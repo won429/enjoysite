@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>enjoy page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 폰트 추가: 학교안심 둥근미소 (로고용) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/HakgyoansimDunggeunmiso/HakgyoansimDunggeunmiso.css" type="text/css"/>
+    
+    <style>
+        /* 폰트 추가: G마켓 산스 (본문용) */
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body { 
+            font-family: 'GmarketSansMedium', sans-serif;
+            background-color: #f8f9fa;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .font-logo {
+            font-family: 'Hakgyoansim Dunggeunmiso', sans-serif;
+        }
+
+        /* 버튼 호버 애니메이션 */
+        .btn-hover {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body class="h-[100dvh] w-full flex flex-col items-center justify-center p-6 bg-white">
+
+    <!-- 메인 컨테이너 -->
+    <div class="w-full max-w-xs flex flex-col gap-8 items-center animate-fade-in-up">
+        
+        <!-- 로고 영역 -->
+        <div class="flex flex-col items-center gap-2 mb-4">
+            <div class="w-20 h-20 bg-[#005ED2]/10 rounded-[2rem] flex items-center justify-center text-[#005ED2] mb-2 shadow-sm">
+                <!-- 아이콘 변경: '페이지' 느낌의 웹 윈도우/레이아웃 아이콘 -->
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+            </div>
+            <!-- 타이틀 수정: enjoy page -->
+            <h1 class="font-logo text-3xl text-black tracking-tight">enjoy page</h1>
+            <p class="text-gray-400 text-xs tracking-widest uppercase">Select Menu</p>
+        </div>
+
+        <!-- 버튼 그룹 -->
+        <div class="w-full flex flex-col gap-4">
+            
+            <!-- 1. 음악 들으러 가기 버튼 -->
+            <button onclick="goToMusic()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                    <div class="text-left">
+                        <span class="block text-xs opacity-80 font-medium mb-0.5">Music Player</span>
+                        <span class="block text-lg font-bold">음악 들으러 가기</span>
+                    </div>
+                </div>
+                <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
+            <!-- 2. 엔조이 주가 확인하기 버튼 (NEW 배지 추가) -->
+            <button onclick="checkStock()" class="btn-hover w-full bg-white text-black border border-gray-200 p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:border-[#005ED2]/30 hover:bg-gray-50 relative overflow-hidden">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 group-hover:text-[#005ED2] transition-colors">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                    </div>
+                    <div class="text-left">
+                        <div class="flex items-center gap-2">
+                            <span class="block text-xs text-gray-400 font-medium mb-0.5">Stock Market</span>
+                            <!-- NEW 배지 -->
+                            <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm">NEW</span>
+                        </div>
+                        <span class="block text-lg font-bold">엔조이 주가 확인</span>
+                    </div>
+                </div>
+                <svg class="text-gray-300 group-hover:text-[#005ED2] group-hover:translate-x-1 transition-all" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
+        </div>
+        
+        <!-- 하단 카피라이트 -->
+        <div class="mt-8 text-center">
+             <p class="text-[10px] text-gray-300">© 2024 Play Enjoy. All rights reserved.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // 링크 설정 (자동으로 https:// 붙여 처리)
+        // ==========================================
+        
+        const LINKS = {
+            music: "https://won429.github.io/enjoy/",      
+            stock: "https://won429.github.io/enjoystock/" 
+        };
+
+        // ==========================================
+
+        function goToMusic() {
+            if (!LINKS.music) return;
+            window.location.href = LINKS.music;
+        }
+
+        function checkStock() {
+            if (!LINKS.stock) return;
+            window.location.href = LINKS.stock;
+        }
+    </script>
+</body>
+</html>
