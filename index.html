@@ -78,24 +78,25 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 2. 엔조이 주가 확인하기 버튼 (NEW 배지) -->
-            <button onclick="checkStock()" class="btn-hover w-full bg-white text-black border border-gray-200 p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:border-[#005ED2]/30 hover:bg-gray-50 relative overflow-hidden">
+            <!-- 2. 엔조이 주가 확인하기 버튼 (하늘색 + 링크 연결 복구) -->
+            <button onclick="checkStock()" class="btn-hover w-full bg-sky-400 text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(56,189,248,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 group-hover:text-[#005ED2] transition-colors">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
                     </div>
                     <div class="text-left">
                         <div class="flex items-center gap-2">
-                            <span class="block text-xs text-gray-400 font-medium mb-0.5">Stock Market</span>
-                            <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm">NEW</span>
+                            <span class="block text-xs opacity-90 font-medium mb-0.5">Stock Market</span>
+                            <!-- NEW 배지 -->
+                            <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm border border-white/20">NEW</span>
                         </div>
                         <span class="block text-lg font-bold">엔조이 주가 확인</span>
                     </div>
                 </div>
-                <svg class="text-gray-300 group-hover:text-[#005ED2] group-hover:translate-x-1 transition-all" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 3. 엔조이 복불복 게임 하기 버튼 (파란색 + NEW 배지 + 링크 연결) -->
+            <!-- 3. 엔조이 복불복 게임 하기 버튼 (파란색) -->
             <button onclick="playGame()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -108,7 +109,6 @@
                     <div class="text-left">
                         <div class="flex items-center gap-2">
                             <span class="block text-xs opacity-80 font-medium mb-0.5">Random Game</span>
-                            <!-- NEW 배지 (파란 배경 위라 흰 테두리 추가하여 가독성 확보) -->
                             <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm border border-white/20">NEW</span>
                         </div>
                         <span class="block text-lg font-bold">엔조이 복불복 게임</span>
@@ -137,8 +137,8 @@
 
             <h3 class="text-lg font-bold text-black mb-4">업데이트 안내</h3>
             
-            <div class="space-y-4 mb-6">
-                <!-- 1. 게임 출시 소식 (강조) -->
+            <div class="space-y-3 mb-6">
+                <!-- 1. 게임 출시 소식 -->
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
                     <p class="text-[#005ED2] text-sm font-bold mb-1">🎉 신규 서비스 오픈!</p>
                     <p class="text-gray-800 text-xs break-keep">
@@ -146,37 +146,17 @@
                     </p>
                 </div>
 
-                <!-- 2. 주식 서비스 중단 안내 (경고) -->
-                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                    <p class="text-red-500 text-sm font-bold mb-1">⚠️ 주식 서비스 일시 중단</p>
-                    <p class="text-gray-500 text-xs break-keep leading-snug">
-                        서버 할당량 초과로 금일 <span class="text-black font-medium">엔조이 주식 서비스</span> 이용이 제한됩니다.<br>
-                        (내일 재개 예정)
+                <!-- 2. 주식 서비스 재개 안내 (수정됨) -->
+                <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
+                    <p class="text-sky-600 text-sm font-bold mb-1">✅ 서비스 정상화</p>
+                    <p class="text-gray-600 text-xs break-keep leading-snug">
+                        <span class="font-bold text-black">엔조이 주식 서비스</span>가<br>
+                        재정비를 마치고 <span class="text-sky-600 font-bold">재개되었습니다.</span>
                     </p>
                 </div>
             </div>
 
             <button onclick="closeModal('startup-modal')" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
-                확인
-            </button>
-        </div>
-    </div>
-
-    <!-- ==================== [개별] 서비스 종료 안내 팝업 (주식 버튼 클릭 시) ==================== -->
-    <div id="quota-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
-            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            </div>
-            <h3 class="text-lg font-bold text-black mb-2">서비스 일시 중지</h3>
-            <p class="text-gray-600 text-sm mb-1 break-keep leading-relaxed">
-                <span class="font-bold text-black">엔조이 주식 서비스</span>는<br>
-                서버 할당량 초과로<br>금일 서비스가 종료되었습니다.
-            </p>
-            <p class="text-[#005ED2] text-xs font-bold mb-6">
-                다음 날 재정비 후 재개될 예정입니다.
-            </p>
-            <button onclick="closeModal('quota-modal')" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
                 확인
             </button>
         </div>
@@ -211,17 +191,17 @@
         }
 
         function checkStock() {
-            // 주가 확인 버튼 클릭 시 팝업 (quota-modal)
-            showModal('quota-modal');
+            // 주가 서비스가 재개되었으므로 바로 링크 이동
+            if (!LINKS.stock) return;
+            window.location.href = LINKS.stock;
         }
 
         function playGame() {
-            // 게임 링크로 바로 이동
             if (!LINKS.game) return;
             window.location.href = LINKS.game;
         }
 
-        // 페이지 로드 시 통합 안내 팝업 (startup-modal) 실행
+        // 페이지 로드 시 통합 안내 팝업 실행
         window.addEventListener('DOMContentLoaded', () => {
             showModal('startup-modal');
         });
