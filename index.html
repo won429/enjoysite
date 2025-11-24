@@ -49,14 +49,14 @@
         <!-- 로고 영역 -->
         <div class="flex flex-col items-center gap-2 mb-4">
             <div class="w-20 h-20 bg-[#005ED2]/10 rounded-[2rem] flex items-center justify-center text-[#005ED2] mb-2 shadow-sm">
-                <!-- 아이콘: '페이지' 느낌의 웹 윈도우/레이아웃 아이콘 -->
+                <!-- 아이콘 -->
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <line x1="3" y1="9" x2="21" y2="9"></line>
                     <line x1="9" y1="21" x2="9" y2="9"></line>
                 </svg>
             </div>
-            <!-- 타이틀: enjoy page -->
+            <!-- 타이틀 -->
             <h1 class="font-logo text-3xl text-black tracking-tight">enjoy page</h1>
             <p class="text-gray-400 text-xs tracking-widest uppercase">Select Menu</p>
         </div>
@@ -95,11 +95,10 @@
                 <svg class="text-gray-300 group-hover:text-[#005ED2] group-hover:translate-x-1 transition-all" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 3. 엔조이 복불복 게임 하기 버튼 (추가됨) -->
-            <button onclick="playGame()" class="btn-hover w-full bg-white text-black border border-gray-200 p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:border-[#005ED2]/30 hover:bg-gray-50 relative overflow-hidden">
+            <!-- 3. 엔조이 복불복 게임 하기 버튼 (파란색 + NEW 배지 + 링크 연결) -->
+            <button onclick="playGame()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 group-hover:text-[#005ED2] transition-colors">
-                        <!-- 게임 아이콘 -->
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="6" y1="12" x2="18" y2="12"></line>
                             <line x1="12" y1="18" x2="12" y2="6"></line>
@@ -107,11 +106,15 @@
                         </svg>
                     </div>
                     <div class="text-left">
-                        <span class="block text-xs text-gray-400 font-medium mb-0.5">Random Game</span>
+                        <div class="flex items-center gap-2">
+                            <span class="block text-xs opacity-80 font-medium mb-0.5">Random Game</span>
+                            <!-- NEW 배지 (파란 배경 위라 흰 테두리 추가하여 가독성 확보) -->
+                            <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm border border-white/20">NEW</span>
+                        </div>
                         <span class="block text-lg font-bold">엔조이 복불복 게임</span>
                     </div>
                 </div>
-                <svg class="text-gray-300 group-hover:text-[#005ED2] group-hover:translate-x-1 transition-all" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
         </div>
@@ -143,25 +146,6 @@
         </div>
     </div>
 
-    <!-- ==================== 준비 중 안내 팝업 (게임) ==================== -->
-    <div id="game-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
-            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-600">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-black mb-2">Coming Soon</h3>
-            <p class="text-gray-600 text-sm mb-6 break-keep leading-relaxed">
-                곧 공개됩니다.
-            </p>
-            <button onclick="closeModal('game-modal')" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition-colors">
-                확인
-            </button>
-        </div>
-    </div>
-
     <script>
         // ==========================================
         // 링크 설정
@@ -169,7 +153,8 @@
         
         const LINKS = {
             music: "https://won429.github.io/enjoy/",      
-            stock: "https://won429.github.io/enjoystock/" 
+            stock: "https://won429.github.io/enjoystock/",
+            game: "https://won429.github.io/enjoygame/"
         };
 
         // ==========================================
@@ -195,8 +180,9 @@
         }
 
         function playGame() {
-            // 게임 버튼 클릭 시 팝업 (game-modal)
-            showModal('game-modal');
+            // 게임 링크로 바로 이동
+            if (!LINKS.game) return;
+            window.location.href = LINKS.game;
         }
 
         // 페이지 로드 시 주식 서비스 중단 팝업 (quota-modal) 자동 실행
