@@ -78,7 +78,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 2. 엔조이 주가 확인하기 버튼 (NEW 배지 추가) -->
+            <!-- 2. 엔조이 주가 확인하기 버튼 (NEW 배지) -->
             <button onclick="checkStock()" class="btn-hover w-full bg-white text-black border border-gray-200 p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:border-[#005ED2]/30 hover:bg-gray-50 relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 group-hover:text-[#005ED2] transition-colors">
@@ -87,10 +87,28 @@
                     <div class="text-left">
                         <div class="flex items-center gap-2">
                             <span class="block text-xs text-gray-400 font-medium mb-0.5">Stock Market</span>
-                            <!-- NEW 배지 -->
                             <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm">NEW</span>
                         </div>
                         <span class="block text-lg font-bold">엔조이 주가 확인</span>
+                    </div>
+                </div>
+                <svg class="text-gray-300 group-hover:text-[#005ED2] group-hover:translate-x-1 transition-all" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
+            <!-- 3. 엔조이 복불복 게임 하기 버튼 (추가됨) -->
+            <button onclick="playGame()" class="btn-hover w-full bg-white text-black border border-gray-200 p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:border-[#005ED2]/30 hover:bg-gray-50 relative overflow-hidden">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 group-hover:text-[#005ED2] transition-colors">
+                        <!-- 게임 아이콘 -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="6" y1="12" x2="18" y2="12"></line>
+                            <line x1="12" y1="18" x2="12" y2="6"></line>
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <span class="block text-xs text-gray-400 font-medium mb-0.5">Random Game</span>
+                        <span class="block text-lg font-bold">엔조이 복불복 게임</span>
                     </div>
                 </div>
                 <svg class="text-gray-300 group-hover:text-[#005ED2] group-hover:translate-x-1 transition-all" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
@@ -105,7 +123,7 @@
 
     </div>
 
-    <!-- ==================== 서비스 종료 안내 팝업 (모달) ==================== -->
+    <!-- ==================== 서비스 종료 안내 팝업 (주식) ==================== -->
     <div id="quota-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
         <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
@@ -119,7 +137,26 @@
             <p class="text-[#005ED2] text-xs font-bold mb-6">
                 다음 날 재정비 후 재개될 예정입니다.
             </p>
-            <button onclick="closeModal()" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
+            <button onclick="closeModal('quota-modal')" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
+                확인
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== 준비 중 안내 팝업 (게임) ==================== -->
+    <div id="game-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-600">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-black mb-2">Coming Soon</h3>
+            <p class="text-gray-600 text-sm mb-6 break-keep leading-relaxed">
+                곧 공개됩니다.
+            </p>
+            <button onclick="closeModal('game-modal')" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition-colors">
                 확인
             </button>
         </div>
@@ -135,16 +172,16 @@
             stock: "https://won429.github.io/enjoystock/" 
         };
 
-        const modal = document.getElementById('quota-modal');
-
         // ==========================================
 
-        function showModal() {
-            modal.classList.remove('hidden');
+        // 모달 열기 공통 함수
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
         }
 
-        function closeModal() {
-            modal.classList.add('hidden');
+        // 모달 닫기 공통 함수
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
 
         function goToMusic() {
@@ -153,13 +190,18 @@
         }
 
         function checkStock() {
-            // 주가 확인 버튼 클릭 시에도 팝업 표시 (링크 이동 막음)
-            showModal();
+            // 주가 확인 버튼 클릭 시 팝업 (quota-modal)
+            showModal('quota-modal');
         }
 
-        // 페이지 로드 시 바로 팝업 표시 (자동 실행)
+        function playGame() {
+            // 게임 버튼 클릭 시 팝업 (game-modal)
+            showModal('game-modal');
+        }
+
+        // 페이지 로드 시 주식 서비스 중단 팝업 (quota-modal) 자동 실행
         window.addEventListener('DOMContentLoaded', () => {
-            showModal();
+            showModal('quota-modal');
         });
         
     </script>
