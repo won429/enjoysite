@@ -126,7 +126,43 @@
 
     </div>
 
-    <!-- ==================== 서비스 종료 안내 팝업 (주식) ==================== -->
+    <!-- ==================== [통합] 업데이트 안내 팝업 (시작 시) ==================== -->
+    <div id="startup-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
+            
+            <!-- 아이콘 -->
+            <div class="w-12 h-12 bg-[#005ED2]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#005ED2]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </div>
+
+            <h3 class="text-lg font-bold text-black mb-4">업데이트 안내</h3>
+            
+            <div class="space-y-4 mb-6">
+                <!-- 1. 게임 출시 소식 (강조) -->
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <p class="text-[#005ED2] text-sm font-bold mb-1">🎉 신규 서비스 오픈!</p>
+                    <p class="text-gray-800 text-xs break-keep">
+                        <span class="font-bold">엔조이 복불복 게임</span>이 출시되었습니다.<br>지금 바로 확인해보세요!
+                    </p>
+                </div>
+
+                <!-- 2. 주식 서비스 중단 안내 (경고) -->
+                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <p class="text-red-500 text-sm font-bold mb-1">⚠️ 주식 서비스 일시 중단</p>
+                    <p class="text-gray-500 text-xs break-keep leading-snug">
+                        서버 할당량 초과로 금일 <span class="text-black font-medium">엔조이 주식 서비스</span> 이용이 제한됩니다.<br>
+                        (내일 재개 예정)
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="closeModal('startup-modal')" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
+                확인
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== [개별] 서비스 종료 안내 팝업 (주식 버튼 클릭 시) ==================== -->
     <div id="quota-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
         <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
@@ -185,9 +221,9 @@
             window.location.href = LINKS.game;
         }
 
-        // 페이지 로드 시 주식 서비스 중단 팝업 (quota-modal) 자동 실행
+        // 페이지 로드 시 통합 안내 팝업 (startup-modal) 실행
         window.addEventListener('DOMContentLoaded', () => {
-            showModal('quota-modal');
+            showModal('startup-modal');
         });
         
     </script>
