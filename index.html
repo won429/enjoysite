@@ -35,6 +35,10 @@
         .btn-hover:active {
             transform: scale(0.96);
         }
+
+        /* 모달 애니메이션 */
+        .scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body class="h-[100dvh] w-full flex flex-col items-center justify-center p-6 bg-white">
@@ -45,14 +49,14 @@
         <!-- 로고 영역 -->
         <div class="flex flex-col items-center gap-2 mb-4">
             <div class="w-20 h-20 bg-[#005ED2]/10 rounded-[2rem] flex items-center justify-center text-[#005ED2] mb-2 shadow-sm">
-                <!-- 아이콘 변경: '페이지' 느낌의 웹 윈도우/레이아웃 아이콘 -->
+                <!-- 아이콘: '페이지' 느낌의 웹 윈도우/레이아웃 아이콘 -->
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <line x1="3" y1="9" x2="21" y2="9"></line>
                     <line x1="9" y1="21" x2="9" y2="9"></line>
                 </svg>
             </div>
-            <!-- 타이틀 수정: enjoy page -->
+            <!-- 타이틀: enjoy page -->
             <h1 class="font-logo text-3xl text-black tracking-tight">enjoy page</h1>
             <p class="text-gray-400 text-xs tracking-widest uppercase">Select Menu</p>
         </div>
@@ -101,9 +105,29 @@
 
     </div>
 
+    <!-- ==================== 서비스 종료 안내 팝업 (모달) ==================== -->
+    <div id="quota-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <h3 class="text-lg font-bold text-black mb-2">서비스 일시 중지</h3>
+            <p class="text-gray-600 text-sm mb-1 break-keep leading-relaxed">
+                <span class="font-bold text-black">엔조이 주식 서비스</span>는<br>
+                서버 할당량 초과로<br>금일 서비스가 종료되었습니다.
+            </p>
+            <p class="text-[#005ED2] text-xs font-bold mb-6">
+                다음 날 재정비 후 재개될 예정입니다.
+            </p>
+            <button onclick="closeModal()" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
+                확인
+            </button>
+        </div>
+    </div>
+
     <script>
         // ==========================================
-        // 링크 설정 (자동으로 https:// 붙여 처리)
+        // 링크 설정
         // ==========================================
         
         const LINKS = {
@@ -111,7 +135,17 @@
             stock: "https://won429.github.io/enjoystock/" 
         };
 
+        const modal = document.getElementById('quota-modal');
+
         // ==========================================
+
+        function showModal() {
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
 
         function goToMusic() {
             if (!LINKS.music) return;
@@ -119,9 +153,15 @@
         }
 
         function checkStock() {
-            if (!LINKS.stock) return;
-            window.location.href = LINKS.stock;
+            // 주가 확인 버튼 클릭 시에도 팝업 표시 (링크 이동 막음)
+            showModal();
         }
+
+        // 페이지 로드 시 바로 팝업 표시 (자동 실행)
+        window.addEventListener('DOMContentLoaded', () => {
+            showModal();
+        });
+        
     </script>
 </body>
 </html>
