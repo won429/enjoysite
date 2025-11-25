@@ -284,7 +284,7 @@
         }
 
         // ==========================================
-        // 초기화 및 에러 처리 (안전장치)
+        // 초기화 및 에러 처리 (안전장치 강화됨)
         // ==========================================
         async function init() {
             try {
@@ -292,17 +292,16 @@
                 const auth = getAuth(app);
                 const db = getFirestore(app);
 
-                // 1. 익명 로그인 시도 (권한 문제 방지)
-                await signInAnonymously(auth).catch(err => {
-                    console.warn("익명 로그인 실패 (정보 없음 전환):", err);
-                    updateUI(null);
-                    throw err; // 실행 중단
-                });
-                
-                console.log("🔥 Firebase 연결 성공!");
+                // 1. 익명 로그인 시도
+                try {
+                    await signInAnonymously(auth);
+                    console.log("🔥 Firebase 연결 성공!");
+                } catch (authErr) {
+                    console.warn("⚠️ 인증 실패 (공개 데이터 접근 시도):", authErr);
+                    // 인증이 실패해도 Firestore 리스너는 연결 시도해봄 (공개 규칙일 경우 작동)
+                }
 
                 // 2. 주식 데이터 리스너 연결
-                // stocks/enjoy 문서 감시
                 onSnapshot(doc(db, "stocks", "enjoy"), (doc) => {
                     if (doc.exists()) {
                         const data = doc.data();
@@ -311,12 +310,12 @@
                         updateUI(null); // 문서 없으면 -
                     }
                 }, (error) => {
-                    console.warn("DB 연결 실패 (정보 없음 전환):", error);
+                    console.warn("DB 연결 실패 (권한/네트워크 문제):", error);
                     updateUI(null); // 에러 시 -
                 });
 
             } catch(e) {
-                console.warn("초기화 실패 (정보 없음 전환):", e);
+                console.warn("초기화 치명적 오류:", e);
                 updateUI(null); // 초기화 실패 시 -
             }
         }
