@@ -68,7 +68,7 @@
                         <span id="market-badge" class="hidden text-[9px] font-bold bg-gray-800 text-white px-1.5 py-0.5 rounded-full">🌙 마감</span>
                     </div>
                     <div class="flex items-end gap-1.5">
-                        <!-- 가격 표시 -->
+                        <!-- 가격 표시 (초기값 -) -->
                         <span id="ticker-price" class="text-xl font-bold text-gray-800 tabular-nums">-</span>
                     </div>
                     <span id="ticker-change" class="text-[10px] font-bold text-gray-400 tabular-nums">-</span>
@@ -101,7 +101,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 주식 (이름 변경됨: 엔조이 주식 게임) -->
+            <!-- 주식 (엔조이 주식 게임) -->
             <button onclick="checkStock()" class="btn-hover w-full bg-sky-400 text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(56,189,248,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -146,7 +146,7 @@
         </div>
     </div>
 
-    <!-- 업데이트 안내 팝업 -->
+    <!-- 업데이트 안내 팝업 (수정됨: 서비스 정상화 내용 삭제) -->
     <div id="startup-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
         <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
             <div class="w-12 h-12 bg-[#005ED2]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#005ED2]">
@@ -160,13 +160,7 @@
                         이제 홈 화면에서 <span class="font-bold">실시간 엔조이 주가</span>를<br>바로 확인하실 수 있습니다.
                     </p>
                 </div>
-                <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
-                    <p class="text-sky-600 text-sm font-bold mb-1">✅ 서비스 정상화</p>
-                    <p class="text-gray-600 text-xs break-keep leading-snug">
-                        <span class="font-bold text-black">엔조이 주식 서비스</span>가<br>
-                        재정비를 마치고 <span class="text-sky-600 font-bold">재개되었습니다.</span>
-                    </p>
-                </div>
+                <!-- 서비스 정상화 안내 삭제됨 -->
             </div>
             <button onclick="closeModal('startup-modal')" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
                 확인
@@ -180,7 +174,6 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // [설정] 사장님 코드 적용
         const firebaseConfig = {
             apiKey: "AIzaSyABn9xi7a-3LyLpvS6HT03gJUGTlQkgHmk",
             authDomain: "enjoystock.firebaseapp.com",
@@ -199,24 +192,21 @@
         const svg = document.getElementById('mini-chart');
         const marketBadge = document.getElementById('market-badge');
         
-        // 장 마감 시간 설정
         const MARKET_START_HOUR = 8;
         const MARKET_START_MIN = 0;
         const MARKET_END_HOUR = 23;
         const MARKET_END_MIN = 30;
 
-        // 장 상태 확인 함수
         function checkMarketStatus(manualPause = false) {
             const now = new Date(); 
             const currentTimeVal = now.getHours() * 60 + now.getMinutes(); 
             const startVal = MARKET_START_HOUR * 60 + MARKET_START_MIN;
             const endVal = MARKET_END_HOUR * 60 + MARKET_END_MIN; 
             
-            // 장 운영 중인가? (시간 내 + 수동 정지 아님)
             const isOpen = (currentTimeVal >= startVal && currentTimeVal < endVal) && !manualPause;
             
             if (!isOpen) {
-                marketBadge.classList.remove('hidden'); // 배지 보이기
+                marketBadge.classList.remove('hidden'); 
                 if (manualPause) {
                     marketBadge.innerText = "⏸ 일시정지";
                     marketBadge.className = "text-[9px] font-bold bg-gray-500 text-white px-1.5 py-0.5 rounded-full ml-1";
@@ -225,23 +215,20 @@
                     marketBadge.className = "text-[9px] font-bold bg-gray-800 text-white px-1.5 py-0.5 rounded-full ml-1";
                 }
             } else {
-                marketBadge.classList.add('hidden'); // 배지 숨기기
+                marketBadge.classList.add('hidden'); 
             }
         }
 
-        // 차트 그리기 (전체 history 데이터를 받아서 그림)
         function drawChart(historyData, basePrice) {
             if (!svg || !historyData || historyData.length === 0) return;
             const width = svg.clientWidth || 120;
             const height = svg.clientHeight || 88;
             
-            // 스케일 계산 (기준가 포함해서 범위 설정)
             let minVal = Math.min(...historyData); 
             let maxVal = Math.max(...historyData);
             minVal = Math.min(minVal, basePrice); 
             maxVal = Math.max(maxVal, basePrice);
             
-            // 여백 추가
             const padding = (maxVal - minVal) * 0.1 || 10;
             maxVal += padding;
             minVal -= padding;
@@ -250,18 +237,15 @@
             let points = "";
             const totalPoints = historyData.length;
             
-            // 데이터가 너무 많으면(94개 이상) 최근 것만 보여주거나, 전체를 압축해서 보여줌
-            // 여기서는 전체 데이터를 X축에 균등하게 배치
             historyData.forEach((val, idx) => {
                 const x = (idx / (totalPoints - 1)) * width;
                 const normalized = (val - minVal) / range;
-                const y = height - (normalized * height); // Y축 뒤집기 (위가 큰 값)
+                const y = height - (normalized * height); 
                 points += `${x},${y} `;
             });
             polyline.setAttribute('points', points);
         }
 
-        // 화면 업데이트 (서버 데이터 통째로 받음)
         function updateUI(data) {
             if (!data) {
                 priceEl.innerText = "-";
@@ -270,14 +254,12 @@
             }
 
             const currentPrice = data.currentPrice;
-            const basePrice = data.basePrice || 12000; // 기본값 안전장치
+            const basePrice = data.basePrice || 12000; 
             const history = data.history || [];
             const manualPause = data.manualPause || false;
 
-            // 1. 장 상태 업데이트
             checkMarketStatus(manualPause);
 
-            // 2. 가격 표시
             priceEl.innerText = currentPrice.toLocaleString();
             
             const changeAmount = currentPrice - basePrice;
@@ -295,20 +277,17 @@
                 polyline.setAttribute('stroke', '#3b82f6');
             }
             
-            // 3. 차트 그리기 (history 데이터 사용)
             drawChart(history, basePrice);
 
             setTimeout(() => { priceEl.classList.remove('price-up', 'price-down'); }, 500);
         }
 
-        // 초기화 로직
         async function init() {
             try {
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
                 const db = getFirestore(app);
 
-                // 1. 인증 시도
                 try {
                     await signInAnonymously(auth);
                     console.log("Auth 성공");
@@ -316,11 +295,10 @@
                     console.warn("Auth 실패");
                 }
 
-                // 2. 데이터 감시 (정확한 주소!!)
                 onSnapshot(doc(db, ...DATA_PATH), (doc) => {
                     if (doc.exists()) {
                         const data = doc.data();
-                        updateUI(data); // 전체 데이터 넘김
+                        updateUI(data); 
                     } else {
                         updateUI(null);
                     }
