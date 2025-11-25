@@ -39,15 +39,22 @@
         /* 모달 애니메이션 */
         .scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* 숫자 변경 애니메이션 */
+        .price-up { color: #ef4444; animation: pulseRed 0.5s ease-in-out; }
+        .price-down { color: #3b82f6; animation: pulseBlue 0.5s ease-in-out; }
+        
+        @keyframes pulseRed { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulseBlue { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="h-[100dvh] w-full flex flex-col items-center justify-center p-6 bg-white">
 
     <!-- 메인 컨테이너 -->
-    <div class="w-full max-w-xs flex flex-col gap-8 items-center animate-fade-in-up">
+    <div class="w-full max-w-xs flex flex-col gap-6 items-center animate-fade-in-up">
         
         <!-- 로고 영역 -->
-        <div class="flex flex-col items-center gap-2 mb-4">
+        <div class="flex flex-col items-center gap-2 mb-2">
             <div class="w-20 h-20 bg-[#005ED2]/10 rounded-[2rem] flex items-center justify-center text-[#005ED2] mb-2 shadow-sm">
                 <!-- 아이콘 -->
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,8 +68,39 @@
             <p class="text-gray-400 text-xs tracking-widest uppercase">Select Menu</p>
         </div>
 
+        <!-- 👇 실시간 주가 위젯 (파이어베이스 연동 완료) -->
+        <div class="w-full bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center justify-between relative overflow-hidden h-[88px]">
+            
+            <!-- 왼쪽 정보 영역 -->
+            <div class="flex items-center gap-3 z-20 shrink-0">
+                <div class="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-500 shrink-0">
+                    <span class="font-bold text-xs">ENJ</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xs text-gray-400 font-medium">실시간 엔조이 주가</span>
+                    <div class="flex items-end gap-1.5">
+                        <!-- 가격 표시 영역 (초기값은 대시) -->
+                        <span id="ticker-price" class="text-xl font-bold text-gray-800 tabular-nums">-</span>
+                    </div>
+                    <span id="ticker-change" class="text-[10px] font-bold text-gray-400 tabular-nums">-</span>
+                </div>
+            </div>
+
+            <!-- 오른쪽 미니 차트 영역 (SVG) -->
+            <div class="absolute right-0 top-0 bottom-0 w-[120px] h-full z-10 opacity-80 pointer-events-none">
+                 <!-- 그라데이션 오버레이 -->
+                 <div class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent z-20"></div>
+                 
+                 <svg id="mini-chart" width="100%" height="100%" preserveAspectRatio="none" class="overflow-visible">
+                    <!-- 차트 선이 여기에 그려집니다 -->
+                    <polyline id="chart-line" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round" points=""></polyline>
+                 </svg>
+            </div>
+        </div>
+        <!-- 👆 실시간 주가 위젯 끝 -->
+
         <!-- 버튼 그룹 -->
-        <div class="w-full flex flex-col gap-4">
+        <div class="w-full flex flex-col gap-3">
             
             <!-- 1. 음악 들으러 가기 버튼 -->
             <button onclick="goToMusic()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group">
@@ -78,7 +116,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 2. 엔조이 주가 확인하기 버튼 (하늘색 + 링크 연결 복구) -->
+            <!-- 2. 엔조이 주가 확인하기 버튼 (하늘색 + 링크 연결) -->
             <button onclick="checkStock()" class="btn-hover w-full bg-sky-400 text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(56,189,248,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -96,7 +134,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 3. 엔조이 복불복 게임 하기 버튼 (파란색) -->
+            <!-- 3. 엔조이 복불복 게임 하기 버튼 (파란색 + NEW 배지) -->
             <button onclick="playGame()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -146,7 +184,7 @@
                     </p>
                 </div>
 
-                <!-- 2. 주식 서비스 재개 안내 (수정됨) -->
+                <!-- 2. 주식 서비스 재개 안내 -->
                 <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
                     <p class="text-sky-600 text-sm font-bold mb-1">✅ 서비스 정상화</p>
                     <p class="text-gray-600 text-xs break-keep leading-snug">
@@ -162,50 +200,149 @@
         </div>
     </div>
 
-    <script>
+    <!-- 🔥 FIREBASE 연동 스크립트 🔥 -->
+    <script type="module">
+        // 1. 파이어베이스 라이브러리 가져오기
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         // ==========================================
-        // 링크 설정
+        // ⚠️ [입력 완료] 엔조이 주식 사이트와 동일한 설정값 적용
         // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyABn9xi7a-3LyLpvS6HT03gJUGTlQkgHmk",
+            authDomain: "enjoystock.firebaseapp.com",
+            projectId: "enjoystock",
+            storageBucket: "enjoystock.firebasestorage.app",
+            messagingSenderId: "981969177924",
+            appId: "1:981969177924:web:51b0093a0d1b001ead9b11"
+        };
+
+        // UI 요소
+        const priceEl = document.getElementById('ticker-price');
+        const changeEl = document.getElementById('ticker-change');
+        const polyline = document.getElementById('chart-line');
+        const svg = document.getElementById('mini-chart');
         
+        let dataPoints = []; 
+        const maxPoints = 20;
+        const basePrice = 12000; 
+
+        function drawChart() {
+            if (!svg || dataPoints.length === 0) return;
+            const width = svg.clientWidth || 120;
+            const height = svg.clientHeight || 88;
+            
+            const min = Math.min(...dataPoints);
+            const max = Math.max(...dataPoints);
+            const range = max - min || 1;
+
+            let points = "";
+            dataPoints.forEach((val, idx) => {
+                const x = (idx / (maxPoints - 1)) * width;
+                const normalized = (val - min) / range;
+                const y = height - (normalized * (height * 0.6) + (height * 0.2));
+                points += `${x},${y} `;
+            });
+            polyline.setAttribute('points', points);
+        }
+
+        function updateUI(currentPrice) {
+            // 데이터가 없거나 유효하지 않으면 '-' 표시하고 종료 (차트도 초기화)
+            if (currentPrice === null || currentPrice === undefined) {
+                priceEl.innerText = "-";
+                changeEl.innerText = "-";
+                polyline.setAttribute('points', "");
+                return;
+            }
+
+            dataPoints.push(currentPrice);
+            if(dataPoints.length > maxPoints) dataPoints.shift();
+
+            priceEl.innerText = currentPrice.toLocaleString();
+            
+            const changeAmount = currentPrice - basePrice;
+            const changePercent = ((changeAmount / basePrice) * 100).toFixed(2);
+            
+            if (changeAmount >= 0) {
+                priceEl.className = "text-xl font-bold text-red-500 tabular-nums price-up";
+                changeEl.className = "text-[10px] font-bold text-red-500 tabular-nums";
+                changeEl.innerText = `▲ ${changePercent}%`;
+                polyline.setAttribute('stroke', '#ef4444'); 
+            } else {
+                priceEl.className = "text-xl font-bold text-blue-500 tabular-nums price-down";
+                changeEl.className = "text-[10px] font-bold text-blue-500 tabular-nums";
+                changeEl.innerText = `▼ ${Math.abs(changePercent)}%`;
+                polyline.setAttribute('stroke', '#3b82f6');
+            }
+            
+            drawChart();
+            setTimeout(() => {
+                priceEl.classList.remove('price-up', 'price-down');
+            }, 500);
+        }
+
+        // ==========================================
+        // 초기화 및 에러 처리 (안전장치)
+        // ==========================================
+        async function init() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                // 1. 익명 로그인 시도 (권한 문제 방지)
+                await signInAnonymously(auth).catch(err => {
+                    console.warn("익명 로그인 실패 (정보 없음 전환):", err);
+                    updateUI(null);
+                    throw err; // 실행 중단
+                });
+                
+                console.log("🔥 Firebase 연결 성공!");
+
+                // 2. 주식 데이터 리스너 연결
+                // stocks/enjoy 문서 감시
+                onSnapshot(doc(db, "stocks", "enjoy"), (doc) => {
+                    if (doc.exists()) {
+                        const data = doc.data();
+                        if (data.price) updateUI(data.price);
+                    } else {
+                        updateUI(null); // 문서 없으면 -
+                    }
+                }, (error) => {
+                    console.warn("DB 연결 실패 (정보 없음 전환):", error);
+                    updateUI(null); // 에러 시 -
+                });
+
+            } catch(e) {
+                console.warn("초기화 실패 (정보 없음 전환):", e);
+                updateUI(null); // 초기화 실패 시 -
+            }
+        }
+
+        // 실행
+        init();
+
+    </script>
+
+    <!-- 기존 스크립트 -->
+    <script>
         const LINKS = {
             music: "https://won429.github.io/enjoy/",      
             stock: "https://won429.github.io/enjoystock/",
             game: "https://won429.github.io/enjoygame/"
         };
 
-        // ==========================================
+        function showModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        function goToMusic() { if (LINKS.music) window.location.href = LINKS.music; }
+        function checkStock() { if (LINKS.stock) window.location.href = LINKS.stock; }
+        function playGame() { if (LINKS.game) window.location.href = LINKS.game; }
 
-        // 모달 열기 공통 함수
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-        }
-
-        // 모달 닫기 공통 함수
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        function goToMusic() {
-            if (!LINKS.music) return;
-            window.location.href = LINKS.music;
-        }
-
-        function checkStock() {
-            // 주가 서비스가 재개되었으므로 바로 링크 이동
-            if (!LINKS.stock) return;
-            window.location.href = LINKS.stock;
-        }
-
-        function playGame() {
-            if (!LINKS.game) return;
-            window.location.href = LINKS.game;
-        }
-
-        // 페이지 로드 시 통합 안내 팝업 실행
         window.addEventListener('DOMContentLoaded', () => {
             showModal('startup-modal');
         });
-        
     </script>
 </body>
 </html>
