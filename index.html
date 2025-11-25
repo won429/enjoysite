@@ -64,7 +64,7 @@
                 <div class="flex flex-col">
                     <span class="text-xs text-gray-400 font-medium">실시간 엔조이 주가</span>
                     <div class="flex items-end gap-1.5">
-                        <!-- 초기값은 - 로 설정 -->
+                        <!-- 초기값은 - 로 설정 (연결 안되면 이대로 유지됨) -->
                         <span id="ticker-price" class="text-xl font-bold text-gray-800 tabular-nums">-</span>
                     </div>
                     <span id="ticker-change" class="text-[10px] font-bold text-gray-400 tabular-nums">-</span>
@@ -105,6 +105,7 @@
                     <div class="text-left">
                         <div class="flex items-center gap-2">
                             <span class="block text-xs opacity-90 font-medium mb-0.5">Stock Market</span>
+                            <!-- NEW 배지 -->
                             <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm border border-white/20">NEW</span>
                         </div>
                         <span class="block text-lg font-bold">엔조이 주가 확인</span>
