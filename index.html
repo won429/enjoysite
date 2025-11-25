@@ -62,9 +62,13 @@
                     <span class="font-bold text-xs">ENJ</span>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xs text-gray-400 font-medium">실시간 엔조이 주가</span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-xs text-gray-400 font-medium">실시간 엔조이 주가</span>
+                        <!-- 장 마감 뱃지 (기본 숨김) -->
+                        <span id="market-badge" class="hidden text-[9px] font-bold bg-gray-800 text-white px-1.5 py-0.5 rounded-full">🌙 마감</span>
+                    </div>
                     <div class="flex items-end gap-1.5">
-                        <!-- 초기값은 - 로 설정 -->
+                        <!-- 가격 표시 -->
                         <span id="ticker-price" class="text-xl font-bold text-gray-800 tabular-nums">-</span>
                     </div>
                     <span id="ticker-change" class="text-[10px] font-bold text-gray-400 tabular-nums">-</span>
@@ -75,6 +79,7 @@
             <div class="absolute right-0 top-0 bottom-0 w-[120px] h-full z-10 opacity-80 pointer-events-none">
                  <div class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent z-20"></div>
                  <svg id="mini-chart" width="100%" height="100%" preserveAspectRatio="none" class="overflow-visible">
+                    <!-- 차트 선 -->
                     <polyline id="chart-line" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round" points=""></polyline>
                  </svg>
             </div>
@@ -96,7 +101,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 주식 (하늘색, NEW 배지, 링크 연결) -->
+            <!-- 주식 (이름 변경됨: 엔조이 주식 게임) -->
             <button onclick="checkStock()" class="btn-hover w-full bg-sky-400 text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(56,189,248,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -108,13 +113,13 @@
                             <!-- NEW 배지 -->
                             <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm border border-white/20">NEW</span>
                         </div>
-                        <span class="block text-lg font-bold">엔조이 주가 확인</span>
+                        <span class="block text-lg font-bold">엔조이 주식 게임</span>
                     </div>
                 </div>
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 게임 (파란색, NEW 배지, 링크 연결) -->
+            <!-- 게임 -->
             <button onclick="playGame()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -150,9 +155,9 @@
             <h3 class="text-lg font-bold text-black mb-4">업데이트 안내</h3>
             <div class="space-y-3 mb-6">
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                    <p class="text-[#005ED2] text-sm font-bold mb-1">🎉 신규 서비스 오픈!</p>
+                    <p class="text-[#005ED2] text-sm font-bold mb-1">🎉 신규 기능 추가!</p>
                     <p class="text-gray-800 text-xs break-keep">
-                        <span class="font-bold">엔조이 복불복 게임</span>이 출시되었습니다.<br>지금 바로 확인해보세요!
+                        이제 홈 화면에서 <span class="font-bold">실시간 엔조이 주가</span>를<br>바로 확인하실 수 있습니다.
                     </p>
                 </div>
                 <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
@@ -175,7 +180,7 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // [설정] 사장님이 주신 코드 적용 완료
+        // [설정] 사장님 코드 적용
         const firebaseConfig = {
             apiKey: "AIzaSyABn9xi7a-3LyLpvS6HT03gJUGTlQkgHmk",
             authDomain: "enjoystock.firebaseapp.com",
@@ -185,49 +190,94 @@
             appId: "1:981969177924:web:51b0093a0d1b001ead9b11"
         };
 
+        // 🔍 [분석된 정확한 데이터 경로]
+        const DATA_PATH = ['artifacts', 'enjoy-stock-live', 'public', 'data', 'stock_data', 'enjoy_ticker'];
+
         const priceEl = document.getElementById('ticker-price');
         const changeEl = document.getElementById('ticker-change');
         const polyline = document.getElementById('chart-line');
         const svg = document.getElementById('mini-chart');
+        const marketBadge = document.getElementById('market-badge');
         
-        let dataPoints = []; 
-        const maxPoints = 20;
-        const basePrice = 12000; 
+        // 장 마감 시간 설정
+        const MARKET_START_HOUR = 8;
+        const MARKET_START_MIN = 0;
+        const MARKET_END_HOUR = 23;
+        const MARKET_END_MIN = 30;
 
-        // 차트 그리기
-        function drawChart() {
-            if (!svg || dataPoints.length === 0) return;
+        // 장 상태 확인 함수
+        function checkMarketStatus(manualPause = false) {
+            const now = new Date(); 
+            const currentTimeVal = now.getHours() * 60 + now.getMinutes(); 
+            const startVal = MARKET_START_HOUR * 60 + MARKET_START_MIN;
+            const endVal = MARKET_END_HOUR * 60 + MARKET_END_MIN; 
+            
+            // 장 운영 중인가? (시간 내 + 수동 정지 아님)
+            const isOpen = (currentTimeVal >= startVal && currentTimeVal < endVal) && !manualPause;
+            
+            if (!isOpen) {
+                marketBadge.classList.remove('hidden'); // 배지 보이기
+                if (manualPause) {
+                    marketBadge.innerText = "⏸ 일시정지";
+                    marketBadge.className = "text-[9px] font-bold bg-gray-500 text-white px-1.5 py-0.5 rounded-full ml-1";
+                } else {
+                    marketBadge.innerText = "🌙 마감";
+                    marketBadge.className = "text-[9px] font-bold bg-gray-800 text-white px-1.5 py-0.5 rounded-full ml-1";
+                }
+            } else {
+                marketBadge.classList.add('hidden'); // 배지 숨기기
+            }
+        }
+
+        // 차트 그리기 (전체 history 데이터를 받아서 그림)
+        function drawChart(historyData, basePrice) {
+            if (!svg || !historyData || historyData.length === 0) return;
             const width = svg.clientWidth || 120;
             const height = svg.clientHeight || 88;
             
-            const min = Math.min(...dataPoints);
-            const max = Math.max(...dataPoints);
-            const range = max - min || 1;
+            // 스케일 계산 (기준가 포함해서 범위 설정)
+            let minVal = Math.min(...historyData); 
+            let maxVal = Math.max(...historyData);
+            minVal = Math.min(minVal, basePrice); 
+            maxVal = Math.max(maxVal, basePrice);
+            
+            // 여백 추가
+            const padding = (maxVal - minVal) * 0.1 || 10;
+            maxVal += padding;
+            minVal -= padding;
+            const range = maxVal - minVal;
 
             let points = "";
-            dataPoints.forEach((val, idx) => {
-                const x = (idx / (maxPoints - 1)) * width;
-                const normalized = (val - min) / range;
-                const y = height - (normalized * (height * 0.6) + (height * 0.2));
+            const totalPoints = historyData.length;
+            
+            // 데이터가 너무 많으면(94개 이상) 최근 것만 보여주거나, 전체를 압축해서 보여줌
+            // 여기서는 전체 데이터를 X축에 균등하게 배치
+            historyData.forEach((val, idx) => {
+                const x = (idx / (totalPoints - 1)) * width;
+                const normalized = (val - minVal) / range;
+                const y = height - (normalized * height); // Y축 뒤집기 (위가 큰 값)
                 points += `${x},${y} `;
             });
             polyline.setAttribute('points', points);
         }
 
-        // 화면 업데이트
-        function updateUI(currentPrice) {
-            // 🚨 데이터 없으면 무조건 '-' 표시하고 종료
-            if (currentPrice === null || currentPrice === undefined) {
+        // 화면 업데이트 (서버 데이터 통째로 받음)
+        function updateUI(data) {
+            if (!data) {
                 priceEl.innerText = "-";
                 changeEl.innerText = "-";
-                polyline.setAttribute('points', "");
                 return;
             }
 
-            // 데이터 있으면 그래프 그림
-            dataPoints.push(currentPrice);
-            if(dataPoints.length > maxPoints) dataPoints.shift();
+            const currentPrice = data.currentPrice;
+            const basePrice = data.basePrice || 12000; // 기본값 안전장치
+            const history = data.history || [];
+            const manualPause = data.manualPause || false;
 
+            // 1. 장 상태 업데이트
+            checkMarketStatus(manualPause);
+
+            // 2. 가격 표시
             priceEl.innerText = currentPrice.toLocaleString();
             
             const changeAmount = currentPrice - basePrice;
@@ -245,7 +295,9 @@
                 polyline.setAttribute('stroke', '#3b82f6');
             }
             
-            drawChart();
+            // 3. 차트 그리기 (history 데이터 사용)
+            drawChart(history, basePrice);
+
             setTimeout(() => { priceEl.classList.remove('price-up', 'price-down'); }, 500);
         }
 
@@ -256,28 +308,30 @@
                 const auth = getAuth(app);
                 const db = getFirestore(app);
 
-                // 익명 로그인 시도 (실패하면 catch로 이동해 '-' 표시)
-                await signInAnonymously(auth);
-                
-                // 데이터 감시 (실패하면 callback error로 이동해 '-' 표시)
-                onSnapshot(doc(db, "stocks", "enjoy"), (doc) => {
+                // 1. 인증 시도
+                try {
+                    await signInAnonymously(auth);
+                    console.log("Auth 성공");
+                } catch (authErr) {
+                    console.warn("Auth 실패");
+                }
+
+                // 2. 데이터 감시 (정확한 주소!!)
+                onSnapshot(doc(db, ...DATA_PATH), (doc) => {
                     if (doc.exists()) {
                         const data = doc.data();
-                        updateUI(data.price); // 실제 가격 표시
+                        updateUI(data); // 전체 데이터 넘김
                     } else {
-                        // 문서가 없으면 콘솔에만 알리고 화면엔 - 표시
-                        console.warn("데이터가 없습니다. (stocks/enjoy 문서를 확인하세요)");
-                        updateUI(null); 
+                        updateUI(null);
                     }
                 }, (error) => {
-                    // 연결 실패 시 - 표시
-                    console.error("데이터 가져오기 실패 (보안 설정 확인 필요):", error);
-                    updateUI(null); 
+                    console.warn("데이터 접근 차단됨:", error);
+                    updateUI(null);
                 });
 
             } catch(e) {
-                console.error("초기화 중 에러:", e);
-                updateUI(null); 
+                console.error("초기화 실패:", e);
+                updateUI(null);
             }
         }
 
