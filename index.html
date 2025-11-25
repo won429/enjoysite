@@ -6,11 +6,10 @@
     <title>enjoy page</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 폰트 추가: 학교안심 둥근미소 (로고용) -->
+    <!-- 폰트 추가 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/HakgyoansimDunggeunmiso/HakgyoansimDunggeunmiso.css" type="text/css"/>
     
     <style>
-        /* 폰트 추가: G마켓 산스 (본문용) */
         @font-face {
             font-family: 'GmarketSansMedium';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
@@ -24,26 +23,15 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        .font-logo {
-            font-family: 'Hakgyoansim Dunggeunmiso', sans-serif;
-        }
-
-        /* 버튼 호버 애니메이션 */
-        .btn-hover {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-hover:active {
-            transform: scale(0.96);
-        }
-
-        /* 모달 애니메이션 */
+        .font-logo { font-family: 'Hakgyoansim Dunggeunmiso', sans-serif; }
+        .btn-hover { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-hover:active { transform: scale(0.96); }
         .scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* 숫자 변경 애니메이션 */
         .price-up { color: #ef4444; animation: pulseRed 0.5s ease-in-out; }
         .price-down { color: #3b82f6; animation: pulseBlue 0.5s ease-in-out; }
-        
         @keyframes pulseRed { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes pulseBlue { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
@@ -56,21 +44,18 @@
         <!-- 로고 영역 -->
         <div class="flex flex-col items-center gap-2 mb-2">
             <div class="w-20 h-20 bg-[#005ED2]/10 rounded-[2rem] flex items-center justify-center text-[#005ED2] mb-2 shadow-sm">
-                <!-- 아이콘 -->
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <line x1="3" y1="9" x2="21" y2="9"></line>
                     <line x1="9" y1="21" x2="9" y2="9"></line>
                 </svg>
             </div>
-            <!-- 타이틀 -->
             <h1 class="font-logo text-3xl text-black tracking-tight">enjoy page</h1>
             <p class="text-gray-400 text-xs tracking-widest uppercase">Select Menu</p>
         </div>
 
-        <!-- 👇 실시간 주가 위젯 (파이어베이스 연동 완료) -->
+        <!-- 👇 실시간 주가 위젯 -->
         <div class="w-full bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center justify-between relative overflow-hidden h-[88px]">
-            
             <!-- 왼쪽 정보 영역 -->
             <div class="flex items-center gap-3 z-20 shrink-0">
                 <div class="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-500 shrink-0">
@@ -79,30 +64,25 @@
                 <div class="flex flex-col">
                     <span class="text-xs text-gray-400 font-medium">실시간 엔조이 주가</span>
                     <div class="flex items-end gap-1.5">
-                        <!-- 가격 표시 영역 (초기값은 대시) -->
+                        <!-- 초기값은 - 로 설정 -->
                         <span id="ticker-price" class="text-xl font-bold text-gray-800 tabular-nums">-</span>
                     </div>
                     <span id="ticker-change" class="text-[10px] font-bold text-gray-400 tabular-nums">-</span>
                 </div>
             </div>
 
-            <!-- 오른쪽 미니 차트 영역 (SVG) -->
+            <!-- 오른쪽 미니 차트 영역 -->
             <div class="absolute right-0 top-0 bottom-0 w-[120px] h-full z-10 opacity-80 pointer-events-none">
-                 <!-- 그라데이션 오버레이 -->
                  <div class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent z-20"></div>
-                 
                  <svg id="mini-chart" width="100%" height="100%" preserveAspectRatio="none" class="overflow-visible">
-                    <!-- 차트 선이 여기에 그려집니다 -->
                     <polyline id="chart-line" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round" points=""></polyline>
                  </svg>
             </div>
         </div>
-        <!-- 👆 실시간 주가 위젯 끝 -->
 
         <!-- 버튼 그룹 -->
         <div class="w-full flex flex-col gap-3">
-            
-            <!-- 1. 음악 들으러 가기 버튼 -->
+            <!-- 음악 -->
             <button onclick="goToMusic()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -116,7 +96,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 2. 엔조이 주가 확인하기 버튼 (하늘색 + 링크 연결) -->
+            <!-- 주식 (하늘색, NEW 배지, 링크 연결) -->
             <button onclick="checkStock()" class="btn-hover w-full bg-sky-400 text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(56,189,248,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -125,7 +105,6 @@
                     <div class="text-left">
                         <div class="flex items-center gap-2">
                             <span class="block text-xs opacity-90 font-medium mb-0.5">Stock Market</span>
-                            <!-- NEW 배지 -->
                             <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse shadow-sm border border-white/20">NEW</span>
                         </div>
                         <span class="block text-lg font-bold">엔조이 주가 확인</span>
@@ -134,7 +113,7 @@
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <!-- 3. 엔조이 복불복 게임 하기 버튼 (파란색 + NEW 배지) -->
+            <!-- 게임 (파란색, NEW 배지, 링크 연결) -->
             <button onclick="playGame()" class="btn-hover w-full bg-[#005ED2] text-white p-5 rounded-2xl shadow-[0_10px_20px_-5px_rgba(0,94,210,0.3)] flex items-center justify-between group relative overflow-hidden">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -154,37 +133,27 @@
                 </div>
                 <svg class="opacity-50 group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
-
         </div>
         
-        <!-- 하단 카피라이트 -->
         <div class="mt-8 text-center">
              <p class="text-[10px] text-gray-300">© 2024 Play Enjoy. All rights reserved.</p>
         </div>
-
     </div>
 
-    <!-- ==================== [통합] 업데이트 안내 팝업 (시작 시) ==================== -->
+    <!-- 업데이트 안내 팝업 -->
     <div id="startup-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
         <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl border border-gray-100 scale-in relative">
-            
-            <!-- 아이콘 -->
             <div class="w-12 h-12 bg-[#005ED2]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#005ED2]">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             </div>
-
             <h3 class="text-lg font-bold text-black mb-4">업데이트 안내</h3>
-            
             <div class="space-y-3 mb-6">
-                <!-- 1. 게임 출시 소식 -->
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
                     <p class="text-[#005ED2] text-sm font-bold mb-1">🎉 신규 서비스 오픈!</p>
                     <p class="text-gray-800 text-xs break-keep">
                         <span class="font-bold">엔조이 복불복 게임</span>이 출시되었습니다.<br>지금 바로 확인해보세요!
                     </p>
                 </div>
-
-                <!-- 2. 주식 서비스 재개 안내 -->
                 <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
                     <p class="text-sky-600 text-sm font-bold mb-1">✅ 서비스 정상화</p>
                     <p class="text-gray-600 text-xs break-keep leading-snug">
@@ -193,23 +162,19 @@
                     </p>
                 </div>
             </div>
-
             <button onclick="closeModal('startup-modal')" class="w-full bg-[#005ED2] text-white font-bold py-3 rounded-xl hover:bg-[#004bb5] transition-colors shadow-lg shadow-[#005ED2]/30">
                 확인
             </button>
         </div>
     </div>
 
-    <!-- 🔥 FIREBASE 연동 스크립트 🔥 -->
+    <!-- 🔥 FIREBASE 연동 🔥 -->
     <script type="module">
-        // 1. 파이어베이스 라이브러리 가져오기
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ==========================================
-        // ⚠️ [입력 완료] 엔조이 주식 사이트와 동일한 설정값 적용
-        // ==========================================
+        // [설정] 사장님이 주신 코드 적용 완료
         const firebaseConfig = {
             apiKey: "AIzaSyABn9xi7a-3LyLpvS6HT03gJUGTlQkgHmk",
             authDomain: "enjoystock.firebaseapp.com",
@@ -219,7 +184,6 @@
             appId: "1:981969177924:web:51b0093a0d1b001ead9b11"
         };
 
-        // UI 요소
         const priceEl = document.getElementById('ticker-price');
         const changeEl = document.getElementById('ticker-change');
         const polyline = document.getElementById('chart-line');
@@ -229,6 +193,7 @@
         const maxPoints = 20;
         const basePrice = 12000; 
 
+        // 차트 그리기
         function drawChart() {
             if (!svg || dataPoints.length === 0) return;
             const width = svg.clientWidth || 120;
@@ -248,8 +213,9 @@
             polyline.setAttribute('points', points);
         }
 
+        // 화면 업데이트
         function updateUI(currentPrice) {
-            // 데이터가 없거나 유효하지 않으면 '-' 표시하고 종료 (차트도 초기화)
+            // 🚨 데이터 없으면 무조건 '-' 표시하고 종료
             if (currentPrice === null || currentPrice === undefined) {
                 priceEl.innerText = "-";
                 changeEl.innerText = "-";
@@ -257,6 +223,7 @@
                 return;
             }
 
+            // 데이터 있으면 그래프 그림
             dataPoints.push(currentPrice);
             if(dataPoints.length > maxPoints) dataPoints.shift();
 
@@ -278,54 +245,42 @@
             }
             
             drawChart();
-            setTimeout(() => {
-                priceEl.classList.remove('price-up', 'price-down');
-            }, 500);
+            setTimeout(() => { priceEl.classList.remove('price-up', 'price-down'); }, 500);
         }
 
-        // ==========================================
-        // 초기화 및 에러 처리 (안전장치 강화됨)
-        // ==========================================
+        // 초기화 로직
         async function init() {
             try {
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
                 const db = getFirestore(app);
 
-                // 1. 익명 로그인 시도
-                try {
-                    await signInAnonymously(auth);
-                    console.log("🔥 Firebase 연결 성공!");
-                } catch (authErr) {
-                    console.warn("⚠️ 인증 실패 (공개 데이터 접근 시도):", authErr);
-                    // 인증이 실패해도 Firestore 리스너는 연결 시도해봄 (공개 규칙일 경우 작동)
-                }
-
-                // 2. 주식 데이터 리스너 연결
+                // 익명 로그인 시도 (실패하면 catch로 이동해 '-' 표시)
+                await signInAnonymously(auth);
+                
+                // 데이터 감시 (실패하면 callback error로 이동해 '-' 표시)
                 onSnapshot(doc(db, "stocks", "enjoy"), (doc) => {
                     if (doc.exists()) {
                         const data = doc.data();
-                        if (data.price) updateUI(data.price);
+                        updateUI(data.price); // 실제 가격 표시
                     } else {
                         updateUI(null); // 문서 없으면 -
                     }
                 }, (error) => {
-                    console.warn("DB 연결 실패 (권한/네트워크 문제):", error);
-                    updateUI(null); // 에러 시 -
+                    console.log("연결 실패: ", error);
+                    updateUI(null); // 에러나면 -
                 });
 
             } catch(e) {
-                console.warn("초기화 치명적 오류:", e);
-                updateUI(null); // 초기화 실패 시 -
+                console.log("초기화 오류: ", e);
+                updateUI(null); // 초기화 실패시 -
             }
         }
 
-        // 실행
         init();
-
     </script>
 
-    <!-- 기존 스크립트 -->
+    <!-- 일반 스크립트 -->
     <script>
         const LINKS = {
             music: "https://won429.github.io/enjoy/",      
