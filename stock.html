@@ -789,14 +789,14 @@
                         if (currentPrice < 1) currentPrice = 1;
                         currentHistory.push(currentPrice);
                         
-                        const v = Math.floor(Math.random() * 500) + 10;
+                        const v = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
                         simVol += v;
                         simAmt += (v * currentPrice);
                         
-                        // Simulate Investor changes per tick
-                        state.investor.individual += Math.floor(Math.random() * 20000) - 10000;
-                        state.investor.foreigner += Math.floor(Math.random() * 20000) - 10000;
-                        state.investor.institution += Math.floor(Math.random() * 20000) - 10000;
+                        // Simulate Investor changes per tick (Smaller than volume)
+                        state.investor.individual += Math.floor(Math.random() * 200) - 100;
+                        state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
+                        state.investor.institution += Math.floor(Math.random() * 200) - 100;
                     }
 
                     state.history = currentHistory;
@@ -827,7 +827,7 @@
                 let nextPrice = state.currentPrice + change; 
                 if(nextPrice < 1) nextPrice = 1; 
                 
-                const simVol = Math.floor(Math.random() * 500) + 10; 
+                const simVol = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
                 state.todayVolume += simVol; 
                 state.todayTradeAmount += (simVol * nextPrice); 
                 
@@ -843,10 +843,10 @@
                 let newTrend = state.adminTrend; let newTrendUntil = state.adminTrendUntil; 
                 if (state.adminTrend && Date.now() > state.adminTrendUntil) { newTrend = null; }
 
-                // Update Investor Trends
-                state.investor.individual += Math.floor(Math.random() * 10000) - 5000;
-                state.investor.foreigner += Math.floor(Math.random() * 10000) - 5000;
-                state.investor.institution += Math.floor(Math.random() * 10000) - 5000;
+                // Update Investor Trends (Smaller than volume)
+                state.investor.individual += Math.floor(Math.random() * 200) - 100;
+                state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
+                state.investor.institution += Math.floor(Math.random() * 200) - 100;
 
                 state.currentPrice = nextPrice; state.history = newHistory; state.lastUpdated = Date.now(); 
                 state.marketMood = currentMood; state.nextMoodChange = nextChange;
@@ -882,21 +882,46 @@
                 window.onSnapshot(dailyRef, async (snapshot) => { 
                     if (snapshot.exists()) { 
                         let history = snapshot.data().history || [];
+                        let needUpdate = false;
                         
                         // 🚨 12.03 누락 데이터 강제 주입
-                        const hasDec3 = history.some(h => h.date === '2025.12.03');
-                        if (!hasDec3) {
-                            const fixedData = {
+                        if (!history.some(h => h.date === '2025.12.03')) {
+                            history.push({
                                 date: '2025.12.03',
-                                close: 1271, // 3일 종가
-                                diff: 29,    // 1271 - 1242 = 29
-                                rate: "2.33", // 2.33%
-                                vol: 12050,  // 임의값
+                                close: 1271, 
+                                diff: 29,    
+                                rate: "2.33", 
+                                vol: 12050,  
                                 amt: 15315550 
-                            };
-                            history = [fixedData, ...history]; 
+                            });
+                            needUpdate = true;
+                        }
+
+                        // 🚨 12.05 데이터 강제 수정 (Fix logic)
+                        const idx1205 = history.findIndex(h => h.date === '2025.12.05');
+                        const correct1205 = {
+                            date: '2025.12.05',
+                            close: 1885, 
+                            diff: 614,    
+                            rate: "48.31", 
+                            vol: 245000,  // Increased volume for realism
+                            amt: 461825000 // 245000 * 1885
+                        };
+
+                        if (idx1205 !== -1) {
+                            // 이미 존재하면 값 확인 후 수정 (특히 거래량이 작으면 수정)
+                            if (history[idx1205].close !== 1885 || history[idx1205].vol < 100000) {
+                                history[idx1205] = correct1205;
+                                needUpdate = true;
+                            }
+                        } else {
+                            // 없으면 추가
+                            history.push(correct1205);
+                            needUpdate = true;
+                        }
+
+                        if (needUpdate) {
                             history.sort((a,b) => new Date(b.date) - new Date(a.date));
-                            
                             await window.updateDoc(dailyRef, { history: history });
                         }
 
@@ -1184,6 +1209,7 @@
             els.btnBuy.onclick = () => { if (!checkMarketStatus()) { showToast("장 마감 시간에는 거래할 수 없습니다. (08:00 ~ 23:30)"); return; } openTradeModal('buy'); };
             els.btnSell.onclick = () => { if (!checkMarketStatus()) { showToast("장 마감 시간에는 거래할 수 없습니다. (08:00 ~ 23:30)"); return; } openTradeModal('sell'); };
             els.btnAdminBasePrice.onclick = async () => { const price = parseInt(els.basePriceInput.value); if (isNaN(price) || price <= 0) { showToast("올바른 가격을 입력하세요."); return; } const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker'); try { await window.updateDoc(docRef, { basePrice: price, basePriceLabel: "어제보다" }); showToast(`기준가가 ${fmt(price)}원으로 설정되었습니다.`); els.basePriceInput.value = ''; } catch(e) { console.error(e); showToast("설정 실패"); } };
+            els.btnHome.onclick = () => { window.location.href = 'index.html'; };
             els.btnProfile.onclick = () => { els.loginModal.classList.remove('hidden'); els.inputPw.value = ''; setTimeout(() => els.inputPw.focus(), 100); };
             els.btnLoginCancel.onclick = () => { els.loginModal.classList.add('hidden'); };
             els.btnLoginConfirm.onclick = () => { const pw = els.inputPw.value; if (pw === '0920') { state.isAdmin = true; els.loginModal.classList.add('hidden'); els.adminPanel.classList.remove('hidden'); showToast("관리자 권한 획득 🔓"); updateUI(); } else { showToast("비밀번호 불일치 ❌"); els.inputPw.value = ''; els.inputPw.focus(); } };
