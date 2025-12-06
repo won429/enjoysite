@@ -190,6 +190,16 @@
         </div>
     </div>
 
+    <!-- [NEW] 알림 팝업 모달 -->
+    <div id="notice-modal" class="fixed inset-0 z-[90] bg-black/50 hidden flex items-center justify-center px-6 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white rounded-[24px] p-6 w-full max-w-xs shadow-2xl transform scale-100 transition-transform duration-300 flex flex-col items-center text-center">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-2xl">📢</div>
+            <h3 id="notice-title" class="text-xl font-bold mb-2 text-[#191f28]">알림</h3>
+            <p id="notice-msg" class="text-sm text-[#4e5968] mb-6 leading-relaxed break-keep"></p>
+            <button onclick="document.getElementById('notice-modal').classList.add('hidden')" class="w-full bg-[#3182f6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md active:scale-95">확인</button>
+        </div>
+    </div>
+
     <!-- 지난 배당 보기 모달 -->
     <div id="dividend-modal" class="fixed inset-0 bg-black/50 z-[80] hidden flex items-end justify-center backdrop-blur-sm">
         <div class="bg-white rounded-t-3xl w-full max-w-md p-6 shadow-2xl slide-up h-[60vh] flex flex-col">
@@ -610,16 +620,29 @@
             const fmt = n => n.toLocaleString();
             const fmtAmt = n => { if(n >= 100000000) return (n/100000000).toFixed(1) + "억"; if(n >= 10000) return (n/10000).toFixed(0) + "만"; return fmt(n); };
             const showToast = (msg) => { const toast = document.createElement('div'); toast.className = 'toast-msg bg-[#333] text-white text-xs px-4 py-2 rounded-full shadow-lg mb-2 pointer-events-auto'; toast.innerText = msg; els.toastContainer.appendChild(toast); setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.5s'; setTimeout(() => toast.remove(), 500); }, 2000); };
+            
+            // New Notification Modal Helper
+            function showNoticeModal(title, msg) {
+                const modal = document.getElementById('notice-modal');
+                const titleEl = document.getElementById('notice-title');
+                const msgEl = document.getElementById('notice-msg');
+                if (modal && titleEl && msgEl) {
+                    titleEl.innerText = title;
+                    msgEl.innerHTML = msg; // Allow HTML for line breaks
+                    modal.classList.remove('hidden');
+                }
+            }
 
-            // 🔹 초기값 (1271원 설정)
+            // 🔹 초기값 (1885원 설정: 사용자의 요청대로 1271을 더 이상 기본값으로 사용하지 않음)
             let state = {
-                currentPrice: 1271, basePrice: 1271, basePriceLabel: "시작가보다", history: [1271], tab: 'chart',
+                currentPrice: 1885, basePrice: 1885, basePriceLabel: "시작가보다", history: [1885], tab: 'chart',
                 lastUpdated: 0, isConnected: false, adminTrend: null, adminTrendUntil: 0, manualPause: false, isAdmin: false,
                 chartOffset: 0, isDragging: false, lastX: 0, marketMood: 'neutral', nextMoodChange: 0,
                 walletCash: 0, walletStocks: 0, walletAvgPrice: 0, pendingOrders: [], tradeLogs: [], tradeType: 'line',
                 dailyHistory: [], todayVolume: 0, todayTradeAmount: 0,
                 chartType: 'line', droppedTicks: 0, zoomScale: 1.0,
-                investor: { individual: 0, foreigner: 0, institution: 0 }
+                investor: { individual: 0, foreigner: 0, institution: 0 },
+                prevManualPause: null // Track previous pause state for notifications
             };
 
             const MARKET_START_HOUR = 8;
@@ -633,19 +656,16 @@
             
             const resize = () => { const rect = els.chartContainer.getBoundingClientRect(); if(rect.width === 0) return; els.canvas.width = rect.width * window.devicePixelRatio; els.canvas.height = rect.height * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio); size = { w: rect.width, h: rect.height }; };
             window.addEventListener('resize', resize);
-            const initAuth = async () => { try { await window.signInAnonymously(window.auth); } catch (e) { console.error(e); } };
-            initAuth();
-            window.onAuthStateChanged(window.auth, (user) => { if (user) { startSync(); startWalletSync(); startHistorySync(); startDailyHistorySync(); els.loadingOverlay.style.opacity = '0'; setTimeout(() => els.loadingOverlay.style.display = 'none', 500); resize(); } });
             
-            const checkMarketStatus = () => { 
+            function checkMarketStatus() { 
                 const now = new Date(); 
                 const currentTimeVal = now.getHours() * 60 + now.getMinutes(); 
                 const startVal = MARKET_START_HOUR * 60 + MARKET_START_MIN;
                 const endVal = MARKET_END_HOUR * 60 + MARKET_END_MIN; 
                 return (currentTimeVal >= startVal && currentTimeVal < endVal) && !state.manualPause; 
-            };
+            }
 
-            const calculatePriceChange = (price) => {
+            function calculatePriceChange(price) {
                 let change = 0; 
                 const randomChance = Math.random(); 
                 const isRandomEvent = randomChance < 0.017;
@@ -667,292 +687,110 @@
                     } 
                 }
                 return change;
-            };
+            }
 
-            const startSync = () => {
-                const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
-                window.onSnapshot(docRef, async (snapshot) => {
-                    if (snapshot.exists()) {
-                        const data = snapshot.data();
-                        
-                        // 🔹 [1271원 강제 고정 및 리셋]
-                        const now = new Date();
-                        const marketStart = new Date();
-                        marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
-                        const lastDate = new Date(data.lastUpdated || 0);
+            // ---- [Function Definitions Moved Up for Hoisting Safety] ----
 
-                        let needReset = false;
-                        if (lastDate.getTime() < marketStart.getTime() && now.getTime() >= marketStart.getTime()) {
-                             needReset = true;
-                        }
-                        // 시작가가 1271원이 아니면 리셋
-                        if (data.basePrice !== 1271) needReset = true;
-
-                        if (needReset) {
-                            const prevClose = 1271;
-                            
-                            state.basePrice = prevClose;
-                            state.currentPrice = prevClose;
-                            state.history = [prevClose];
-                            state.lastUpdated = marketStart.getTime();
-                            state.todayVolume = 0;
-                            state.todayTradeAmount = 0;
-                            state.investor = { individual: 0, foreigner: 0, institution: 0 };
-                            
-                            try {
-                                await window.updateDoc(docRef, {
-                                    basePrice: prevClose,
-                                    basePriceLabel: "어제보다",
-                                    history: [prevClose],
-                                    lastUpdated: marketStart.getTime(),
-                                    todayVolume: 0,
-                                    todayTradeAmount: 0,
-                                    currentPrice: prevClose,
-                                    investor: state.investor
-                                });
-                            } catch(e) {}
-                        } else {
-                            state.currentPrice = data.currentPrice;
-                            state.history = data.history || [];
-                            state.lastUpdated = data.lastUpdated;
-                            state.basePrice = data.basePrice;
-                            state.todayVolume = data.todayVolume;
-                            state.todayTradeAmount = data.todayTradeAmount;
-                            state.investor = data.investor || { individual: 0, foreigner: 0, institution: 0 };
-                        }
-
-                        await simulateMissingData(docRef);
-
-                        state.adminTrend = data.adminTrend || null; 
-                        state.adminTrendUntil = data.adminTrendUntil || 0; 
-                        state.manualPause = data.manualPause || false;
-                        state.basePriceLabel = data.basePriceLabel || "시작가보다";
-                        state.marketMood = data.marketMood || 'neutral'; 
-                        state.nextMoodChange = data.nextMoodChange || 0;
-
-                        state.isConnected = true; 
-                        els.syncStatus.classList.remove('bg-gray-300', 'bg-red-500'); 
-                        els.syncStatus.classList.add('bg-green-500');
-                        
-                        updateUI(); drawChart(); updateWalletUI(); updateMoodUI(); checkPendingOrders(state.currentPrice);
-                    } else initializeData(docRef);
-                });
+            function drawChart() { 
+                if(state.tab !== 'chart') return; 
+                const { w, h } = size; if(w === 0) { resize(); return; } 
+                ctx.clearRect(0, 0, w, h); 
+                const fullHistory = state.history; if (fullHistory.length === 0) return; 
                 
-                setInterval(async () => {
-                    if (!state.isConnected) return; 
-                    const isMarketOpen = checkMarketStatus();
-                    const now = new Date();
-                    const currentTimeVal = now.getHours() * 60 + now.getMinutes();
-
-                    if (currentTimeVal >= (MARKET_END_HOUR * 60 + MARKET_END_MIN)) {
-                        const todayStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-                        const lastRecord = state.dailyHistory.length > 0 ? state.dailyHistory[0] : null;
-                        if (!lastRecord || lastRecord.date !== todayStr) {
-                            await recordDailyHistory(now, state.currentPrice, state.basePrice, state.todayVolume, state.todayTradeAmount);
-                        }
-                    }
-
-                    if (isMarketOpen) {
-                        if (Date.now() - state.lastUpdated > 600000) {
-                            await generateNextTick(docRef);
-                        }
-                    }
-                }, 1000);
-                setInterval(() => { if (state.isAdmin) updateUI(); }, 500);
-            };
-
-            const simulateMissingData = async (docRef) => {
-                const now = new Date();
-                const marketStart = new Date(now);
-                marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
-                const marketEnd = new Date(now);
-                marketEnd.setHours(MARKET_END_HOUR, MARKET_END_MIN, 0, 0);
-
-                if (now.getTime() < marketStart.getTime()) return;
-
-                let currentHistory = [...state.history];
-                let currentPrice = state.currentPrice;
-
-                const timeCap = Math.min(now.getTime(), marketEnd.getTime());
-                const diffMs = timeCap - marketStart.getTime();
-                const expectedCount = Math.floor(diffMs / 600000) + 1;
+                let minVal = Math.min(...fullHistory); let maxVal = Math.max(...fullHistory); 
+                minVal = Math.min(minVal, state.basePrice); maxVal = Math.max(maxVal, state.basePrice); 
+                if (maxVal === minVal) { maxVal += 10; minVal -= 10; } else { const padding = (maxVal - minVal) * 0.1; maxVal += padding; minVal -= padding; } 
+                const range = maxVal - minVal; 
+                const baseY = h - ((state.basePrice - minVal) / range) * h; 
+                els.baseLine.style.top = `${(baseY / h) * 100}%`; els.baseLine.classList.remove('hidden'); 
                 
-                const missingTicks = expectedCount - currentHistory.length;
-
-                if (missingTicks > 0) {
-                    let simVol = state.todayVolume;
-                    let simAmt = state.todayTradeAmount;
-
-                    for (let i = 0; i < missingTicks; i++) {
-                        const change = calculatePriceChange(currentPrice);
-                        currentPrice += change;
-                        if (currentPrice < 1) currentPrice = 1;
-                        currentHistory.push(currentPrice);
-                        
-                        const v = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
-                        simVol += v;
-                        simAmt += (v * currentPrice);
-                        
-                        // Simulate Investor changes per tick (Smaller than volume)
-                        state.investor.individual += Math.floor(Math.random() * 200) - 100;
-                        state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
-                        state.investor.institution += Math.floor(Math.random() * 200) - 100;
-                    }
-
-                    state.history = currentHistory;
-                    state.currentPrice = currentPrice;
-                    state.lastUpdated = marketStart.getTime() + ((currentHistory.length - 1) * 600000);
-                    state.todayVolume = simVol;
-                    state.todayTradeAmount = simAmt;
-
-                    updateUI(); 
-                    drawChart();
-
-                    try {
-                        await window.updateDoc(docRef, {
-                            currentPrice: state.currentPrice,
-                            history: state.history,
-                            lastUpdated: state.lastUpdated,
-                            todayVolume: state.todayVolume,
-                            todayTradeAmount: state.todayTradeAmount,
-                            basePrice: state.basePrice,
-                            investor: state.investor
-                        });
-                    } catch(e) { console.log("Sim update skip"); }
-                }
-            };
-
-            const generateNextTick = async (docRef) => {
-                let change = calculatePriceChange(state.currentPrice);
-                let nextPrice = state.currentPrice + change; 
-                if(nextPrice < 1) nextPrice = 1; 
+                const xStep = (w - 40) / (TOTAL_TICKS - 1); 
+                let lastPoint = { x: 0, y: 0 }; 
                 
-                const simVol = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
-                state.todayVolume += simVol; 
-                state.todayTradeAmount += (simVol * nextPrice); 
-                
-                const newHistory = [...state.history, nextPrice]; 
-                
-                let currentMood = state.marketMood; let nextChange = state.nextMoodChange;
-                if (Date.now() > nextChange) { 
-                    const candidates = ['bull', 'bear', 'neutral'].filter(m => m !== currentMood); 
-                    currentMood = candidates[Math.floor(Math.random() * candidates.length)]; 
-                    nextChange = Date.now() + (30 * 60 * 1000); 
-                }
-
-                let newTrend = state.adminTrend; let newTrendUntil = state.adminTrendUntil; 
-                if (state.adminTrend && Date.now() > state.adminTrendUntil) { newTrend = null; }
-
-                // Update Investor Trends (Smaller than volume)
-                state.investor.individual += Math.floor(Math.random() * 200) - 100;
-                state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
-                state.investor.institution += Math.floor(Math.random() * 200) - 100;
-
-                state.currentPrice = nextPrice; state.history = newHistory; state.lastUpdated = Date.now(); 
-                state.marketMood = currentMood; state.nextMoodChange = nextChange;
-                
-                updateUI(); updateWalletUI(); 
-                
-                try { 
-                    await window.updateDoc(docRef, { 
-                        currentPrice: nextPrice, history: newHistory, lastUpdated: Date.now(), 
-                        adminTrend: newTrend, adminTrendUntil: newTrendUntil, 
-                        marketMood: currentMood, nextMoodChange: nextChange, 
-                        todayVolume: state.todayVolume, todayTradeAmount: state.todayTradeAmount,
-                        investor: state.investor
+                if (state.chartType === 'line') { 
+                    const lastVal = fullHistory[fullHistory.length - 1]; const isUp = lastVal >= state.basePrice; const color = isUp ? '#f04452' : '#3182f6'; 
+                    els.labelHigh.style.color = color; els.labelLow.style.color = color; els.liveDot.style.backgroundColor = color; 
+                    els.chartPulseDot.style.backgroundColor = color; els.chartPulseDot.querySelector('.pulse-ring').style.backgroundColor = color; 
+                    
+                    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; 
+                    fullHistory.forEach((p, i) => { 
+                        const x = 20 + i * xStep; const y = h - ((p - minVal) / range) * h; 
+                        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); 
+                        if (i === fullHistory.length - 1) { lastPoint = { x, y }; } 
                     }); 
-                } catch (e) {}
-            };
-
-            const initializeData = async (docRef) => { 
-                try { 
-                    await window.setDoc(docRef, { 
-                        currentPrice: 1271, history: [1271], lastUpdated: Date.now(), 
-                        adminTrend: null, adminTrendUntil: 0, manualPause: false, 
-                        basePrice: 1271, basePriceLabel: "어제보다", marketMood: 'neutral', 
-                        nextMoodChange: Date.now() + 300000, todayVolume: 0, todayTradeAmount: 0,
-                        investor: { individual: 0, foreigner: 0, institution: 0 }
-                    }); 
-                } catch(e) {} 
-            };
-            
-            // 🔹 12월 3일 데이터 강제 복구 로직 (1271원)
-            const startDailyHistorySync = () => { 
-                const dailyRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history'); 
-                window.onSnapshot(dailyRef, async (snapshot) => { 
-                    if (snapshot.exists()) { 
-                        let history = snapshot.data().history || [];
-                        let needUpdate = false;
-                        
-                        // 🚨 12.03 누락 데이터 강제 주입
-                        if (!history.some(h => h.date === '2025.12.03')) {
-                            history.push({
-                                date: '2025.12.03',
-                                close: 1271, 
-                                diff: 29,    
-                                rate: "2.33", 
-                                vol: 12050,  
-                                amt: 15315550 
-                            });
-                            needUpdate = true;
-                        }
-
-                        // 🚨 12.05 데이터 강제 수정 (Fix logic)
-                        const idx1205 = history.findIndex(h => h.date === '2025.12.05');
-                        const correct1205 = {
-                            date: '2025.12.05',
-                            close: 1885, 
-                            diff: 614,    
-                            rate: "48.31", 
-                            vol: 245000,  // Increased volume for realism
-                            amt: 461825000 // 245000 * 1885
-                        };
-
-                        if (idx1205 !== -1) {
-                            // 이미 존재하면 값 확인 후 수정 (특히 거래량이 작으면 수정)
-                            if (history[idx1205].close !== 1885 || history[idx1205].vol < 100000) {
-                                history[idx1205] = correct1205;
-                                needUpdate = true;
-                            }
-                        } else {
-                            // 없으면 추가
-                            history.push(correct1205);
-                            needUpdate = true;
-                        }
-
-                        if (needUpdate) {
-                            history.sort((a,b) => new Date(b.date) - new Date(a.date));
-                            await window.updateDoc(dailyRef, { history: history });
-                        }
-
-                        state.dailyHistory = history; 
-                        renderDailyQuotes(); 
-                    } else { 
-                        window.setDoc(dailyRef, { history: [] }); 
+                    ctx.stroke(); 
+                    
+                    if (fullHistory.length > 0) { 
+                        const lastX = 20 + (fullHistory.length - 1) * xStep; 
+                        ctx.lineTo(lastX, h); ctx.lineTo(20, h); ctx.closePath(); 
+                        const grad = ctx.createLinearGradient(0, 0, 0, h); 
+                        grad.addColorStop(0, isUp ? 'rgba(240, 68, 82, 0.05)' : 'rgba(49, 130, 246, 0.05)'); 
+                        grad.addColorStop(1, 'rgba(255, 255, 255, 0)'); 
+                        ctx.fillStyle = grad; ctx.fill(); 
+                        const lastY = h - ((lastVal - minVal) / range) * h; 
+                        ctx.beginPath(); ctx.fillStyle = color; ctx.arc(lastX, lastY, 4, 0, Math.PI * 2); ctx.fill(); 
                     } 
-                }); 
-            };
+                    
+                    if (checkMarketStatus()) { els.chartPulseDot.classList.remove('hidden'); els.chartPulseDot.style.left = `${lastPoint.x}px`; els.chartPulseDot.style.top = `${lastPoint.y}px`; } else { els.chartPulseDot.classList.add('hidden'); } 
+                    
+                    const maxValData = Math.max(...fullHistory); const minValData = Math.min(...fullHistory); 
+                    els.valHigh.innerText = Math.round(maxValData); els.valLow.innerText = Math.round(minValData); 
+                    const maxIdx = fullHistory.lastIndexOf(maxValData); const minIdx = fullHistory.lastIndexOf(minValData); 
+                    const maxPos = { x: 20 + maxIdx * xStep, y: h - ((maxValData - minVal) / range) * h }; 
+                    const minPos = { x: 20 + minIdx * xStep, y: h - ((minValData - minVal) / range) * h }; 
+                    const labelX_Max = Math.min(Math.max(maxPos.x, 30), w - 30); const labelX_Min = Math.min(Math.max(minPos.x, 30), w - 30); 
+                    els.labelHigh.style.opacity = 1; els.labelHigh.style.left = `${labelX_Max}px`; els.labelHigh.style.top = `${maxPos.y - 25}px`; 
+                    els.labelLow.style.opacity = 1; els.labelLow.style.left = `${labelX_Min}px`; els.labelLow.style.top = `${minPos.y + 10}px`; 
+                    [maxPos, minPos].forEach(pos => { ctx.beginPath(); ctx.fillStyle = 'white'; ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }); 
+                } else { 
+                    const candleWidth = xStep * 0.6; els.chartPulseDot.classList.add('hidden'); 
+                    fullHistory.forEach((p, i) => { 
+                        const prev = i > 0 ? fullHistory[i-1] : state.basePrice; const x = 20 + i * xStep; 
+                        const yClose = h - ((p - minVal) / range) * h; const yOpen = h - ((prev - minVal) / range) * h; 
+                        const isUp = p >= prev; const color = isUp ? '#f04452' : '#3182f6'; ctx.fillStyle = color; 
+                        let bodyHeight = Math.abs(yClose - yOpen); if (bodyHeight < 1) bodyHeight = 1; const bodyY = Math.min(yOpen, yClose); 
+                        ctx.fillRect(x - candleWidth/2, bodyY, candleWidth, bodyHeight); 
+                        ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 1; 
+                        const highY = Math.min(yOpen, yClose) - (Math.random() * 5); const lowY = Math.max(yOpen, yClose) + (Math.random() * 5); 
+                        ctx.moveTo(x, highY); ctx.lineTo(x, lowY); ctx.stroke(); 
+                    }); 
+                } 
+            }
 
-            async function recordDailyHistory(dateObj, closePrice, basePrice, volume, tradeAmt) { 
-                const dailyRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history'); 
-                const dateStr = `${dateObj.getFullYear()}.${String(dateObj.getMonth()+1).padStart(2,'0')}.${String(dateObj.getDate()).padStart(2,'0')}`; 
-                const diff = closePrice - basePrice; 
-                const diffRate = basePrice > 0 ? ((diff / basePrice) * 100).toFixed(2) : "0.00"; 
-                const newItem = { date: dateStr, close: closePrice, diff: diff, rate: diffRate, vol: volume, amt: tradeAmt }; 
+            function updateUI() { 
+                els.price.innerText = fmt(state.currentPrice); els.diffLabel.innerText = state.basePriceLabel; 
+                const diff = state.currentPrice - state.basePrice; 
+                const rate = ((diff / state.basePrice) * 100).toFixed(1); 
+                const sign = diff > 0 ? '+' : ''; const isUp = diff >= 0; 
+                els.diffVal.innerText = `${sign}${diff}원`; els.rate.innerText = `(${sign}${rate}%)`; 
+                els.diffBox.className = `flex items-center gap-1 ${isUp ? 'text-up' : 'text-down'}`; 
+                const isMarketOpen = checkMarketStatus(); 
                 
-                const docSnap = await window.getDoc(dailyRef); 
-                let currentHistory = []; 
-                if (docSnap.exists()) { currentHistory = docSnap.data().history || []; } 
-                if (currentHistory.length > 0 && currentHistory[0].date === dateStr) return; 
+                // 장 상태 표시 로직 수정
+                if (!isMarketOpen) { 
+                    els.marketMsgContainer.classList.remove('hidden'); 
+                    els.liveDot.classList.remove('animate-pulse'); 
+                    els.liveDot.classList.replace('bg-[#3182f6]', 'bg-gray-400'); 
+                    
+                    if (state.manualPause) {
+                        els.chartStatus.innerText = "일시정지됨";
+                        els.marketMsgBadge.innerText = "⏸ 장 일시정지됨";
+                    } else {
+                        els.chartStatus.innerText = "장 종료";
+                        els.marketMsgBadge.innerText = "🌙 장 종료 (08:00 ~ 23:30)";
+                    }
+                } else { 
+                    els.marketMsgContainer.classList.add('hidden'); 
+                    els.liveDot.classList.add('animate-pulse'); 
+                    els.liveDot.classList.replace('bg-gray-400', 'bg-[#3182f6]'); 
+                    els.chartStatus.innerText = "장 운영중 (08:00~23:30)"; 
+                } 
                 
-                const newHistory = [newItem, ...currentHistory].slice(0, 365); 
-                await window.updateDoc(dailyRef, { history: newHistory }); 
-            };
+                if (state.isAdmin && state.adminTrend && state.adminTrendUntil > Date.now()) { const timeLeft = Math.ceil((state.adminTrendUntil - Date.now()) / 1000); if (timeLeft > 0) { const mins = Math.floor(timeLeft / 60); const secs = timeLeft % 60; els.adminTimer.innerText = `${mins}:${secs < 10 ? '0'+secs : secs}`; els.adminTimer.classList.remove('hidden'); } else els.adminTimer.classList.add('hidden'); } else els.adminTimer.classList.add('hidden'); 
+                if(state.tab === 'chart') drawChart(); else if(state.tab === 'order') renderOrderBook(); 
+                updateInvestorTrendUI();
+            }
 
-            const startWalletSync = () => { const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); window.onSnapshot(walletDocRef, (snapshot) => { if (snapshot.exists()) { const data = snapshot.data(); state.walletCash = data.cash || 0; state.walletStocks = data.stocks || 0; state.walletAvgPrice = data.avgPrice || 0; state.pendingOrders = data.pendingOrders || []; updateWalletUI(); } else { window.setDoc(walletDocRef, { cash: 0, stocks: 0, avgPrice: 0, pendingOrders: [] }); } }); };
-            const startHistorySync = () => { const histDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'trade_history'); window.onSnapshot(histDocRef, (snapshot) => { if (snapshot.exists()) { state.tradeLogs = snapshot.data().logs || []; renderHistory(); } else { window.setDoc(histDocRef, { logs: [] }); } }); };
-            const addHistoryLog = async (type, detail) => { const histDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'trade_history'); const newLog = { type, detail, time: Date.now() }; const currentLogs = state.tradeLogs; const updatedLogs = [newLog, ...currentLogs].slice(0, 30); await window.updateDoc(histDocRef, { logs: updatedLogs }); };
-            
             function renderDailyQuotes() { 
                 if (state.dailyHistory.length === 0) { els.dailyQuoteList.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400">기록된 시세가 없습니다.</td></tr>'; return; } 
                 els.dailyQuoteList.innerHTML = state.dailyHistory.map(item => { 
@@ -1011,7 +849,7 @@
                 }).join(''); 
             }
 
-            window.cancelOrder = async (orderId) => { 
+            async function cancelOrder(orderId) { 
                 const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); 
                 await window.runTransaction(window.db, async (transaction) => { 
                     const doc = await transaction.get(walletDocRef); if (!doc.exists()) return; const data = doc.data(); const pending = data.pendingOrders || []; const orderIndex = pending.findIndex(o => o.id === orderId); if (orderIndex === -1) return; const order = pending[orderIndex]; let newCash = data.cash || 0; let newStocks = data.stocks || 0; if (order.type === 'buy') { newCash += (order.price * order.qty); } else { newStocks += order.qty; } pending.splice(orderIndex, 1); transaction.update(walletDocRef, { cash: newCash, stocks: newStocks, pendingOrders: pending }); 
@@ -1150,52 +988,6 @@
                 }
             }
 
-            // 지난 배당 보기 모달 기능 구현
-            els.btnViewDividends.onclick = () => {
-                const deposits = state.tradeLogs.filter(l => l.type === 'deposit');
-                if(deposits.length === 0) {
-                    els.dividendListContent.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">배당 내역이 없습니다.</div>';
-                } else {
-                    els.dividendListContent.innerHTML = deposits.map(log => {
-                        const date = new Date(log.time);
-                        const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')}`;
-                        return `
-                            <div class="flex justify-between items-center py-4 border-b border-gray-100 last:border-0">
-                                <span class="text-sm text-[#333]">${dateStr}</span>
-                                <span class="font-bold text-[#3182f6]">${log.detail}</span>
-                            </div>
-                        `;
-                    }).join('');
-                }
-                els.dividendModal.classList.remove('hidden');
-            };
-            
-            els.btnDividendClose.onclick = () => {
-                els.dividendModal.classList.add('hidden');
-            };
-
-            els.btnHome.onclick = () => { window.location.href = 'https://won429.github.io/enjoysite/'; };
-
-            const openTradeModal = (type) => { state.tradeType = type; els.tradeModal.classList.remove('hidden'); els.tradeTitle.innerText = type === 'buy' ? '매수하기' : '매도하기'; els.tradeTitle.className = type === 'buy' ? 'text-xl font-bold text-[#f04452]' : 'text-xl font-bold text-[#3182f6]'; els.btnTradeConfirm.innerText = type === 'buy' ? '매수하기' : '매도하기'; els.btnTradeConfirm.className = `w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg active:scale-95 transition-transform ${type === 'buy' ? 'bg-[#f04452]' : 'bg-[#3182f6]'}`; els.inputPrice.value = state.currentPrice; els.inputQty.value = 1; updateTradeTotal(); };
-            const updateTradeTotal = () => { const p = parseInt(els.inputPrice.value) || 0; const q = parseInt(els.inputQty.value) || 0; els.tradeTotalAmount.innerText = fmt(p * q); };
-            els.inputPrice.oninput = updateTradeTotal; els.inputQty.oninput = updateTradeTotal;
-            els.btnPriceUp.onclick = () => { els.inputPrice.value = parseInt(els.inputPrice.value) + 1; updateTradeTotal(); }; els.btnPriceDown.onclick = () => { els.inputPrice.value = Math.max(1, parseInt(els.inputPrice.value) - 1); updateTradeTotal(); }; els.btnQtyUp.onclick = () => { els.inputQty.value = parseInt(els.inputQty.value) + 1; updateTradeTotal(); }; els.btnQtyDown.onclick = () => { els.inputQty.value = Math.max(1, parseInt(els.inputQty.value) - 1); updateTradeTotal(); }; els.btnTradeClose.onclick = () => { els.tradeModal.classList.add('hidden'); };
-            els.btnTradeConfirm.onclick = async () => { const price = parseInt(els.inputPrice.value); const qty = parseInt(els.inputQty.value); if (price <= 0 || qty <= 0) { showToast("가격과 수량을 확인해주세요."); return; } const success = await placeOrder(state.tradeType, qty, price); if (success) { els.tradeModal.classList.add('hidden'); } };
-            const placeOrder = async (type, qty, price) => { const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); let success = false; try { await window.runTransaction(window.db, async (transaction) => { const doc = await transaction.get(walletDocRef); if (!doc.exists()) throw "지갑 데이터 오류"; const data = doc.data(); let cash = data.cash || 0; let stocks = data.stocks || 0; let avgPrice = data.avgPrice || 0; let pending = data.pendingOrders || []; const isImmediateBuy = (type === 'buy' && price >= state.currentPrice); const isImmediateSell = (type === 'sell' && price <= state.currentPrice); if (isImmediateBuy || isImmediateSell) { const execPrice = state.currentPrice; const totalAmt = execPrice * qty; if (type === 'buy') { if (cash < totalAmt) throw "현금이 부족합니다."; cash -= totalAmt; const totalValue = (stocks * avgPrice) + totalAmt; stocks += qty; avgPrice = totalValue / stocks; addHistoryLog('buy', `${qty}주 매수 체결 (${fmt(execPrice)}원)`); showToast(`🎉 ${qty}주 매수 체결 완료!`); } else { if (stocks < qty) throw "주식이 부족합니다."; stocks -= qty; cash += totalAmt; if(stocks === 0) avgPrice = 0; addHistoryLog('sell', `${qty}주 매도 체결 (${fmt(execPrice)}원)`); showToast(`🎉 ${qty}주 매도 체결 완료!`); } } else { const totalAmt = price * qty; if (type === 'buy') { if (cash < totalAmt) throw "현금이 부족합니다 (예약)."; cash -= totalAmt; } else { if (stocks < qty) throw "주식이 부족합니다 (예약)."; stocks -= qty; } pending.push({ id: Date.now() + Math.random().toString(36).substr(2, 9), type, qty, price, time: Date.now() }); showToast(`📝 ${qty}주 ${type==='buy'?'매수':'매도'} 주문 예약됨`); } transaction.update(walletDocRef, { cash, stocks, avgPrice, pendingOrders: pending }); }); success = true; } catch(e) { showToast(typeof e === 'string' ? e : "거래 실패"); success = false; } return success; };
-            function checkPendingOrders(currentPrice) { 
-                if (state.pendingOrders.length === 0) return; 
-                const executable = state.pendingOrders.filter(o => (o.type === 'buy' && currentPrice <= o.price) || (o.type === 'sell' && currentPrice >= o.price)); 
-                if (executable.length === 0) return; 
-                const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); 
-                window.runTransaction(window.db, async (transaction) => { 
-                    const doc = await transaction.get(walletDocRef); if (!doc.exists()) return; const data = doc.data(); let cash = data.cash || 0; let stocks = data.stocks || 0; let avgPrice = data.avgPrice || 0; let pending = data.pendingOrders || []; const toExecute = []; const remaining = []; 
-                    pending.forEach(o => { if ((o.type === 'buy' && state.currentPrice <= o.price) || (o.type === 'sell' && state.currentPrice >= o.price)) { toExecute.push(o); } else { remaining.push(o); } }); 
-                    if (toExecute.length === 0) return; 
-                    toExecute.forEach(o => { if (o.type === 'buy') { const totalValue = (stocks * avgPrice) + (o.price * o.qty); stocks += o.qty; avgPrice = totalValue / stocks; addHistoryLog('buy', `예약 매수 체결: ${o.qty}주 (${fmt(o.price)}원)`); } else { cash += (o.price * o.qty); if(stocks === 0) avgPrice = 0; addHistoryLog('sell', `예약 매도 체결: ${o.qty}주 (${fmt(o.price)}원)`); } }); 
-                    transaction.update(walletDocRef, { cash, stocks, avgPrice, pendingOrders: remaining }); 
-                }); 
-            }
-
             function renderOrderBook() { 
                 if(state.tab !== 'order') return; const asks = []; const bids = []; const gap = Math.max(1, Math.floor(state.currentPrice * 0.005)); 
                 for(let i=5; i>=1; i--) { asks.push({ price: state.currentPrice + i * gap, vol: Math.floor(Math.random() * 50) + 1 }); } 
@@ -1206,102 +998,377 @@
                 els.orderList.innerHTML = html; 
             }
 
-            els.btnBuy.onclick = () => { if (!checkMarketStatus()) { showToast("장 마감 시간에는 거래할 수 없습니다. (08:00 ~ 23:30)"); return; } openTradeModal('buy'); };
-            els.btnSell.onclick = () => { if (!checkMarketStatus()) { showToast("장 마감 시간에는 거래할 수 없습니다. (08:00 ~ 23:30)"); return; } openTradeModal('sell'); };
-            els.btnAdminBasePrice.onclick = async () => { const price = parseInt(els.basePriceInput.value); if (isNaN(price) || price <= 0) { showToast("올바른 가격을 입력하세요."); return; } const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker'); try { await window.updateDoc(docRef, { basePrice: price, basePriceLabel: "어제보다" }); showToast(`기준가가 ${fmt(price)}원으로 설정되었습니다.`); els.basePriceInput.value = ''; } catch(e) { console.error(e); showToast("설정 실패"); } };
+            // ---- MISSING FUNCTION RESTORED & IMPROVED ----
+            function checkPendingOrders(currentPrice) {
+                // Ensure checkPendingOrders only executes when market is OPEN
+                if (!checkMarketStatus()) return;
+
+                if (state.pendingOrders.length === 0) return;
+                const executable = state.pendingOrders.filter(o => (o.type === 'buy' && currentPrice <= o.price) || (o.type === 'sell' && currentPrice >= o.price));
+                if (executable.length === 0) return;
+                const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet');
+                window.runTransaction(window.db, async (transaction) => {
+                    const doc = await transaction.get(walletDocRef);
+                    if (!doc.exists()) return;
+                    const data = doc.data();
+                    let cash = data.cash || 0;
+                    let stocks = data.stocks || 0;
+                    let avgPrice = data.avgPrice || 0;
+                    let pending = data.pendingOrders || [];
+                    const toExecute = [];
+                    const remaining = [];
+                    
+                    pending.forEach(o => {
+                        // Check execution condition again inside transaction
+                        if ((o.type === 'buy' && state.currentPrice <= o.price) || (o.type === 'sell' && state.currentPrice >= o.price)) {
+                            toExecute.push(o);
+                        } else {
+                            remaining.push(o);
+                        }
+                    });
+
+                    if (toExecute.length === 0) return;
+
+                    toExecute.forEach(o => {
+                        if (o.type === 'buy') {
+                            const totalValue = (stocks * avgPrice) + (o.price * o.qty);
+                            stocks += o.qty;
+                            avgPrice = totalValue / stocks;
+                            addHistoryLog('buy', `예약 매수 체결: ${o.qty}주 (${fmt(o.price)}원)`);
+                        } else {
+                            cash += (o.price * o.qty);
+                            if(stocks === 0) avgPrice = 0;
+                            addHistoryLog('sell', `예약 매도 체결: ${o.qty}주 (${fmt(o.price)}원)`);
+                        }
+                    });
+
+                    transaction.update(walletDocRef, { cash, stocks, avgPrice, pendingOrders: remaining });
+                });
+            }
+
+            function startSync() {
+                const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
+                window.onSnapshot(docRef, async (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.data();
+                        const currentPauseState = data.manualPause || false;
+                        
+                        // 🔹 [Notice Popup Logic]
+                        if (state.prevManualPause !== null) {
+                            if (!state.prevManualPause && currentPauseState) {
+                                // Pause Event
+                                showNoticeModal("서비스 일시 정지", "증권사 사정으로 서비스가 일시 정지되었습니다.<br>빠른 시간 내에 복구하겠습니다.");
+                            } else if (state.prevManualPause && !currentPauseState) {
+                                // Resume Event
+                                showNoticeModal("서비스 복구 완료", "시스템 복구가 완료되어<br>거래가 재개되었습니다.");
+                            }
+                        }
+                        state.prevManualPause = currentPauseState;
+                        
+                        // 🔹 [Smart Recovery System]
+                        const dailyRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history');
+                        let lastClose = 1885; 
+                        
+                        try {
+                            const dailySnap = await window.getDoc(dailyRef);
+                            if (dailySnap.exists() && dailySnap.data().history?.length > 0) {
+                                lastClose = dailySnap.data().history[0].close;
+                            }
+                        } catch(e) { console.warn("Failed to fetch daily history"); }
+
+                        if (data.basePrice === 1271 && lastClose !== 1271) {
+                            console.log(`Auto-fixing base price: 1271 -> ${lastClose}`);
+                            await window.updateDoc(docRef, { basePrice: lastClose, basePriceLabel: "어제보다", lastUpdated: Date.now() });
+                        }
+
+                        const now = new Date();
+                        const marketStart = new Date();
+                        marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
+                        const lastDate = new Date(data.lastUpdated || 0);
+
+                        let needReset = false;
+                        if (lastDate.getTime() < marketStart.getTime() && now.getTime() >= marketStart.getTime()) {
+                             needReset = true;
+                        }
+
+                        if (needReset) {
+                            const prevClose = lastClose || 1885;
+                            
+                            state.basePrice = prevClose;
+                            state.currentPrice = prevClose;
+                            state.history = [prevClose];
+                            state.lastUpdated = marketStart.getTime();
+                            state.todayVolume = 0;
+                            state.todayTradeAmount = 0;
+                            state.investor = { individual: 0, foreigner: 0, institution: 0 };
+                            
+                            try {
+                                await window.updateDoc(docRef, {
+                                    basePrice: prevClose,
+                                    basePriceLabel: "어제보다",
+                                    history: [prevClose],
+                                    lastUpdated: marketStart.getTime(),
+                                    todayVolume: 0,
+                                    todayTradeAmount: 0,
+                                    currentPrice: prevClose,
+                                    investor: state.investor
+                                });
+                            } catch(e) {}
+                        } else {
+                            state.currentPrice = data.currentPrice;
+                            state.history = data.history || [];
+                            state.lastUpdated = data.lastUpdated;
+                            state.basePrice = data.basePrice;
+                            state.todayVolume = data.todayVolume;
+                            state.todayTradeAmount = data.todayTradeAmount;
+                            state.investor = data.investor || { individual: 0, foreigner: 0, institution: 0 };
+                        }
+
+                        await simulateMissingData(docRef);
+
+                        state.adminTrend = data.adminTrend || null; 
+                        state.adminTrendUntil = data.adminTrendUntil || 0; 
+                        state.manualPause = currentPauseState;
+                        state.basePriceLabel = data.basePriceLabel || "시작가보다";
+                        state.marketMood = data.marketMood || 'neutral'; 
+                        state.nextMoodChange = data.nextMoodChange || 0;
+
+                        state.isConnected = true; 
+                        els.syncStatus.classList.remove('bg-gray-300', 'bg-red-500'); 
+                        els.syncStatus.classList.add('bg-green-500');
+                        
+                        updateUI(); drawChart(); updateWalletUI(); updateMoodUI(); 
+                        
+                        // Check pending orders whenever price updates (and market is open)
+                        checkPendingOrders(state.currentPrice);
+                    } else initializeData(docRef);
+                });
+                
+                setInterval(async () => {
+                    if (!state.isConnected) return; 
+                    const isMarketOpen = checkMarketStatus();
+                    const now = new Date();
+                    const currentTimeVal = now.getHours() * 60 + now.getMinutes();
+
+                    if (currentTimeVal >= (MARKET_END_HOUR * 60 + MARKET_END_MIN)) {
+                        const todayStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+                        const lastRecord = state.dailyHistory.length > 0 ? state.dailyHistory[0] : null;
+                        if (!lastRecord || lastRecord.date !== todayStr) {
+                            await recordDailyHistory(now, state.currentPrice, state.basePrice, state.todayVolume, state.todayTradeAmount);
+                        }
+                    }
+
+                    if (isMarketOpen) {
+                        if (Date.now() - state.lastUpdated > 600000) {
+                            await generateNextTick(docRef);
+                        }
+                    }
+                }, 1000);
+                setInterval(() => { if (state.isAdmin) updateUI(); }, 500);
+            }
+
+            async function simulateMissingData(docRef) {
+                const now = new Date();
+                const marketStart = new Date(now);
+                marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
+                const marketEnd = new Date(now);
+                marketEnd.setHours(MARKET_END_HOUR, MARKET_END_MIN, 0, 0);
+
+                if (now.getTime() < marketStart.getTime()) return;
+
+                let currentHistory = [...state.history];
+                let currentPrice = state.currentPrice;
+
+                const timeCap = Math.min(now.getTime(), marketEnd.getTime());
+                const diffMs = timeCap - marketStart.getTime();
+                const expectedCount = Math.floor(diffMs / 600000) + 1;
+                
+                const missingTicks = expectedCount - currentHistory.length;
+
+                if (missingTicks > 0) {
+                    let simVol = state.todayVolume;
+                    let simAmt = state.todayTradeAmount;
+
+                    for (let i = 0; i < missingTicks; i++) {
+                        const change = calculatePriceChange(currentPrice);
+                        currentPrice += change;
+                        if (currentPrice < 1) currentPrice = 1;
+                        currentHistory.push(currentPrice);
+                        
+                        const v = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
+                        simVol += v;
+                        simAmt += (v * currentPrice);
+                        
+                        // Simulate Investor changes per tick (Smaller than volume)
+                        state.investor.individual += Math.floor(Math.random() * 200) - 100;
+                        state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
+                        state.investor.institution += Math.floor(Math.random() * 200) - 100;
+                    }
+
+                    state.history = currentHistory;
+                    state.currentPrice = currentPrice;
+                    state.lastUpdated = marketStart.getTime() + ((currentHistory.length - 1) * 600000);
+                    state.todayVolume = simVol;
+                    state.todayTradeAmount = simAmt;
+
+                    updateUI(); 
+                    drawChart();
+
+                    try {
+                        await window.updateDoc(docRef, {
+                            currentPrice: state.currentPrice,
+                            history: state.history,
+                            lastUpdated: state.lastUpdated,
+                            todayVolume: state.todayVolume,
+                            todayTradeAmount: state.todayTradeAmount,
+                            basePrice: state.basePrice,
+                            investor: state.investor
+                        });
+                    } catch(e) { console.log("Sim update skip"); }
+                }
+            }
+
+            async function generateNextTick(docRef) {
+                let change = calculatePriceChange(state.currentPrice);
+                let nextPrice = state.currentPrice + change; 
+                if(nextPrice < 1) nextPrice = 1; 
+                
+                const simVol = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
+                state.todayVolume += simVol; 
+                state.todayTradeAmount += (simVol * nextPrice); 
+                
+                const newHistory = [...state.history, nextPrice]; 
+                
+                let currentMood = state.marketMood; let nextChange = state.nextMoodChange;
+                if (Date.now() > nextChange) { 
+                    const candidates = ['bull', 'bear', 'neutral'].filter(m => m !== currentMood); 
+                    currentMood = candidates[Math.floor(Math.random() * candidates.length)]; 
+                    nextChange = Date.now() + (30 * 60 * 1000); 
+                }
+
+                let newTrend = state.adminTrend; let newTrendUntil = state.adminTrendUntil; 
+                if (state.adminTrend && Date.now() > state.adminTrendUntil) { newTrend = null; }
+
+                // Update Investor Trends (Smaller than volume)
+                state.investor.individual += Math.floor(Math.random() * 200) - 100;
+                state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
+                state.investor.institution += Math.floor(Math.random() * 200) - 100;
+
+                state.currentPrice = nextPrice; state.history = newHistory; state.lastUpdated = Date.now(); 
+                state.marketMood = currentMood; state.nextMoodChange = nextChange;
+                
+                updateUI(); updateWalletUI(); 
+                
+                try { 
+                    await window.updateDoc(docRef, { 
+                        currentPrice: nextPrice, history: newHistory, lastUpdated: Date.now(), 
+                        adminTrend: newTrend, adminTrendUntil: newTrendUntil, 
+                        marketMood: currentMood, nextMoodChange: nextChange, 
+                        todayVolume: state.todayVolume, todayTradeAmount: state.todayTradeAmount,
+                        investor: state.investor
+                    }); 
+                } catch (e) {}
+            }
+
+            async function initializeData(docRef) { 
+                try { 
+                    await window.setDoc(docRef, { 
+                        currentPrice: 1885, history: [1885], lastUpdated: Date.now(), // Fixed initial value to 1885
+                        adminTrend: null, adminTrendUntil: 0, manualPause: false, 
+                        basePrice: 1885, basePriceLabel: "어제보다", marketMood: 'neutral', 
+                        nextMoodChange: Date.now() + 300000, todayVolume: 0, todayTradeAmount: 0,
+                        investor: { individual: 0, foreigner: 0, institution: 0 }
+                    }); 
+                } catch(e) {} 
+            }
+            
+            // 🔹 12월 3일 데이터 강제 복구 로직 (1271원)
+            function startDailyHistorySync() { 
+                const dailyRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history'); 
+                window.onSnapshot(dailyRef, async (snapshot) => { 
+                    if (snapshot.exists()) { 
+                        let history = snapshot.data().history || [];
+                        let needUpdate = false;
+                        
+                        // 🚨 12.03 누락 데이터 강제 주입
+                        if (!history.some(h => h.date === '2025.12.03')) {
+                            history.push({
+                                date: '2025.12.03',
+                                close: 1271, 
+                                diff: 29,    
+                                rate: "2.33", 
+                                vol: 12050,  
+                                amt: 15315550 
+                            });
+                            needUpdate = true;
+                        }
+
+                        // 🚨 12.05 데이터 강제 수정 (Fix logic)
+                        const idx1205 = history.findIndex(h => h.date === '2025.12.05');
+                        const correct1205 = {
+                            date: '2025.12.05',
+                            close: 1885, 
+                            diff: 614,    
+                            rate: "48.31", 
+                            vol: 245000,  // Increased volume for realism
+                            amt: 461825000 // 245000 * 1885
+                        };
+
+                        if (idx1205 !== -1) {
+                            // 이미 존재하면 값 확인 후 수정 (특히 거래량이 작으면 수정)
+                            if (history[idx1205].close !== 1885 || history[idx1205].vol < 100000) {
+                                history[idx1205] = correct1205;
+                                needUpdate = true;
+                            }
+                        } else {
+                            // 없으면 추가
+                            history.push(correct1205);
+                            needUpdate = true;
+                        }
+
+                        if (needUpdate) {
+                            history.sort((a,b) => new Date(b.date) - new Date(a.date));
+                            await window.updateDoc(dailyRef, { history: history });
+                        }
+
+                        state.dailyHistory = history; 
+                        renderDailyQuotes(); 
+                    } else { 
+                        window.setDoc(dailyRef, { history: [] }); 
+                    } 
+                }); 
+            }
+
+            function startWalletSync() { const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); window.onSnapshot(walletDocRef, (snapshot) => { if (snapshot.exists()) { const data = snapshot.data(); state.walletCash = data.cash || 0; state.walletStocks = data.stocks || 0; state.walletAvgPrice = data.avgPrice || 0; state.pendingOrders = data.pendingOrders || []; updateWalletUI(); } else { window.setDoc(walletDocRef, { cash: 0, stocks: 0, avgPrice: 0, pendingOrders: [] }); } }); }
+            function startHistorySync() { const histDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'trade_history'); window.onSnapshot(histDocRef, (snapshot) => { if (snapshot.exists()) { state.tradeLogs = snapshot.data().logs || []; renderHistory(); } else { window.setDoc(histDocRef, { logs: [] }); } }); }
+            async function addHistoryLog(type, detail) { const histDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'trade_history'); const newLog = { type, detail, time: Date.now() }; const currentLogs = state.tradeLogs; const updatedLogs = [newLog, ...currentLogs].slice(0, 30); await window.updateDoc(histDocRef, { logs: updatedLogs }); }
+            
+            // ---- Event Handlers Setup ----
+            els.btnChartLine.onclick = () => { state.chartType = 'line'; els.btnChartLine.classList.add('active'); els.btnChartCandle.classList.remove('active'); drawChart(); };
+            els.btnChartCandle.onclick = () => { state.chartType = 'candle'; els.btnChartCandle.classList.add('active'); els.btnChartLine.classList.remove('active'); drawChart(); };
+
+            els.btnBuy.onclick = () => { 
+                // Removed checkMarketStatus() check here to allow opening modal
+                openTradeModal('buy'); 
+            };
+            els.btnSell.onclick = () => { 
+                // Removed checkMarketStatus() check here to allow opening modal
+                openTradeModal('sell'); 
+            };
+            els.btnAdminBasePrice.onclick = async () => { const price = parseInt(els.basePriceInput.value); if (isNaN(price) || price <= 0) { showToast("올바른 가격을 입력하세요."); return; } const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker'); try { await window.updateDoc(docRef, { basePrice: price, basePriceLabel: "어제보다", lastUpdated: Date.now() }); showToast(`기준가가 ${fmt(price)}원으로 설정되었습니다.`); els.basePriceInput.value = ''; } catch(e) { console.error(e); showToast("설정 실패"); } };
             els.btnHome.onclick = () => { window.location.href = 'index.html'; };
             els.btnProfile.onclick = () => { els.loginModal.classList.remove('hidden'); els.inputPw.value = ''; setTimeout(() => els.inputPw.focus(), 100); };
             els.btnLoginCancel.onclick = () => { els.loginModal.classList.add('hidden'); };
             els.btnLoginConfirm.onclick = () => { const pw = els.inputPw.value; if (pw === '0920') { state.isAdmin = true; els.loginModal.classList.add('hidden'); els.adminPanel.classList.remove('hidden'); showToast("관리자 권한 획득 🔓"); updateUI(); } else { showToast("비밀번호 불일치 ❌"); els.inputPw.value = ''; els.inputPw.focus(); } };
-            const triggerSharpMove = async (type) => { if (!state.isAdmin) return; const factor = 0.10 + (Math.random() * 0.10); let change = Math.floor(state.currentPrice * factor); let nextPrice; let logMsg; if (type === 'surge') { nextPrice = state.currentPrice + change; logMsg = `관리자: 급등 이벤트 발생 (+${(factor*100).toFixed(1)}%)`; } else { nextPrice = Math.max(1, state.currentPrice - change); logMsg = `관리자: 급락 이벤트 발생 (-${(factor*100).toFixed(1)}%)`; } const newHistory = [...state.history, nextPrice]; if (newHistory.length > 1000) newHistory.shift(); state.currentPrice = nextPrice; state.history = newHistory; state.lastUpdated = Date.now(); updateUI(); updateWalletUI(); checkPendingOrders(nextPrice); showToast(logMsg); const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker'); try { await window.updateDoc(docRef, { currentPrice: nextPrice, history: newHistory, lastUpdated: Date.now() }); } catch(e) { console.error(e); } };
-            els.btnAdminSurge.onclick = () => triggerSharpMove('surge'); els.btnAdminCrash.onclick = () => triggerSharpMove('crash');
-            const setAdminTrend = async (trend) => { if (!state.isAdmin) return; const duration = 30 * 1000; const until = Date.now() + duration; const mood = trend === 'up' ? 'bull' : 'bear'; state.marketMood = mood; state.adminTrend = trend; state.adminTrendUntil = until; updateUI(); updateMoodUI(); showToast(`관리자: ${trend === 'up' ? '상승' : '하락'}장 조작 시작 (30초)`); const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker'); try { await window.updateDoc(docRef, { adminTrend: trend, adminTrendUntil: until, marketMood: mood, nextMoodChange: until }); } catch(e) { console.error(e); } };
-            const setMarketStatus = async (pause) => { if (!state.isAdmin) return; state.manualPause = pause; updateUI(); showToast(`장 ${pause ? '일시정지' : '재개'} 완료`); const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker'); try { await window.updateDoc(docRef, { manualPause: pause }); } catch(e) { console.error(e); } };
-            els.btnAdminUp.onclick = () => setAdminTrend('up'); els.btnAdminDown.onclick = () => setAdminTrend('down'); els.btnMarketResume.onclick = () => setMarketStatus(false); els.btnMarketPause.onclick = () => setMarketStatus(true); els.btnLogout.onclick = () => { state.isAdmin = false; els.adminPanel.classList.add('hidden'); showToast("관리자 로그아웃"); updateUI(); };
-            els.btnAdminDeposit.onclick = async () => { const amount = parseInt(els.depositInput.value); if (isNaN(amount) || amount <= 0) { showToast("올바른 금액을 입력하세요."); return; } const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); try { const snapshot = await window.getDoc(walletDocRef); const currentCash = snapshot.exists() ? (snapshot.data().cash || 0) : 0; await window.updateDoc(walletDocRef, { cash: currentCash + amount }); addHistoryLog('deposit', `배당금 입금 ${fmt(amount)}원`); showToast(`${fmt(amount)}원 공용 입금 완료!`); els.depositInput.value = ''; } catch(e) { console.error("Deposit Error", e); } };
             
-            els.btnChartLine.onclick = () => { state.chartType = 'line'; els.btnChartLine.classList.add('active'); els.btnChartCandle.classList.remove('active'); drawChart(); };
-            els.btnChartCandle.onclick = () => { state.chartType = 'candle'; els.btnChartCandle.classList.add('active'); els.btnChartLine.classList.remove('active'); drawChart(); };
-
-            function drawChart() { 
-                if(state.tab !== 'chart') return; 
-                const { w, h } = size; if(w === 0) { resize(); return; } 
-                ctx.clearRect(0, 0, w, h); 
-                const fullHistory = state.history; if (fullHistory.length === 0) return; 
-                
-                let minVal = Math.min(...fullHistory); let maxVal = Math.max(...fullHistory); 
-                minVal = Math.min(minVal, state.basePrice); maxVal = Math.max(maxVal, state.basePrice); 
-                if (maxVal === minVal) { maxVal += 10; minVal -= 10; } else { const padding = (maxVal - minVal) * 0.1; maxVal += padding; minVal -= padding; } 
-                const range = maxVal - minVal; 
-                const baseY = h - ((state.basePrice - minVal) / range) * h; 
-                els.baseLine.style.top = `${(baseY / h) * 100}%`; els.baseLine.classList.remove('hidden'); 
-                
-                const xStep = (w - 40) / (TOTAL_TICKS - 1); 
-                let lastPoint = { x: 0, y: 0 }; 
-                
-                if (state.chartType === 'line') { 
-                    const lastVal = fullHistory[fullHistory.length - 1]; const isUp = lastVal >= state.basePrice; const color = isUp ? '#f04452' : '#3182f6'; 
-                    els.labelHigh.style.color = color; els.labelLow.style.color = color; els.liveDot.style.backgroundColor = color; 
-                    els.chartPulseDot.style.backgroundColor = color; els.chartPulseDot.querySelector('.pulse-ring').style.backgroundColor = color; 
-                    
-                    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; 
-                    fullHistory.forEach((p, i) => { 
-                        const x = 20 + i * xStep; const y = h - ((p - minVal) / range) * h; 
-                        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); 
-                        if (i === fullHistory.length - 1) { lastPoint = { x, y }; } 
-                    }); 
-                    ctx.stroke(); 
-                    
-                    if (fullHistory.length > 0) { 
-                        const lastX = 20 + (fullHistory.length - 1) * xStep; 
-                        ctx.lineTo(lastX, h); ctx.lineTo(20, h); ctx.closePath(); 
-                        const grad = ctx.createLinearGradient(0, 0, 0, h); 
-                        grad.addColorStop(0, isUp ? 'rgba(240, 68, 82, 0.05)' : 'rgba(49, 130, 246, 0.05)'); 
-                        grad.addColorStop(1, 'rgba(255, 255, 255, 0)'); 
-                        ctx.fillStyle = grad; ctx.fill(); 
-                        const lastY = h - ((lastVal - minVal) / range) * h; 
-                        ctx.beginPath(); ctx.fillStyle = color; ctx.arc(lastX, lastY, 4, 0, Math.PI * 2); ctx.fill(); 
-                    } 
-                    
-                    if (checkMarketStatus()) { els.chartPulseDot.classList.remove('hidden'); els.chartPulseDot.style.left = `${lastPoint.x}px`; els.chartPulseDot.style.top = `${lastPoint.y}px`; } else { els.chartPulseDot.classList.add('hidden'); } 
-                    
-                    const maxValData = Math.max(...fullHistory); const minValData = Math.min(...fullHistory); 
-                    els.valHigh.innerText = Math.round(maxValData); els.valLow.innerText = Math.round(minValData); 
-                    const maxIdx = fullHistory.lastIndexOf(maxValData); const minIdx = fullHistory.lastIndexOf(minValData); 
-                    const maxPos = { x: 20 + maxIdx * xStep, y: h - ((maxValData - minVal) / range) * h }; 
-                    const minPos = { x: 20 + minIdx * xStep, y: h - ((minValData - minVal) / range) * h }; 
-                    const labelX_Max = Math.min(Math.max(maxPos.x, 30), w - 30); const labelX_Min = Math.min(Math.max(minPos.x, 30), w - 30); 
-                    els.labelHigh.style.opacity = 1; els.labelHigh.style.left = `${labelX_Max}px`; els.labelHigh.style.top = `${maxPos.y - 25}px`; 
-                    els.labelLow.style.opacity = 1; els.labelLow.style.left = `${labelX_Min}px`; els.labelLow.style.top = `${minPos.y + 10}px`; 
-                    [maxPos, minPos].forEach(pos => { ctx.beginPath(); ctx.fillStyle = 'white'; ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }); 
-                } else { 
-                    const candleWidth = xStep * 0.6; els.chartPulseDot.classList.add('hidden'); 
-                    fullHistory.forEach((p, i) => { 
-                        const prev = i > 0 ? fullHistory[i-1] : state.basePrice; const x = 20 + i * xStep; 
-                        const yClose = h - ((p - minVal) / range) * h; const yOpen = h - ((prev - minVal) / range) * h; 
-                        const isUp = p >= prev; const color = isUp ? '#f04452' : '#3182f6'; ctx.fillStyle = color; 
-                        let bodyHeight = Math.abs(yClose - yOpen); if (bodyHeight < 1) bodyHeight = 1; const bodyY = Math.min(yOpen, yClose); 
-                        ctx.fillRect(x - candleWidth/2, bodyY, candleWidth, bodyHeight); 
-                        ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 1; 
-                        const highY = Math.min(yOpen, yClose) - (Math.random() * 5); const lowY = Math.max(yOpen, yClose) + (Math.random() * 5); 
-                        ctx.moveTo(x, highY); ctx.lineTo(x, lowY); ctx.stroke(); 
-                    }); 
-                } 
-            }
-
-            function updateUI() { 
-                els.price.innerText = fmt(state.currentPrice); els.diffLabel.innerText = state.basePriceLabel; 
-                const diff = state.currentPrice - state.basePrice; 
-                const rate = ((diff / state.basePrice) * 100).toFixed(1); 
-                const sign = diff > 0 ? '+' : ''; const isUp = diff >= 0; 
-                els.diffVal.innerText = `${sign}${diff}원`; els.rate.innerText = `(${sign}${rate}%)`; 
-                els.diffBox.className = `flex items-center gap-1 ${isUp ? 'text-up' : 'text-down'}`; 
-                const isMarketOpen = checkMarketStatus(); 
-                if (!isMarketOpen) { els.marketMsgContainer.classList.remove('hidden'); els.liveDot.classList.remove('animate-pulse'); els.liveDot.classList.replace('bg-[#3182f6]', 'bg-gray-400'); els.chartStatus.innerText = "일시정지됨"; if (state.manualPause) els.marketMsgBadge.innerText = "⏸ 장 일시정지됨"; else els.marketMsgBadge.innerText = "🌙 장 마감 (08:00 ~ 23:30)"; } else { els.marketMsgContainer.classList.add('hidden'); els.liveDot.classList.add('animate-pulse'); els.liveDot.classList.replace('bg-gray-400', 'bg-[#3182f6]'); els.chartStatus.innerText = "장 운영중 (08:00~23:30)"; } 
-                if (state.isAdmin && state.adminTrend && state.adminTrendUntil > Date.now()) { const timeLeft = Math.ceil((state.adminTrendUntil - Date.now()) / 1000); if (timeLeft > 0) { const mins = Math.floor(timeLeft / 60); const secs = timeLeft % 60; els.adminTimer.innerText = `${mins}:${secs < 10 ? '0'+secs : secs}`; els.adminTimer.classList.remove('hidden'); } else els.adminTimer.classList.add('hidden'); } else els.adminTimer.classList.add('hidden'); 
-                if(state.tab === 'chart') drawChart(); else if(state.tab === 'order') renderOrderBook(); 
-                updateInvestorTrendUI();
-            }
+            els.btnAdminSurge.onclick = () => triggerSharpMove('surge'); 
+            els.btnAdminCrash.onclick = () => triggerSharpMove('crash');
+            els.btnAdminUp.onclick = () => setAdminTrend('up'); 
+            els.btnAdminDown.onclick = () => setAdminTrend('down'); 
+            els.btnMarketResume.onclick = () => setMarketStatus(false); 
+            els.btnMarketPause.onclick = () => setMarketStatus(true); 
+            els.btnLogout.onclick = () => { state.isAdmin = false; els.adminPanel.classList.add('hidden'); showToast("관리자 로그아웃"); updateUI(); };
+            els.btnAdminDeposit.onclick = async () => { const amount = parseInt(els.depositInput.value); if (isNaN(amount) || amount <= 0) { showToast("올바른 금액을 입력하세요."); return; } const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); try { const snapshot = await window.getDoc(walletDocRef); const currentCash = snapshot.exists() ? (snapshot.data().cash || 0) : 0; await window.updateDoc(walletDocRef, { cash: currentCash + amount }); addHistoryLog('deposit', `배당금 입금 ${fmt(amount)}원`); showToast(`${fmt(amount)}원 공용 입금 완료!`); els.depositInput.value = ''; } catch(e) { console.error("Deposit Error", e); } };
 
             function switchTab(tabName) { 
                 state.tab = tabName; 
@@ -1326,6 +1393,21 @@
                 else { els.viewInfo.classList.remove('hidden'); els.viewInfo.classList.add('flex'); } 
             }
             els.tabChart.onclick = () => switchTab('chart'); els.tabOrder.onclick = () => switchTab('order'); els.tabDaily.onclick = () => switchTab('daily'); els.tabAccount.onclick = () => switchTab('account'); els.tabWallet.onclick = () => switchTab('wallet'); els.tabInfo.onclick = () => switchTab('info');
+            
+            // ---- Auth Listener (Calls the above functions) ----
+            const initAuth = async () => { try { await window.signInAnonymously(window.auth); } catch (e) { console.error(e); } };
+            initAuth();
+            window.onAuthStateChanged(window.auth, (user) => { 
+                if (user) { 
+                    startSync(); 
+                    startWalletSync(); 
+                    startHistorySync(); 
+                    startDailyHistorySync(); 
+                    els.loadingOverlay.style.opacity = '0'; 
+                    setTimeout(() => els.loadingOverlay.style.display = 'none', 500); 
+                    resize(); 
+                } 
+            });
         });
     </script>
 </body>
