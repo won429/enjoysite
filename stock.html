@@ -242,6 +242,30 @@
         </div>
     </div>
 
+    <!-- [NEW] 장 재개 안내 팝업 (추가됨) -->
+    <div id="resumed-startup-modal" class="fixed inset-0 z-[95] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-left relative overflow-hidden">
+            <h3 class="text-xl font-bold text-[#191f28] mb-4 mt-1 text-center">서비스 재개 안내 🔔</h3>
+            
+            <div class="space-y-3 mb-6">
+                <!-- 초록 박스 -->
+                <div class="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-100">
+                    <p class="text-sm font-bold text-emerald-600 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check"></i> 정상 거래 가능
+                    </p>
+                    <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
+                        <span class="font-bold text-gray-800">모든 서비스가 재개되었습니다.</span><br>
+                        기다려주셔서 감사합니다.<br>지금 바로 거래를 시작해보세요!
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('resumed-startup-modal').classList.add('hidden')" class="flex-1 bg-[#3182F6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md shadow-blue-500/20 active:scale-95">거래 시작하기</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 지난 배당 보기 모달 -->
     <div id="dividend-modal" class="fixed inset-0 bg-black/50 z-[80] hidden flex items-end justify-center backdrop-blur-sm">
         <div class="bg-white rounded-t-3xl w-full max-w-md p-6 shadow-2xl slide-up h-[60vh] flex flex-col">
@@ -328,6 +352,7 @@
         <button id="tab-account" class="tab-item py-2.5 flex-shrink-0">계좌</button>
         <button id="tab-wallet" class="tab-item py-2.5 flex-shrink-0">보유자산</button>
         <button id="tab-info" class="tab-item py-2.5 flex-shrink-0">종목정보</button>
+        <button id="tab-hours" class="tab-item py-2.5 flex-shrink-0">운영시간</button>
     </div>
 
     <!-- 메인 컨텐츠 -->
@@ -579,6 +604,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- 운영시간 뷰 (추가됨) -->
+        <div id="view-hours" class="hidden flex-col w-full px-5 pt-4">
+            <div class="bg-[#f9fafb] p-6 rounded-2xl border border-[#f2f4f6] flex flex-col items-center justify-center text-center h-40">
+                <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-3 text-blue-500 text-xl">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+                <h3 class="font-bold text-lg text-[#191f28] mb-1">매일 운영</h3>
+                <p class="text-sm text-[#6b7684] font-medium">오전 08시 ~ 밤 11시 30분</p>
+            </div>
+        </div>
     </main>
 
     <!-- 하단 매수/매도 버튼 -->
@@ -608,8 +644,8 @@
                 baseLine: document.getElementById('base-line'), liveDot: document.getElementById('live-dot'),
                 btnHome: document.getElementById('btn-home'),
                 marketMoodBadge: document.getElementById('market-mood-badge'), orderList: document.getElementById('order-book-list'),
-                viewChart: document.getElementById('view-chart'), viewOrder: document.getElementById('view-order'), viewInfo: document.getElementById('view-info'), viewWallet: document.getElementById('view-wallet'), viewDaily: document.getElementById('view-daily'), viewAccount: document.getElementById('view-account'),
-                tabChart: document.getElementById('tab-chart'), tabOrder: document.getElementById('tab-order'), tabInfo: document.getElementById('tab-info'), tabWallet: document.getElementById('tab-wallet'), tabDaily: document.getElementById('tab-daily'), tabAccount: document.getElementById('tab-account'),
+                viewChart: document.getElementById('view-chart'), viewOrder: document.getElementById('view-order'), viewInfo: document.getElementById('view-info'), viewWallet: document.getElementById('view-wallet'), viewDaily: document.getElementById('view-daily'), viewAccount: document.getElementById('view-account'), viewHours: document.getElementById('view-hours'),
+                tabChart: document.getElementById('tab-chart'), tabOrder: document.getElementById('tab-order'), tabInfo: document.getElementById('tab-info'), tabWallet: document.getElementById('tab-wallet'), tabDaily: document.getElementById('tab-daily'), tabAccount: document.getElementById('tab-account'), tabHours: document.getElementById('tab-hours'),
                 toastContainer: document.getElementById('toast-container'), loadingOverlay: document.getElementById('loading-overlay'), syncStatus: document.getElementById('sync-status'),
                 btnProfile: document.getElementById('btn-profile'),
                 loginModal: document.getElementById('login-modal'), inputPw: document.getElementById('admin-pw'),
@@ -1220,19 +1256,31 @@
                         const data = snapshot.data();
                         const currentPauseState = data.manualPause || false;
                         
-                        // 🔹 [Notice Popup Logic]
+                        // 🔹 [Notice Popup Logic - Modified]
+                        // 상태가 변경되었을 때 (일시정지 <-> 재개) 해당 팝업을 띄웁니다.
+                        
+                        // 현재 시간이 장 운영 시간인지 확인 (08:00 ~ 23:30)
+                        const now = new Date();
+                        const t = now.getHours() * 60 + now.getMinutes();
+                        const isMarketTime = t >= (8*60) && t < (23*60 + 30);
+
                         if (state.prevManualPause !== null) {
                             if (!state.prevManualPause && currentPauseState) {
-                                // Pause Event (Toast)
-                                showNoticeModal("서비스 일시 정지", "증권사 사정으로 서비스가 일시 정지되었습니다.<br>빠른 시간 내에 복구하겠습니다.");
+                                // [관리자] 정지로 변경됨 -> 정지 팝업 (시간 무관하게 띄움)
+                                document.getElementById('paused-startup-modal').classList.remove('hidden');
                             } else if (state.prevManualPause && !currentPauseState) {
-                                // Resume Event (Toast)
-                                showNoticeModal("서비스 복구 완료", "시스템 복구가 완료되어<br>거래가 재개되었습니다.");
+                                // [관리자] 재개로 변경됨 -> 재개 팝업
+                                // ⚠️ 중요: 단순히 시간이 흘러서 장이 열린게 아니라, 관리자가 풀었을 때만 뜨는데
+                                // 혹시라도 밤늦게 관리자가 풀었을 때 "거래 가능"이라고 뜨면 안되니까 장 시간 체크를 추가함
+                                if (isMarketTime) {
+                                    document.getElementById('resumed-startup-modal').classList.remove('hidden');
+                                }
                             }
                         }
                         
                         // 🔹 [Initial Load Check for Paused State]
-                        // 만약 첫 로딩(재접속)이고, 장이 일시정지 상태라면 '사진처럼' 생긴 팝업을 띄운다.
+                        // 만약 첫 로딩(재접속)이고, 장이 '관리자에 의해' 일시정지 상태라면 정지 팝업을 띄운다.
+                        // (자연스러운 장 마감 시간에는 띄우지 않음)
                         if (state.isFirstLoad && currentPauseState) {
                             document.getElementById('paused-startup-modal').classList.remove('hidden');
                         }
@@ -1256,7 +1304,7 @@
                             await window.updateDoc(docRef, { basePrice: lastClose, basePriceLabel: "어제보다", lastUpdated: Date.now() });
                         }
 
-                        const now = new Date();
+                        // const now = new Date(); // <--- REMOVED DUPLICATE
                         const marketStart = new Date();
                         marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
                         const lastDate = new Date(data.lastUpdated || 0);
@@ -1553,15 +1601,16 @@
 
             function switchTab(tabName) { 
                 state.tab = tabName; 
-                [els.tabChart, els.tabOrder, els.tabDaily, els.tabWallet, els.tabInfo, els.tabAccount].forEach(btn => btn.classList.remove('active')); 
+                [els.tabChart, els.tabOrder, els.tabDaily, els.tabWallet, els.tabInfo, els.tabAccount, els.tabHours].forEach(btn => btn.classList.remove('active')); 
                 if(tabName === 'chart') els.tabChart.classList.add('active'); 
                 if(tabName === 'order') els.tabOrder.classList.add('active'); 
                 if(tabName === 'daily') els.tabDaily.classList.add('active'); 
                 if(tabName === 'account') els.tabAccount.classList.add('active'); 
                 if(tabName === 'wallet') els.tabWallet.classList.add('active'); 
-                if(tabName === 'info') els.tabInfo.classList.add('active'); 
+                if(tabName === 'info') els.tabInfo.classList.add('active');
+                if(tabName === 'hours') els.tabHours.classList.add('active');
                 
-                [els.viewChart, els.viewOrder, els.viewDaily, els.viewAccount, els.viewWallet, els.viewInfo].forEach(view => {
+                [els.viewChart, els.viewOrder, els.viewDaily, els.viewAccount, els.viewWallet, els.viewInfo, els.viewHours].forEach(view => {
                     view.classList.add('hidden');
                     view.classList.remove('flex');
                 });
@@ -1571,9 +1620,10 @@
                 else if(tabName === 'daily') { els.viewDaily.classList.remove('hidden'); els.viewDaily.classList.add('flex'); renderDailyQuotes(); } 
                 else if(tabName === 'account') { els.viewAccount.classList.remove('hidden'); els.viewAccount.classList.add('flex'); } 
                 else if(tabName === 'wallet') { els.viewWallet.classList.remove('hidden'); els.viewWallet.classList.add('flex'); } 
-                else { els.viewInfo.classList.remove('hidden'); els.viewInfo.classList.add('flex'); } 
+                else if(tabName === 'info') { els.viewInfo.classList.remove('hidden'); els.viewInfo.classList.add('flex'); }
+                else { els.viewHours.classList.remove('hidden'); els.viewHours.classList.add('flex'); }
             }
-            els.tabChart.onclick = () => switchTab('chart'); els.tabOrder.onclick = () => switchTab('order'); els.tabDaily.onclick = () => switchTab('daily'); els.tabAccount.onclick = () => switchTab('account'); els.tabWallet.onclick = () => switchTab('wallet'); els.tabInfo.onclick = () => switchTab('info');
+            els.tabChart.onclick = () => switchTab('chart'); els.tabOrder.onclick = () => switchTab('order'); els.tabDaily.onclick = () => switchTab('daily'); els.tabAccount.onclick = () => switchTab('account'); els.tabWallet.onclick = () => switchTab('wallet'); els.tabInfo.onclick = () => switchTab('info'); els.tabHours.onclick = () => switchTab('hours');
             
             // ---- Auth Listener (Calls the above functions) ----
             const initAuth = async () => { try { await window.signInAnonymously(window.auth); } catch (e) { console.error(e); } };
