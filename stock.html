@@ -720,9 +720,10 @@
                 dailyHistory: [], todayVolume: 0, todayTradeAmount: 0,
                 chartType: 'line', droppedTicks: 0, zoomScale: 1.0,
                 investor: { individual: 0, foreigner: 0, institution: 0 },
-                prevManualPause: null, // Track previous pause state for notifications
-                isFirstLoad: true, // New flag to track first load for pause popup
-                lastProcessedResumeTime: 0 // [NEW] 마지막으로 처리한 재개 알림 시간 (재접속 시에도 알림 유지용)
+                prevManualPause: null, 
+                isFirstLoad: true, 
+                lastProcessedResumeTime: 0,
+                isUpdating: false // [NEW] 중복 업데이트 방지 플래그
             };
 
             const MARKET_START_HOUR = 8;
@@ -1264,41 +1265,38 @@
                         const currentPauseState = data.manualPause || false;
                         
                         // 🔹 [Notice Popup Logic - Modified]
-                        // 상태가 변경되었을 때 (일시정지 <-> 재개) 해당 팝업을 띄웁니다.
-                        
                         // 현재 시간이 장 운영 시간인지 확인 (08:00 ~ 23:30)
-                        const now = new Date();
-                        const t = now.getHours() * 60 + now.getMinutes();
+                        // [수정] 변수명 충돌 방지를 위해 snapshotTime으로 변경하고 내부에서 계산
+                        const snapshotTime = new Date();
+                        const t = snapshotTime.getHours() * 60 + snapshotTime.getMinutes();
                         const isMarketTime = t >= (8*60) && t < (23*60 + 30);
 
-                        // [장 일시정지 알림] - 기존 방식 유지 (실시간 변경 감지)
                         if (state.prevManualPause !== null) {
                             if (!state.prevManualPause && currentPauseState) {
-                                // [관리자] 정지로 변경됨 -> 정지 팝업 (시간 무관하게 띄움)
+                                // [관리자] 정지로 변경됨 -> 정지 팝업
                                 document.getElementById('paused-startup-modal').classList.remove('hidden');
+                            } else if (state.prevManualPause && !currentPauseState) {
+                                // [관리자] 재개로 변경됨 -> 재개 팝업
+                                if (isMarketTime) {
+                                    document.getElementById('resumed-startup-modal').classList.remove('hidden');
+                                }
                             }
                         }
                         
                         // 🔹 [Initial Load Check for Paused State]
-                        // 만약 첫 로딩(재접속)이고, 장이 '관리자에 의해' 일시정지 상태라면 정지 팝업을 띄운다.
                         if (state.isFirstLoad && currentPauseState) {
                             document.getElementById('paused-startup-modal').classList.remove('hidden');
                         }
 
-                        // 🔹 [장 재개 알림 로직 강화]
-                        // "한번 정지하고 재개하면 그 날 하루는 떠있어야지" -> DB의 lastResumeTime을 확인
+                        // 🔹 [장 재개 알림 로직]
                         const serverResumeTime = data.lastResumeTime || 0;
                         if (!currentPauseState && serverResumeTime > 0) {
-                            // 1. 오늘 날짜인지 확인 (자정 기준)
-                            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                            const startOfToday = new Date(snapshotTime.getFullYear(), snapshotTime.getMonth(), snapshotTime.getDate()).getTime();
                             const isTodayResume = serverResumeTime > startOfToday;
 
-                            // 2. 아직 이 재개 알림을 처리하지 않았는지 확인 (새로고침 시 state.lastProcessedResumeTime은 0이므로 실행됨)
                             if (isTodayResume && serverResumeTime > state.lastProcessedResumeTime) {
-                                // 3. 장 운영 시간인지 확인 (밤늦게 켜는 경우 방지)
                                 if (isMarketTime) {
                                     document.getElementById('resumed-startup-modal').classList.remove('hidden');
-                                    // 팝업을 띄웠으므로 처리된 시간 갱신 (중복 실행 방지)
                                     state.lastProcessedResumeTime = serverResumeTime;
                                 }
                             }
@@ -1323,19 +1321,17 @@
                             await window.updateDoc(docRef, { basePrice: lastClose, basePriceLabel: "어제보다", lastUpdated: Date.now() });
                         }
 
-                        // const now = new Date(); // <--- REMOVED DUPLICATE
                         const marketStart = new Date();
                         marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
                         const lastDate = new Date(data.lastUpdated || 0);
 
                         let needReset = false;
-                        if (lastDate.getTime() < marketStart.getTime() && now.getTime() >= marketStart.getTime()) {
+                        if (lastDate.getTime() < marketStart.getTime() && snapshotTime.getTime() >= marketStart.getTime()) {
                              needReset = true;
                         }
 
                         if (needReset) {
                             const prevClose = lastClose || 1885;
-                            
                             state.basePrice = prevClose;
                             state.currentPrice = prevClose;
                             state.history = [prevClose];
@@ -1369,7 +1365,10 @@
                         state.manualPause = currentPauseState;
 
                         if (!state.manualPause) {
-                            await simulateMissingData(docRef);
+                            // [수정] 충돌 방지를 위해 simulateMissingData를 안전하게 호출
+                            if (!state.isUpdating) {
+                                await simulateMissingData(docRef);
+                            }
                         }
 
                         state.adminTrend = data.adminTrend || null; 
@@ -1384,8 +1383,6 @@
                         els.syncStatus.classList.add('bg-green-500');
                         
                         updateUI(); drawChart(); updateWalletUI(); updateMoodUI(); 
-                        
-                        // Check pending orders whenever price updates (and market is open)
                         checkPendingOrders(state.currentPrice);
                     } else initializeData(docRef);
                 });
@@ -1405,7 +1402,8 @@
                     }
 
                     if (isMarketOpen) {
-                        if (Date.now() - state.lastUpdated > 600000) {
+                        // [수정] 주가 생성 로직 중복 실행 방지
+                        if (!state.isUpdating && Date.now() - state.lastUpdated > 600000) {
                             await generateNextTick(docRef);
                         }
                     }
@@ -1414,7 +1412,7 @@
             }
 
             async function simulateMissingData(docRef) {
-                if (state.manualPause) return;
+                if (state.manualPause || state.isUpdating) return;
 
                 const now = new Date();
                 const marketStart = new Date(now);
@@ -1424,98 +1422,124 @@
 
                 if (now.getTime() < marketStart.getTime()) return;
 
-                let currentHistory = [...state.history];
-                let currentPrice = state.currentPrice;
-
                 const timeCap = Math.min(now.getTime(), marketEnd.getTime());
                 const diffMs = timeCap - marketStart.getTime();
                 const expectedCount = Math.floor(diffMs / 600000) + 1;
                 
-                const missingTicks = expectedCount - currentHistory.length;
+                // 로컬 상태 기준으로 먼저 체크하여 불필요한 트랜잭션 방지
+                if (state.history.length >= expectedCount) return;
 
-                if (missingTicks > 0) {
-                    let simVol = state.todayVolume;
-                    let simAmt = state.todayTradeAmount;
+                state.isUpdating = true; // 락 걸기
 
-                    for (let i = 0; i < missingTicks; i++) {
-                        const change = calculatePriceChange(currentPrice);
-                        currentPrice += change;
-                        if (currentPrice < 1) currentPrice = 1;
-                        currentHistory.push(currentPrice);
+                try {
+                    await window.runTransaction(window.db, async (transaction) => {
+                        const sfDoc = await transaction.get(docRef);
+                        if (!sfDoc.exists()) return;
                         
-                        const v = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
-                        simVol += v;
-                        simAmt += (v * currentPrice);
+                        const data = sfDoc.data();
+                        const currentHistory = data.history || [];
+                        const currentPrice = data.currentPrice;
                         
-                        // Simulate Investor changes per tick (Smaller than volume)
-                        state.investor.individual += Math.floor(Math.random() * 200) - 100;
-                        state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
-                        state.investor.institution += Math.floor(Math.random() * 200) - 100;
-                    }
+                        // DB 데이터 기준으로 다시 체크 (Race Condition 방지)
+                        if (currentHistory.length >= expectedCount) return;
 
-                    state.history = currentHistory;
-                    state.currentPrice = currentPrice;
-                    state.lastUpdated = marketStart.getTime() + ((currentHistory.length - 1) * 600000);
-                    state.todayVolume = simVol;
-                    state.todayTradeAmount = simAmt;
+                        const missingTicks = expectedCount - currentHistory.length;
+                        let simVol = data.todayVolume || 0;
+                        let simAmt = data.todayTradeAmount || 0;
+                        let simPrice = currentPrice;
+                        let simHistory = [...currentHistory];
+                        let simInvestor = data.investor || { individual: 0, foreigner: 0, institution: 0 };
 
-                    updateUI(); 
-                    drawChart();
+                        for (let i = 0; i < missingTicks; i++) {
+                            const change = calculatePriceChange(simPrice);
+                            simPrice += change;
+                            if (simPrice < 1) simPrice = 1;
+                            simHistory.push(simPrice);
+                            
+                            const v = Math.floor(Math.random() * 2000) + 500;
+                            simVol += v;
+                            simAmt += (v * simPrice);
+                            
+                            simInvestor.individual += Math.floor(Math.random() * 200) - 100;
+                            simInvestor.foreigner += Math.floor(Math.random() * 200) - 100;
+                            simInvestor.institution += Math.floor(Math.random() * 200) - 100;
+                        }
 
-                    try {
-                        await window.updateDoc(docRef, {
-                            currentPrice: state.currentPrice,
-                            history: state.history,
-                            lastUpdated: state.lastUpdated,
-                            todayVolume: state.todayVolume,
-                            todayTradeAmount: state.todayTradeAmount,
-                            basePrice: state.basePrice,
-                            investor: state.investor
+                        transaction.update(docRef, {
+                            currentPrice: simPrice,
+                            history: simHistory,
+                            lastUpdated: marketStart.getTime() + ((simHistory.length - 1) * 600000), // 시간 보정
+                            todayVolume: simVol,
+                            todayTradeAmount: simAmt,
+                            investor: simInvestor
                         });
-                    } catch(e) { console.log("Sim update skip"); }
+                    });
+                } catch (e) {
+                    console.log("Simulate update skip/fail", e);
+                } finally {
+                    state.isUpdating = false; // 락 해제
                 }
             }
 
             async function generateNextTick(docRef) {
-                let change = calculatePriceChange(state.currentPrice);
-                let nextPrice = state.currentPrice + change; 
-                if(nextPrice < 1) nextPrice = 1; 
-                
-                const simVol = Math.floor(Math.random() * 2000) + 500; // Increased volume increment
-                state.todayVolume += simVol; 
-                state.todayTradeAmount += (simVol * nextPrice); 
-                
-                const newHistory = [...state.history, nextPrice]; 
-                
-                let currentMood = state.marketMood; let nextChange = state.nextMoodChange;
-                if (Date.now() > nextChange) { 
-                    const candidates = ['bull', 'bear', 'neutral'].filter(m => m !== currentMood); 
-                    currentMood = candidates[Math.floor(Math.random() * candidates.length)]; 
-                    nextChange = Date.now() + (30 * 60 * 1000); 
+                if (state.isUpdating) return;
+                state.isUpdating = true; // 락 걸기
+
+                try {
+                    await window.runTransaction(window.db, async (transaction) => {
+                        const sfDoc = await transaction.get(docRef);
+                        if (!sfDoc.exists()) return;
+
+                        const data = sfDoc.data();
+                        // 트랜잭션 내부에서 시간 다시 확인 (중복 실행 방지 핵심)
+                        if (Date.now() - data.lastUpdated < 600000) return;
+
+                        let currentPrice = data.currentPrice;
+                        let change = calculatePriceChange(currentPrice);
+                        let nextPrice = currentPrice + change; 
+                        if(nextPrice < 1) nextPrice = 1; 
+                        
+                        const simVol = Math.floor(Math.random() * 2000) + 500;
+                        const newVolume = (data.todayVolume || 0) + simVol; 
+                        const newTradeAmt = (data.todayTradeAmount || 0) + (simVol * nextPrice); 
+                        
+                        const newHistory = [...(data.history || []), nextPrice]; 
+                        
+                        let currentMood = data.marketMood || 'neutral'; 
+                        let nextChange = data.nextMoodChange || 0;
+                        if (Date.now() > nextChange) { 
+                            const candidates = ['bull', 'bear', 'neutral'].filter(m => m !== currentMood); 
+                            currentMood = candidates[Math.floor(Math.random() * candidates.length)]; 
+                            nextChange = Date.now() + (30 * 60 * 1000); 
+                        }
+
+                        let newTrend = data.adminTrend || null; 
+                        let newTrendUntil = data.adminTrendUntil || 0; 
+                        if (data.adminTrend && Date.now() > data.adminTrendUntil) { newTrend = null; }
+
+                        const newInvestor = data.investor || { individual: 0, foreigner: 0, institution: 0 };
+                        newInvestor.individual += Math.floor(Math.random() * 200) - 100;
+                        newInvestor.foreigner += Math.floor(Math.random() * 200) - 100;
+                        newInvestor.institution += Math.floor(Math.random() * 200) - 100;
+
+                        transaction.update(docRef, { 
+                            currentPrice: nextPrice, 
+                            history: newHistory, 
+                            lastUpdated: Date.now(), 
+                            adminTrend: newTrend, 
+                            adminTrendUntil: newTrendUntil, 
+                            marketMood: currentMood, 
+                            nextMoodChange: nextChange, 
+                            todayVolume: newVolume, 
+                            todayTradeAmount: newTradeAmt,
+                            investor: newInvestor
+                        }); 
+                    });
+                } catch (e) {
+                    console.error("Tick gen failed", e);
+                } finally {
+                    state.isUpdating = false; // 락 해제
                 }
-
-                let newTrend = state.adminTrend; let newTrendUntil = state.adminTrendUntil; 
-                if (state.adminTrend && Date.now() > state.adminTrendUntil) { newTrend = null; }
-
-                // Update Investor Trends (Smaller than volume)
-                state.investor.individual += Math.floor(Math.random() * 200) - 100;
-                state.investor.foreigner += Math.floor(Math.random() * 200) - 100;
-                state.investor.institution += Math.floor(Math.random() * 200) - 100;
-
-                state.currentPrice = nextPrice; state.history = newHistory; state.lastUpdated = Date.now(); 
-                state.marketMood = currentMood; state.nextMoodChange = nextChange;
-                
-                updateUI(); updateWalletUI(); 
-                
-                try { 
-                    await window.updateDoc(docRef, { 
-                        currentPrice: nextPrice, history: newHistory, lastUpdated: Date.now(), 
-                        adminTrend: newTrend, adminTrendUntil: newTrendUntil, 
-                        marketMood: currentMood, nextMoodChange: nextChange, 
-                        todayVolume: state.todayVolume, todayTradeAmount: state.todayTradeAmount,
-                        investor: state.investor
-                    }); 
-                } catch (e) {}
             }
 
             async function initializeData(docRef) { 
