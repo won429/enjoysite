@@ -1618,6 +1618,34 @@
             els.btnLogout.onclick = () => { state.isAdmin = false; els.adminPanel.classList.add('hidden'); showToast("관리자 로그아웃"); updateUI(); };
             els.btnAdminDeposit.onclick = async () => { const amount = parseInt(els.depositInput.value); if (isNaN(amount) || amount <= 0) { showToast("올바른 금액을 입력하세요."); return; } const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); try { const snapshot = await window.getDoc(walletDocRef); const currentCash = snapshot.exists() ? (snapshot.data().cash || 0) : 0; await window.updateDoc(walletDocRef, { cash: currentCash + amount }); addHistoryLog('deposit', `배당금 입금 ${fmt(amount)}원`); showToast(`${fmt(amount)}원 공용 입금 완료!`); els.depositInput.value = ''; } catch(e) { console.error("Deposit Error", e); } };
 
+            // [수정됨] 지난 배당 보기 버튼 기능 연결
+            els.btnViewDividends.onclick = () => {
+                const depositLogs = state.tradeLogs.filter(log => log.type === 'deposit');
+                
+                if (depositLogs.length === 0) {
+                    els.dividendListContent.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">아직 배당 내역이 없습니다.</div>';
+                } else {
+                    els.dividendListContent.innerHTML = depositLogs.map(log => {
+                        const date = new Date(log.time);
+                        const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')}`;
+                        return `
+                            <div class="flex justify-between items-center py-4 border-b border-gray-100 last:border-0">
+                                <div>
+                                    <span class="block text-xs text-gray-400 mb-1">${dateStr}</span>
+                                    <span class="block text-sm font-bold text-[#191f28]">${log.detail}</span>
+                                </div>
+                                <span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded">입금완료</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                els.dividendModal.classList.remove('hidden');
+            };
+
+            els.btnDividendClose.onclick = () => {
+                els.dividendModal.classList.add('hidden');
+            };
+
             function switchTab(tabName) { 
                 state.tab = tabName; 
                 [els.tabChart, els.tabOrder, els.tabDaily, els.tabWallet, els.tabInfo, els.tabAccount, els.tabHours].forEach(btn => btn.classList.remove('active')); 
