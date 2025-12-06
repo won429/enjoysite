@@ -630,10 +630,13 @@
         <div class="grid grid-cols-2 gap-3 mb-3"><button id="btn-admin-up" class="bg-[#f04452] text-white font-bold py-3 rounded-xl active:scale-95 transition-transform">📈 상승 (30초)</button><button id="btn-admin-down" class="bg-[#3182f6] text-white font-bold py-3 rounded-xl active:scale-95 transition-transform">📉 하락 (30초)</button></div>
         <div class="grid grid-cols-2 gap-3 mb-3"><button id="btn-market-resume" class="bg-green-500 text-white font-bold py-2 rounded-xl active:scale-95 transition-transform text-sm">🔔 장 재개</button><button id="btn-market-pause" class="bg-gray-700 text-white font-bold py-2 rounded-xl active:scale-95 transition-transform text-sm">⏸ 장 일시정지</button></div>
         
-        <!-- [NEW] 시세 강제 기록 버튼 추가 -->
+        <!-- [NEW] 시세 강제 기록 및 삭제 버튼 수정 -->
         <div class="bg-gray-50 p-3 rounded-xl mb-3 border border-gray-200">
             <p class="text-xs font-bold text-gray-500 mb-2">📊 시세 관리 (23:30 자동 저장됨)</p>
-            <button id="btn-admin-record-daily" class="w-full bg-[#333] text-white font-bold py-2 rounded-lg text-sm active:scale-95 transition-transform">오늘 종가 기록하기 (강제)</button>
+            <div class="flex gap-2">
+                <button id="btn-admin-record-daily" class="flex-1 bg-[#333] text-white font-bold py-2 rounded-lg text-sm active:scale-95 transition-transform">종가 기록 (날짜선택)</button>
+                <button id="btn-admin-delete-daily" class="bg-red-100 text-red-600 font-bold px-3 py-2 rounded-lg text-sm active:scale-95 transition-transform">최근 삭제</button>
+            </div>
         </div>
 
         <div class="bg-gray-50 p-3 rounded-xl mb-3 border border-gray-200"><p class="text-xs font-bold text-gray-500 mb-2">💰 기준가 수동 설정</p><div class="flex gap-2"><input type="number" id="base-price-input" placeholder="가격" class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none"><button id="btn-admin-base-price" class="bg-[#333] text-white font-bold px-4 rounded-lg text-sm">설정</button></div></div>
@@ -667,7 +670,8 @@
                 btnBuy: document.getElementById('btn-buy'), btnSell: document.getElementById('btn-sell'), 
                 depositInput: document.getElementById('deposit-input'), btnAdminDeposit: document.getElementById('btn-admin-deposit'),
                 basePriceInput: document.getElementById('base-price-input'), btnAdminBasePrice: document.getElementById('btn-admin-base-price'), 
-                btnAdminRecordDaily: document.getElementById('btn-admin-record-daily'), // [NEW] 버튼 엘리먼트 추가
+                btnAdminRecordDaily: document.getElementById('btn-admin-record-daily'), // [NEW] 날짜 선택 기록 버튼
+                btnAdminDeleteDaily: document.getElementById('btn-admin-delete-daily'), // [NEW] 최근 삭제 버튼
                 historyList: document.getElementById('trade-history-list'), 
                 wHistoryList: document.getElementById('w-trade-history-list'), 
                 depositList: document.getElementById('deposit-history-list'), 
@@ -1695,11 +1699,48 @@
             els.btnLogout.onclick = () => { state.isAdmin = false; els.adminPanel.classList.add('hidden'); showToast("관리자 로그아웃"); updateUI(); };
             els.btnAdminDeposit.onclick = async () => { const amount = parseInt(els.depositInput.value); if (isNaN(amount) || amount <= 0) { showToast("올바른 금액을 입력하세요."); return; } const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet'); try { const snapshot = await window.getDoc(walletDocRef); const currentCash = snapshot.exists() ? (snapshot.data().cash || 0) : 0; await window.updateDoc(walletDocRef, { cash: currentCash + amount }); addHistoryLog('deposit', `배당금 입금 ${fmt(amount)}원`); showToast(`${fmt(amount)}원 공용 입금 완료!`); els.depositInput.value = ''; } catch(e) { console.error("Deposit Error", e); } };
 
-            // [NEW] 오늘 종가 강제 기록 버튼 이벤트
+            // [NEW] 날짜 지정 종가 기록 버튼
             els.btnAdminRecordDaily.onclick = async () => {
-                if (!confirm("현재 가격으로 오늘 시세를 강제 기록하시겠습니까?\n(이미 기록된 경우 덮어쓰거나 무시될 수 있습니다)")) return;
-                await recordDailyHistory(new Date(), state.currentPrice, state.basePrice, state.todayVolume, state.todayTradeAmount);
-                showToast("오늘 시세 기록 요청 완료 💾");
+                const now = new Date();
+                const defaultDate = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+                
+                const userDateStr = prompt("기록할 날짜를 입력하세요 (예: 2025.12.06)", defaultDate);
+                if (!userDateStr) return;
+
+                const parts = userDateStr.split('.');
+                if (parts.length !== 3) {
+                    showToast("날짜 형식이 올바르지 않습니다.");
+                    return;
+                }
+
+                // 입력받은 날짜로 Date 객체 생성
+                const targetDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                
+                await recordDailyHistory(targetDate, state.currentPrice, state.basePrice, state.todayVolume, state.todayTradeAmount);
+                showToast(`${userDateStr} 시세 기록 요청 완료 💾`);
+            };
+
+            // [NEW] 최근 시세 삭제 버튼
+            els.btnAdminDeleteDaily.onclick = async () => {
+                if (!confirm("가장 최근의 시세 기록 1개를 삭제하시겠습니까?\n(실수로 기록된 오늘 날짜 등을 지울 때 사용)")) return;
+                
+                const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history');
+                try {
+                    await window.runTransaction(window.db, async (transaction) => {
+                        const sfDoc = await transaction.get(docRef);
+                        if (!sfDoc.exists()) return;
+                        
+                        let history = sfDoc.data().history || [];
+                        if (history.length > 0) {
+                            history.shift(); // 맨 앞(최신) 데이터 삭제
+                            transaction.update(docRef, { history: history });
+                        }
+                    });
+                    showToast("최근 시세 기록 삭제 완료 🗑️");
+                } catch (e) {
+                    console.error(e);
+                    showToast("삭제 실패");
+                }
             };
 
             // [수정됨] 지난 배당 보기 버튼 기능 연결
