@@ -721,7 +721,8 @@
                 chartType: 'line', droppedTicks: 0, zoomScale: 1.0,
                 investor: { individual: 0, foreigner: 0, institution: 0 },
                 prevManualPause: null, // Track previous pause state for notifications
-                isFirstLoad: true // New flag to track first load for pause popup
+                isFirstLoad: true, // New flag to track first load for pause popup
+                lastProcessedResumeTime: 0 // [NEW] 마지막으로 처리한 재개 알림 시간 (재접속 시에도 알림 유지용)
             };
 
             const MARKET_START_HOUR = 8;
@@ -1081,7 +1082,13 @@
             async function setMarketStatus(isPaused) {
                 const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
                 try {
-                    await window.updateDoc(docRef, { manualPause: isPaused });
+                    const updateData = { manualPause: isPaused };
+                    // [수정] 장 재개 시, 재개 시간을 기록하여 하루 동안 팝업이 유지되도록 함
+                    if (!isPaused) {
+                        updateData.lastResumeTime = Date.now();
+                    }
+                    await window.updateDoc(docRef, updateData);
+                    
                     // 관리자가 버튼을 눌렀을 때 즉시 반응하도록 함 (DB 리스너가 처리하지만 피드백을 위해)
                     if (isPaused) showToast("⏸ 장을 일시정지했습니다.");
                     else showToast("🔔 장을 재개했습니다.");
@@ -1264,28 +1271,40 @@
                         const t = now.getHours() * 60 + now.getMinutes();
                         const isMarketTime = t >= (8*60) && t < (23*60 + 30);
 
+                        // [장 일시정지 알림] - 기존 방식 유지 (실시간 변경 감지)
                         if (state.prevManualPause !== null) {
                             if (!state.prevManualPause && currentPauseState) {
                                 // [관리자] 정지로 변경됨 -> 정지 팝업 (시간 무관하게 띄움)
                                 document.getElementById('paused-startup-modal').classList.remove('hidden');
-                            } else if (state.prevManualPause && !currentPauseState) {
-                                // [관리자] 재개로 변경됨 -> 재개 팝업
-                                // ⚠️ 중요: 단순히 시간이 흘러서 장이 열린게 아니라, 관리자가 풀었을 때만 뜨는데
-                                // 혹시라도 밤늦게 관리자가 풀었을 때 "거래 가능"이라고 뜨면 안되니까 장 시간 체크를 추가함
-                                if (isMarketTime) {
-                                    document.getElementById('resumed-startup-modal').classList.remove('hidden');
-                                }
                             }
                         }
                         
                         // 🔹 [Initial Load Check for Paused State]
                         // 만약 첫 로딩(재접속)이고, 장이 '관리자에 의해' 일시정지 상태라면 정지 팝업을 띄운다.
-                        // (자연스러운 장 마감 시간에는 띄우지 않음)
                         if (state.isFirstLoad && currentPauseState) {
                             document.getElementById('paused-startup-modal').classList.remove('hidden');
                         }
+
+                        // 🔹 [장 재개 알림 로직 강화]
+                        // "한번 정지하고 재개하면 그 날 하루는 떠있어야지" -> DB의 lastResumeTime을 확인
+                        const serverResumeTime = data.lastResumeTime || 0;
+                        if (!currentPauseState && serverResumeTime > 0) {
+                            // 1. 오늘 날짜인지 확인 (자정 기준)
+                            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                            const isTodayResume = serverResumeTime > startOfToday;
+
+                            // 2. 아직 이 재개 알림을 처리하지 않았는지 확인 (새로고침 시 state.lastProcessedResumeTime은 0이므로 실행됨)
+                            if (isTodayResume && serverResumeTime > state.lastProcessedResumeTime) {
+                                // 3. 장 운영 시간인지 확인 (밤늦게 켜는 경우 방지)
+                                if (isMarketTime) {
+                                    document.getElementById('resumed-startup-modal').classList.remove('hidden');
+                                    // 팝업을 띄웠으므로 처리된 시간 갱신 (중복 실행 방지)
+                                    state.lastProcessedResumeTime = serverResumeTime;
+                                }
+                            }
+                        }
+
                         state.isFirstLoad = false;
-                        
                         state.prevManualPause = currentPauseState;
                         
                         // 🔹 [Smart Recovery System]
