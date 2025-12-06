@@ -6,6 +6,8 @@
     <title>Enjoy Stock - Shared Wallet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" type="text/css"/>
+    <!-- 아이콘 사용을 위한 FontAwesome 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -84,6 +86,10 @@
 
         .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        /* 팝업 애니메이션 */
+        .scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         #market-closed-overlay { backdrop-filter: blur(2px); }
         .divider-section { border-top: 8px solid #f2f4f6; margin-top: 20px; padding-top: 20px; }
@@ -190,13 +196,49 @@
         </div>
     </div>
 
-    <!-- [NEW] 알림 팝업 모달 -->
+    <!-- [NEW] 일반 알림 팝업 (토스트 대체용) -->
     <div id="notice-modal" class="fixed inset-0 z-[90] bg-black/50 hidden flex items-center justify-center px-6 backdrop-blur-sm transition-opacity duration-300">
         <div class="bg-white rounded-[24px] p-6 w-full max-w-xs shadow-2xl transform scale-100 transition-transform duration-300 flex flex-col items-center text-center">
             <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-2xl">📢</div>
             <h3 id="notice-title" class="text-xl font-bold mb-2 text-[#191f28]">알림</h3>
             <p id="notice-msg" class="text-sm text-[#4e5968] mb-6 leading-relaxed break-keep"></p>
             <button onclick="document.getElementById('notice-modal').classList.add('hidden')" class="w-full bg-[#3182f6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md active:scale-95">확인</button>
+        </div>
+    </div>
+
+    <!-- [NEW] 장 일시정지 안내 팝업 (사진 스타일) -->
+    <div id="paused-startup-modal" class="fixed inset-0 z-[95] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-left relative overflow-hidden">
+            <h3 class="text-xl font-bold text-[#191f28] mb-4 mt-1 text-center">서비스 점검 안내 🔔</h3>
+            
+            <div class="space-y-3 mb-6">
+                <!-- 파란 박스 -->
+                <div class="bg-blue-50 p-3.5 rounded-2xl border border-blue-100">
+                    <p class="text-sm font-bold text-blue-600 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info"></i> 현재 장이 일시 정지됨
+                    </p>
+                    <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
+                        <span class="font-bold text-gray-800">잠시 거래가 중단되었습니다.</span><br>
+                        관리자 설정 또는 서버 점검으로 인해<br>서비스 이용이 제한됩니다.
+                    </p>
+                </div>
+                
+                <!-- 빨간 박스 -->
+                <div class="bg-red-50 p-3.5 rounded-2xl border border-red-100">
+                    <p class="text-sm font-bold text-red-500 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-ban"></i> 거래 불가 안내
+                    </p>
+                    <ul class="text-xs text-gray-600 leading-relaxed pl-4 list-disc marker:text-red-300">
+                        <li>매수 / 매도 주문 불가</li>
+                        <li>실시간 시세 변동 중단</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('paused-startup-modal').classList.add('hidden')" class="flex-1 bg-[#F2F4F6] text-[#4E5968] font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors active:scale-95">닫기</button>
+                <button onclick="document.getElementById('paused-startup-modal').classList.add('hidden')" class="flex-1 bg-[#3182F6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md shadow-blue-500/20 active:scale-95">확인했어요</button>
+            </div>
         </div>
     </div>
 
@@ -642,7 +684,8 @@
                 dailyHistory: [], todayVolume: 0, todayTradeAmount: 0,
                 chartType: 'line', droppedTicks: 0, zoomScale: 1.0,
                 investor: { individual: 0, foreigner: 0, institution: 0 },
-                prevManualPause: null // Track previous pause state for notifications
+                prevManualPause: null, // Track previous pause state for notifications
+                isFirstLoad: true // New flag to track first load for pause popup
             };
 
             const MARKET_START_HOUR = 8;
@@ -998,6 +1041,130 @@
                 els.orderList.innerHTML = html; 
             }
 
+            // [추가됨] 관리자 및 모달 관련 누락된 함수 복구
+            async function setMarketStatus(isPaused) {
+                const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
+                try {
+                    await window.updateDoc(docRef, { manualPause: isPaused });
+                    // 관리자가 버튼을 눌렀을 때 즉시 반응하도록 함 (DB 리스너가 처리하지만 피드백을 위해)
+                    if (isPaused) showToast("⏸ 장을 일시정지했습니다.");
+                    else showToast("🔔 장을 재개했습니다.");
+                } catch (e) {
+                    console.error(e);
+                    showToast("설정 변경 실패");
+                }
+            }
+
+            async function setAdminTrend(trend) {
+                const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
+                try {
+                    await window.updateDoc(docRef, {
+                        adminTrend: trend,
+                        adminTrendUntil: Date.now() + 30000 // 30초 유지
+                    });
+                    showToast(trend === 'up' ? "📈 30초 상승 모드 실행" : "📉 30초 하락 모드 실행");
+                } catch (e) { console.error(e); showToast("명령 실패"); }
+            }
+
+            async function triggerSharpMove(type) {
+                const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
+                try {
+                    const snap = await window.getDoc(docRef);
+                    if (!snap.exists()) return;
+                    const current = snap.data().currentPrice;
+                    const factor = 0.15 + (Math.random() * 0.05); // 15~20% 변동
+                    let change = Math.floor(current * factor);
+                    if (type === 'crash') change = -change;
+                    
+                    let next = current + change;
+                    if (next < 1) next = 1;
+                    
+                    const history = snap.data().history || [];
+                    history.push(next);
+                    
+                    await window.updateDoc(docRef, {
+                        currentPrice: next,
+                        history: history,
+                        lastUpdated: Date.now(),
+                        todayVolume: (snap.data().todayVolume || 0) + 10000,
+                        todayTradeAmount: (snap.data().todayTradeAmount || 0) + (10000 * next)
+                    });
+                    showToast(type === 'surge' ? "🚀 급등 실행!" : "📉 급락 실행!");
+                } catch(e) { console.error(e); showToast("실행 실패"); }
+            }
+
+            function openTradeModal(type) {
+                // 장 마감 체크 (관리자가 아니면 거래 불가)
+                if (!checkMarketStatus() && !state.isAdmin) {
+                    showToast("지금은 거래 가능 시간이 아닙니다.");
+                    return;
+                }
+                const isBuy = type === 'buy';
+                els.tradeTitle.innerText = isBuy ? '매수하기' : '매도하기';
+                els.tradeTitle.style.color = isBuy ? '#f04452' : '#3182f6';
+                els.btnTradeConfirm.style.backgroundColor = isBuy ? '#f04452' : '#3182f6';
+                els.btnTradeConfirm.innerText = isBuy ? '매수 주문' : '매도 주문';
+                els.inputPrice.value = state.currentPrice;
+                els.inputQty.value = 1;
+                updateTradeTotal();
+                
+                // 이벤트 핸들러 재설정 (클로저 변수 type 사용을 위해)
+                els.btnTradeConfirm.onclick = () => executeTrade(type);
+                
+                els.tradeModal.classList.remove('hidden');
+                els.tradeModal.classList.add('flex');
+            }
+
+            function updateTradeTotal() {
+                const p = parseInt(els.inputPrice.value) || 0;
+                const q = parseInt(els.inputQty.value) || 0;
+                els.tradeTotalAmount.innerText = fmt(p * q);
+            }
+
+            // 수량/가격 조절 버튼 이벤트 연결
+            els.btnPriceUp.onclick = () => { els.inputPrice.value = parseInt(els.inputPrice.value) + 10; updateTradeTotal(); };
+            els.btnPriceDown.onclick = () => { els.inputPrice.value = Math.max(0, parseInt(els.inputPrice.value) - 10); updateTradeTotal(); };
+            els.btnQtyUp.onclick = () => { els.inputQty.value = parseInt(els.inputQty.value) + 1; updateTradeTotal(); };
+            els.btnQtyDown.onclick = () => { els.inputQty.value = Math.max(1, parseInt(els.inputQty.value) - 1); updateTradeTotal(); };
+            els.inputPrice.oninput = updateTradeTotal;
+            els.inputQty.oninput = updateTradeTotal;
+            els.btnTradeClose.onclick = () => { els.tradeModal.classList.add('hidden'); els.tradeModal.classList.remove('flex'); };
+
+            async function executeTrade(type) {
+                const price = parseInt(els.inputPrice.value);
+                const qty = parseInt(els.inputQty.value);
+                if (price <= 0 || qty <= 0) { showToast("가격과 수량을 확인해주세요."); return; }
+
+                // 로직: 예약 주문으로 처리 (실시간 체결 아님)
+                const walletDocRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'shared_wallet');
+                const newOrder = {
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                    type: type,
+                    price: price,
+                    qty: qty,
+                    time: Date.now()
+                };
+
+                try {
+                    await window.runTransaction(window.db, async (transaction) => {
+                        const doc = await transaction.get(walletDocRef);
+                        if (!doc.exists()) throw "Wallet not found";
+                        const data = doc.data();
+                        const pending = data.pendingOrders || [];
+                        pending.push(newOrder);
+                        transaction.update(walletDocRef, { pendingOrders: pending });
+                    });
+                    
+                    showToast("주문이 접수되었습니다 (대기중)");
+                    els.tradeModal.classList.add('hidden');
+                    // 즉시 체결 시도 (가격 조건 맞을 경우)
+                    checkPendingOrders(state.currentPrice);
+                } catch (e) {
+                    console.error(e);
+                    showToast("주문 실패");
+                }
+            }
+
             // ---- MISSING FUNCTION RESTORED & IMPROVED ----
             function checkPendingOrders(currentPrice) {
                 // Ensure checkPendingOrders only executes when market is OPEN
@@ -1056,13 +1223,21 @@
                         // 🔹 [Notice Popup Logic]
                         if (state.prevManualPause !== null) {
                             if (!state.prevManualPause && currentPauseState) {
-                                // Pause Event
+                                // Pause Event (Toast)
                                 showNoticeModal("서비스 일시 정지", "증권사 사정으로 서비스가 일시 정지되었습니다.<br>빠른 시간 내에 복구하겠습니다.");
                             } else if (state.prevManualPause && !currentPauseState) {
-                                // Resume Event
+                                // Resume Event (Toast)
                                 showNoticeModal("서비스 복구 완료", "시스템 복구가 완료되어<br>거래가 재개되었습니다.");
                             }
                         }
+                        
+                        // 🔹 [Initial Load Check for Paused State]
+                        // 만약 첫 로딩(재접속)이고, 장이 일시정지 상태라면 '사진처럼' 생긴 팝업을 띄운다.
+                        if (state.isFirstLoad && currentPauseState) {
+                            document.getElementById('paused-startup-modal').classList.remove('hidden');
+                        }
+                        state.isFirstLoad = false;
+                        
                         state.prevManualPause = currentPauseState;
                         
                         // 🔹 [Smart Recovery System]
@@ -1124,11 +1299,15 @@
                             state.investor = data.investor || { individual: 0, foreigner: 0, institution: 0 };
                         }
 
-                        await simulateMissingData(docRef);
+                        state.manualPause = currentPauseState;
+
+                        if (!state.manualPause) {
+                            await simulateMissingData(docRef);
+                        }
 
                         state.adminTrend = data.adminTrend || null; 
                         state.adminTrendUntil = data.adminTrendUntil || 0; 
-                        state.manualPause = currentPauseState;
+                        
                         state.basePriceLabel = data.basePriceLabel || "시작가보다";
                         state.marketMood = data.marketMood || 'neutral'; 
                         state.nextMoodChange = data.nextMoodChange || 0;
@@ -1168,6 +1347,8 @@
             }
 
             async function simulateMissingData(docRef) {
+                if (state.manualPause) return;
+
                 const now = new Date();
                 const marketStart = new Date(now);
                 marketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
