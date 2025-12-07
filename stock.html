@@ -1283,8 +1283,13 @@
                 state.isUpdating = true;
 
                 try {
+                    // 시세 기록 문서 참조 생성
+                    const dailyRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history');
+
                     await window.runTransaction(window.db, async (transaction) => {
                         const sfDoc = await transaction.get(docRef);
+                        const dailyDoc = await transaction.get(dailyRef); // 시세 기록 가져오기
+
                         if (!sfDoc.exists()) return;
                         
                         const data = sfDoc.data();
@@ -1295,37 +1300,42 @@
                         todayMarketStart.setHours(MARKET_START_HOUR, MARKET_START_MIN, 0, 0);
                         const todayStartTime = todayMarketStart.getTime();
 
-                        // 이미 오늘 날짜로 리셋되어 있다면 중단
                         if (lastUpdatedTime >= todayStartTime) return;
 
-                        // 어제 종가를 오늘의 시가로
-                        const prevClose = data.currentPrice; 
+                        // [핵심 수정] 어제 종가를 오늘의 시가로 설정 (시세 탭 데이터 우선 사용)
+                        let prevClose = data.currentPrice; 
+                        
+                        if (dailyDoc.exists()) {
+                            const historyList = dailyDoc.data().history || [];
+                            // 기록이 있다면 가장 최신(0번 인덱스) 종가를 가져옴
+                            if (historyList.length > 0) {
+                                prevClose = historyList[0].close;
+                            }
+                        }
+
                         let currentPrice = prevClose;
                         let history = [prevClose];
                         let todayVolume = 0;
                         let todayTradeAmount = 0;
                         let investor = { individual: 0, foreigner: 0, institution: 0 };
 
-                        // 🔹 [업그레이드] 리셋 시점부터 '현재 시간'까지의 데이터 미리 생성 (빈 차트 방지)
-                        // 장 시작(08:00)부터 현재 시각(또는 장 마감)까지의 틱 수 계산
+                        // 리셋 시점부터 '현재 시간'까지의 데이터 미리 생성
                         const marketEnd = new Date(now);
                         marketEnd.setHours(MARKET_END_HOUR, MARKET_END_MIN, 0, 0);
                         
-                        // 현재 시간이 장 시작 전이면 루프 안 돎
                         const calcUntil = Math.min(now.getTime(), marketEnd.getTime());
                         
                         if (calcUntil > todayStartTime) {
                             const diffMs = calcUntil - todayStartTime;
-                            const ticksToFill = Math.floor(diffMs / 600000); // 10분 단위
+                            const ticksToFill = Math.floor(diffMs / 600000);
 
                             for (let i = 0; i < ticksToFill; i++) {
-                                // 가격 변동 계산 (간단한 랜덤 로직 적용)
                                 let change = 0;
                                 const rand = Math.random();
-                                if (rand < 0.02) { // 급등락 이벤트
+                                if (rand < 0.02) {
                                     const factor = 0.1 + (Math.random() * 0.1);
                                     change = Math.floor(currentPrice * factor) * (Math.random() > 0.5 ? 1 : -1);
-                                } else { // 일반 변동
+                                } else {
                                     change = Math.floor(Math.random() * 11) - 5;
                                     if(change === 0) change = Math.random() > 0.5 ? 1 : -1;
                                 }
@@ -1334,34 +1344,30 @@
                                 if (currentPrice < 1) currentPrice = 1;
                                 history.push(currentPrice);
 
-                                // 거래량/대금 가상 생성
                                 const v = Math.floor(Math.random() * 2000) + 500;
                                 todayVolume += v;
                                 todayTradeAmount += (v * currentPrice);
 
-                                // 투자자 동향 가상 생성
                                 investor.individual += Math.floor(Math.random() * 200) - 100;
                                 investor.foreigner += Math.floor(Math.random() * 200) - 100;
                                 investor.institution += Math.floor(Math.random() * 200) - 100;
                             }
                         }
 
-                        // 계산된 최종 시간 (현재 시각에 가장 가까운 10분 단위)
                         const finalUpdateTime = todayStartTime + ((history.length - 1) * 600000);
 
                         transaction.update(docRef, {
-                            basePrice: prevClose,
+                            basePrice: prevClose, // 시세 탭의 종가로 설정
                             basePriceLabel: "어제보다",
                             currentPrice: currentPrice,
                             history: history,
-                            lastUpdated: finalUpdateTime, // 현재 시간까지 반영된 시간으로 저장
+                            lastUpdated: finalUpdateTime,
                             todayVolume: todayVolume,
                             todayTradeAmount: todayTradeAmount,
                             investor: investor
                         });
                     });
                     
-                    // 어제 기록 저장 (안전장치)
                     if (lastData) {
                         const lastDateObj = new Date(lastData.lastUpdated || Date.now() - 86400000);
                         await recordDailyHistory(lastDateObj, lastData.currentPrice, lastData.basePrice, lastData.todayVolume || 0, lastData.todayTradeAmount || 0);
@@ -1842,17 +1848,28 @@
 
             // [NEW] 오늘 차트 강제 초기화 버튼 (여기도 동일하게 현재 시간까지 채우도록 수정)
             els.btnAdminResetChart.onclick = async () => {
-                if (!confirm("⚠️ 정말로 오늘 차트를 초기화하시겠습니까?\n(현재가를 시작가로 설정하고, 현재 시간까지의 차트를 다시 그립니다)")) return;
+                if (!confirm("⚠️ 정말로 오늘 차트를 초기화하시겠습니까?\n(시세 탭의 '최근 종가'를 시작가로 설정하고 다시 그립니다)")) return;
                 
                 const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'enjoy_ticker');
+                const dailyRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'stock_data', 'daily_history');
                 
                 try {
                     await window.runTransaction(window.db, async (transaction) => {
                         const sfDoc = await transaction.get(docRef);
+                        const dailyDoc = await transaction.get(dailyRef); // 시세 기록 가져오기
+
                         if (!sfDoc.exists()) return;
                         
                         const data = sfDoc.data();
-                        const prevClose = data.currentPrice; // 현재가를 시가로 사용
+                        
+                        // [핵심 수정] 강제 리셋 시에도 시세 탭의 종가를 우선 사용
+                        let prevClose = data.currentPrice; 
+                        if (dailyDoc.exists()) {
+                            const historyList = dailyDoc.data().history || [];
+                            if (historyList.length > 0) {
+                                prevClose = historyList[0].close;
+                            }
+                        }
                         
                         const now = new Date();
                         const todayMarketStart = new Date(now);
@@ -1865,7 +1882,6 @@
                         let todayTradeAmount = 0;
                         let investor = { individual: 0, foreigner: 0, institution: 0 };
 
-                        // 🔹 [업그레이드] 강제 리셋 시에도 현재 시간까지 데이터 채우기
                         const marketEnd = new Date(now);
                         marketEnd.setHours(MARKET_END_HOUR, MARKET_END_MIN, 0, 0);
                         const calcUntil = Math.min(now.getTime(), marketEnd.getTime());
@@ -1875,7 +1891,6 @@
                             const ticksToFill = Math.floor(diffMs / 600000);
 
                             for (let i = 0; i < ticksToFill; i++) {
-                                // 가격 변동 (랜덤)
                                 let change = Math.floor(Math.random() * 11) - 5;
                                 if(change === 0) change = Math.random() > 0.5 ? 1 : -1;
                                 
@@ -1896,7 +1911,7 @@
                         const finalUpdateTime = todayStartTime + ((history.length - 1) * 600000);
                         
                         transaction.update(docRef, {
-                            basePrice: prevClose,
+                            basePrice: prevClose, // 시세 탭의 종가로 설정
                             basePriceLabel: "시작가보다",
                             currentPrice: currentPrice,
                             history: history,
@@ -1906,7 +1921,7 @@
                             investor: investor
                         });
                     });
-                    showToast("차트가 현재 시간 기준으로 재설정되었습니다 🔄");
+                    showToast("차트가 '시세 종가' 기준으로 재설정되었습니다 🔄");
                 } catch (e) {
                     console.error(e);
                     showToast("초기화 실패");
