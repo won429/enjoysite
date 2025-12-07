@@ -167,40 +167,16 @@
             </div>
         </div>
 
-        <!-- 섹션 1: 자산/주식 -->
-        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group" onclick="window.haptic(); window.checkStock()">
-            <div class="flex justify-between items-center mb-6 pointer-events-none">
-                <h2 class="text-xl font-bold text-main">엔조이 증권</h2>
-                <i class="fa-solid fa-chevron-right text-sub text-xs group-hover:translate-x-1 transition-transform"></i>
-            </div>
-            <div class="flex items-center justify-between relative z-10 pb-2 pointer-events-none">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-blue-50/80 flex items-center justify-center text-blue-500 text-xl shadow-sm">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <p class="text-sm font-medium text-sub">엔조이</p> 
-                            <span id="market-badge" class="hidden text-[10px] font-bold bg-gray-100/80 text-gray-500 px-1.5 py-0.5 rounded-md">마감</span>
-                        </div>
-                        <div class="flex items-end gap-2">
-                            <h3 id="ticker-price" class="text-2xl font-bold text-main tabular-nums tracking-tight">Loading...</h3>
-                            <span id="ticker-change" class="text-sm font-medium text-sub mb-1 tabular-nums">-</span>
-                        </div>
-                    </div>
+        <!-- 섹션 1: OTT 서비스 준비중 (구 증권 자리) -->
+        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group" onclick="window.haptic(); window.showOttModal()">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-blue-50/80 flex items-center justify-center text-blue-500 text-xl shadow-sm">
+                    <i class="fa-solid fa-film"></i>
                 </div>
-            </div>
-            <div class="absolute bottom-0 right-0 w-[60%] h-[50%] opacity-20 pointer-events-none">
-                 <svg id="mini-chart" viewBox="0 0 100 50" width="100%" height="100%" preserveAspectRatio="none" class="overflow-visible">
-                    <defs>
-                        <linearGradient id="chart-grad" x1="0" x2="0" y1="0" y2="1">
-                            <stop offset="0%" stop-color="#3182F6" stop-opacity="0.5"/>
-                            <stop offset="100%" stop-color="#3182F6" stop-opacity="0"/>
-                        </linearGradient>
-                    </defs>
-                    <path id="chart-fill" d="" fill="url(#chart-grad)"></path>
-                    <polyline id="chart-line" points="" fill="none" stroke="#3182F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
-                 </svg>
+                <div>
+                    <h2 class="text-xl font-bold text-main">엔조이 OTT</h2>
+                    <p class="text-sm font-medium text-sub">서비스 준비중</p>
+                </div>
             </div>
         </div>
 
@@ -508,29 +484,32 @@
         </div>
     </div>
 
+    <!-- 수정된 스타트업 팝업: 공지사항 -->
     <div id="startup-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
         <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-left relative overflow-hidden">
-            <h3 class="text-xl font-bold text-main mb-4 mt-1 text-center">업데이트 소식 🔔</h3>
+            <h3 class="text-xl font-bold text-main mb-4 mt-1 text-center">공지사항 🔔</h3>
             
             <div class="space-y-3 mb-6">
-                <div class="bg-blue-50 p-3.5 rounded-2xl border border-blue-100">
-                    <p class="text-sm font-bold text-blue-600 mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-shapes"></i> 인터페이스 & 서비스
+                <!-- 1. 엔조이 증권 종료 (Red) -->
+                <div class="bg-red-50 p-3.5 rounded-2xl border border-red-100">
+                    <p class="text-sm font-bold text-red-500 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line-down"></i> 엔조이 증권 서비스 종료 📉
                     </p>
                     <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
-                        <span class="font-bold text-gray-800">새로운 인터페이스 UI 적용!</span><br>
-                        여행기록, 일정, 모임통장 서비스가 추가되었어요.
+                        <span class="font-bold text-gray-800">엔조이 증권 서비스가 종료되었습니다.</span><br>
+                        그동안 이용해 주셔서 감사합니다.
                     </p>
                 </div>
                 
-                <div class="bg-red-50 p-3.5 rounded-2xl border border-red-100">
-                    <p class="text-sm font-bold text-red-500 mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-dice"></i> 엔조이 복불복
+                <!-- 2. OTT 준비 (Blue) -->
+                <div class="bg-blue-50 p-3.5 rounded-2xl border border-blue-100">
+                    <p class="text-sm font-bold text-blue-600 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-film"></i> OTT 서비스 준비 중 🎬
                     </p>
-                    <ul class="text-xs text-gray-600 leading-relaxed pl-4 list-disc marker:text-red-300">
-                        <li>멤버 1명 추가 등록 완료</li>
-                        <li>차량 대수 선택 기능 업데이트</li>
-                    </ul>
+                    <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
+                        <span class="font-bold text-gray-800">새로운 OTT 서비스를 준비하고 있어요.</span><br>
+                        조금만 기다려 주세요!
+                    </p>
                 </div>
             </div>
 
@@ -880,6 +859,15 @@
             window.updateTabUI(0);
         };
 
+        window.showOttModal = () => { 
+            const m = document.getElementById('common-modal'); 
+            document.getElementById('modal-title').innerText = '오픈 예정'; 
+            document.getElementById('modal-desc').innerHTML = '2025년 말 오픈 예정입니다! 🍿<br>많은 기대 부탁드려요.'; 
+            document.getElementById('modal-icon').className = 'fa-solid fa-film'; 
+            document.getElementById('modal-icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-blue-50 text-blue-500'; 
+            m.classList.remove('hidden'); m.classList.add('flex'); 
+        };
+
     </script>
 
     <!-- Firebase Module -->
@@ -928,6 +916,8 @@
 
         function updateStockUI(data) {
             const priceEl = document.getElementById('ticker-price'); const changeEl = document.getElementById('ticker-change');
+            if (!priceEl || !changeEl) return; // 메뉴가 삭제되었으므로 오류 방지
+
             const base = data.basePrice || 1250; const currentPrice = data.currentPrice;
             
             // 1. 가격 및 등락률 업데이트
