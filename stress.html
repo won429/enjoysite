@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>랙돌 물리 샌드박스 - 피바다 에디션</title>
+    <title>랙돌 물리 샌드박스 - 모바일 최적화</title>
     <style>
         body {
             margin: 0;
@@ -85,7 +85,6 @@
             font-weight: bold;
         }
         
-        /* 핵폭탄 버튼 스타일 */
         #btn-nuke {
             background: #442200;
             border-color: #ff8800;
@@ -136,7 +135,7 @@
         @media (max-width: 768px) {
             #ui-panel {
                 top: auto;
-                bottom: 20px;
+                bottom: 10px; /* 최대한 하단으로 */
                 left: 10px;
                 right: 10px;
                 width: auto;
@@ -148,7 +147,9 @@
                 padding: 10px;
                 gap: 8px;
                 -ms-overflow-style: none;
-                scrollbar-width: none; 
+                scrollbar-width: none;
+                background: rgba(0, 0, 0, 0.85); /* 모바일에서는 더 진하게 */
+                z-index: 50; /* 캔버스 위에 확실히 올라오게 */
             }
             #ui-panel::-webkit-scrollbar {
                 display: none;
@@ -160,8 +161,8 @@
 
             .tool-btn {
                 flex: 0 0 auto;
-                padding: 8px 12px;
-                font-size: 13px;
+                padding: 12px 16px; /* 버튼 터치 영역 확대 */
+                font-size: 14px;
             }
             
             .slider-container {
@@ -214,10 +215,13 @@
         const damageEl = document.getElementById('damage-text');
         
         let width, height;
+        let floorY; // 바닥 높이 변수 추가
+        
         let points = [];
         let sticks = [];
         let particles = [];
         let bloodPuddles = []; 
+        let totalDamage = 0; // 변수 선언을 상단으로 이동 (ReferenceError 해결)
         
         // 설정
         const friction = 0.99;
@@ -225,7 +229,7 @@
         let gravity = 0.5;
         let originalGravity = 0.5;
         let isSlowMotion = false;
-        let mode = 'drag'; // drag, boom, clean, nuke
+        let mode = 'drag';
         let stiffness = 5;
         const breakThreshold = 60; 
         const reassembleDistance = 30;
@@ -306,7 +310,6 @@
                 noise.start(now);
                 noise.stop(now + 0.1);
             } else if (type === 'nuke_start') {
-                // 핵폭탄 사이렌 느낌
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(300, now);
                 osc.frequency.linearRampToValueAtTime(600, now + 0.5);
@@ -320,14 +323,86 @@
             }
         }
 
+        // --- 기능 함수 선언 (resize에서 호출됨) ---
+        function updateDamageUI() {
+            damageEl.innerText = `충격량: ${totalDamage.toLocaleString()}`;
+            damageEl.style.transform = "scale(1.2)";
+            setTimeout(() => damageEl.style.transform = "scale(1)", 100);
+        }
+
+        function createRagdoll(x, y) {
+            points = [];
+            sticks = [];
+            totalDamage = 0;
+            updateDamageUI();
+
+            // 생성 위치 조정
+            const spawnY = floorY ? floorY / 2 : y;
+
+            const head = new Point(x, spawnY, 15);
+            const neck = new Point(x, spawnY + 20, 5);
+            const shoulder = new Point(x, spawnY + 25, 5);
+            
+            const elbowL = new Point(x - 30, spawnY + 30, 5);
+            const handL = new Point(x - 50, spawnY + 30, 8);
+            
+            const elbowR = new Point(x + 30, spawnY + 30, 5);
+            const handR = new Point(x + 50, spawnY + 30, 8);
+            
+            const pelvis = new Point(x, spawnY + 80, 8);
+            
+            const kneeL = new Point(x - 15, spawnY + 110, 5);
+            const footL = new Point(x - 15, spawnY + 150, 8);
+            
+            const kneeR = new Point(x + 15, spawnY + 110, 5);
+            const footR = new Point(x + 15, spawnY + 150, 8);
+
+            points.push(head, neck, shoulder, elbowL, handL, elbowR, handR, pelvis, kneeL, footL, kneeR, footR);
+
+            sticks.push(new Stick(head, neck, null, true, 8, false)); 
+            sticks.push(new Stick(neck, shoulder, null, true, 8, false)); 
+            sticks.push(new Stick(shoulder, elbowL, null, true, 2, true)); 
+            sticks.push(new Stick(elbowL, handL, null, true, 2, true));
+            sticks.push(new Stick(shoulder, elbowR, null, true, 2, true));
+            sticks.push(new Stick(elbowR, handR, null, true, 2, true));
+            sticks.push(new Stick(shoulder, pelvis, null, true, 8, false)); 
+            sticks.push(new Stick(pelvis, kneeL, null, true, 2, true)); 
+            sticks.push(new Stick(kneeL, footL, null, true, 2, true));
+            sticks.push(new Stick(pelvis, kneeR, null, true, 2, true));
+            sticks.push(new Stick(kneeR, footR, null, true, 2, true));
+
+            sticks.push(new Stick(head, shoulder, null, false)); 
+            sticks.push(new Stick(shoulder, handL, null, false));
+            sticks.push(new Stick(shoulder, handR, null, false));
+            sticks.push(new Stick(pelvis, footL, null, false));
+            sticks.push(new Stick(pelvis, footR, null, false));
+            sticks.push(new Stick(kneeL, kneeR, null, false));
+        }
+
+        function resetRagdoll() {
+            createRagdoll(width / 2, floorY ? floorY / 3 : height / 3);
+            bloodPuddles = []; 
+        }
+
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
+            
+            // 모바일 환경(너비 768px 이하)일 때 바닥 높이를 위로 올림
+            if (width <= 768) {
+                // 하단 UI 높이만큼 바닥을 올림 (약 100~120px)
+                floorY = height - 120;
+            } else {
+                floorY = height;
+            }
+            
+            bloodPuddles = []; // 리사이즈 시 초기화가 깔끔함
+            resetRagdoll();
         }
         window.addEventListener('resize', resize);
-        resize();
-
-        // --- 물리 엔진 ---
+        
+        
+        // --- 물리 엔진 클래스 정의 ---
         class Point {
             constructor(x, y, radius = 5, isFixed = false) {
                 this.x = x;
@@ -356,6 +431,7 @@
                 let hit = false;
                 let impact = 0;
 
+                // 좌우 벽
                 if (this.x > width - this.radius) {
                     impact = (this.x - this.oldx);
                     this.x = width - this.radius;
@@ -368,12 +444,13 @@
                     hit = true;
                 }
 
-                if (this.y > height - this.radius) {
+                // 바닥 (floorY 사용)
+                if (this.y > floorY - this.radius) {
                     impact = (this.y - this.oldy);
-                    this.y = height - this.radius;
+                    this.y = floorY - this.radius;
                     this.oldy = this.y + vy * bounce;
                     hit = true;
-                } else if (this.y < this.radius) {
+                } else if (this.y < this.radius) { // 천장
                     impact = -(this.y - this.oldy);
                     this.y = this.radius;
                     this.oldy = this.y + vy * bounce;
@@ -418,7 +495,6 @@
                 const offsetX = dx * percent;
                 const offsetY = dy * percent;
 
-                // 부서짐 체크
                 if (this.isBreakable && Math.abs(diff) > breakThreshold) {
                     this.visible = false;
                     playSound('break');
@@ -461,10 +537,9 @@
                     this.decay = Math.random() * 0.01 + 0.01;
                     this.size = Math.random() * 3 + 1;
                 } else if (this.type === 'nuke_fire') {
-                    // 핵폭발 파티클 (더 크고 오래감)
                     this.vx = (Math.random() - 0.5) * 30;
                     this.vy = (Math.random() - 0.5) * 30;
-                    this.color = `hsl(${Math.random()*40 + 10}, 100%, 70%)`; // 밝은 오렌지/노랑
+                    this.color = `hsl(${Math.random()*40 + 10}, 100%, 70%)`; 
                     this.decay = 0.01;
                     this.size = Math.random() * 10 + 5;
                 } else {
@@ -481,9 +556,10 @@
                 
                 if (this.type === 'blood') {
                     this.vy += 0.3; 
-                    if (this.y > height - 2) {
+                    // 바닥(floorY)에 닿으면 고임
+                    if (this.y > floorY - 2) {
                         this.life = 0; 
-                        spawnPuddle(this.x, height); 
+                        spawnPuddle(this.x, floorY); 
                     }
                 } else {
                     this.vy += 0.2;
@@ -501,12 +577,11 @@
             }
         }
 
-        // 바닥에 고인 피 관리
         class Puddle {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.size = Math.random() * 15 + 10; // 더 크게
+                this.size = Math.random() * 15 + 10;
                 this.scaleX = Math.random() * 2 + 1; 
                 this.alpha = 0.8 + Math.random() * 0.2;
                 this.color = `rgb(${130 + Math.random() * 50}, 0, 0)`;
@@ -525,7 +600,6 @@
         }
 
         function spawnPuddle(x, y) {
-            // 제한을 20,000개로 대폭 늘림 (성능상 한계치까지)
             if (bloodPuddles.length > 20000) {
                 bloodPuddles.shift();
             }
@@ -539,7 +613,8 @@
                 const dx = p.x - x;
                 const dy = p.y - y; 
                 
-                if (Math.abs(dx) < cleanRadius && Math.abs(y - height) < 50) {
+                // 바닥(floorY) 근처 체크
+                if (Math.abs(dx) < cleanRadius && Math.abs(y - floorY) < 50) {
                     p.alpha -= 0.1; 
                     if (p.alpha <= 0) {
                         bloodPuddles.splice(i, 1);
@@ -549,71 +624,11 @@
             }
         }
 
-        function updateDamageUI() {
-            damageEl.innerText = `충격량: ${totalDamage.toLocaleString()}`;
-            damageEl.style.transform = "scale(1.2)";
-            setTimeout(() => damageEl.style.transform = "scale(1)", 100);
-        }
-
         function spawnBlood(x, y, intensity) {
             const count = Math.min(Math.floor(intensity * 1.5), 20);
             for(let i=0; i<count; i++) {
                 particles.push(new Particle(x, y, 'blood'));
             }
-        }
-
-        let totalDamage = 0;
-
-        function createRagdoll(x, y) {
-            points = [];
-            sticks = [];
-            totalDamage = 0;
-            updateDamageUI();
-
-            // 포인트
-            const head = new Point(x, y, 15);
-            const neck = new Point(x, y + 20, 5);
-            const shoulder = new Point(x, y + 25, 5);
-            
-            const elbowL = new Point(x - 30, y + 30, 5);
-            const handL = new Point(x - 50, y + 30, 8);
-            
-            const elbowR = new Point(x + 30, y + 30, 5);
-            const handR = new Point(x + 50, y + 30, 8);
-            
-            const pelvis = new Point(x, y + 80, 8);
-            
-            const kneeL = new Point(x - 15, y + 110, 5);
-            const footL = new Point(x - 15, y + 150, 8);
-            
-            const kneeR = new Point(x + 15, y + 110, 5);
-            const footR = new Point(x + 15, y + 150, 8);
-
-            points.push(head, neck, shoulder, elbowL, handL, elbowR, handR, pelvis, kneeL, footL, kneeR, footR);
-
-            // 스틱
-            sticks.push(new Stick(head, neck, null, true, 8, false)); 
-            sticks.push(new Stick(neck, shoulder, null, true, 8, false)); 
-            
-            sticks.push(new Stick(shoulder, elbowL, null, true, 2, true)); 
-            sticks.push(new Stick(elbowL, handL, null, true, 2, true));
-            sticks.push(new Stick(shoulder, elbowR, null, true, 2, true));
-            sticks.push(new Stick(elbowR, handR, null, true, 2, true));
-            
-            sticks.push(new Stick(shoulder, pelvis, null, true, 8, false)); 
-            
-            sticks.push(new Stick(pelvis, kneeL, null, true, 2, true)); 
-            sticks.push(new Stick(kneeL, footL, null, true, 2, true));
-            sticks.push(new Stick(pelvis, kneeR, null, true, 2, true));
-            sticks.push(new Stick(kneeR, footR, null, true, 2, true));
-
-            // 보조 구조
-            sticks.push(new Stick(head, shoulder, null, false)); 
-            sticks.push(new Stick(shoulder, handL, null, false));
-            sticks.push(new Stick(shoulder, handR, null, false));
-            sticks.push(new Stick(pelvis, footL, null, false));
-            sticks.push(new Stick(pelvis, footR, null, false));
-            sticks.push(new Stick(kneeL, kneeR, null, false));
         }
 
         function setMode(newMode) {
@@ -640,48 +655,34 @@
             }
         }
 
-        function resetRagdoll() {
-            createRagdoll(width / 2, height / 3);
-            bloodPuddles = []; 
-        }
-
         function explode(x, y, force, type='fire') {
             for(let i=0; i<20; i++) particles.push(new Particle(x, y, type));
-            
             points.forEach(p => {
                 const dx = p.x - x;
                 const dy = p.y - y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 400) { // 폭발 범위 증가
+                if (dist < 400) { 
                     const power = (1 - dist / 400) * force;
                     p.oldx -= (dx / dist) * power;
                     p.oldy -= (dy / dist) * power;
-                    
-                    // 핵폭발 시 더 잘 부서짐
                     if(force > 100) {
-                         p.oldx -= (Math.random()-0.5) * 20; // 랜덤 충격 추가
+                         p.oldx -= (Math.random()-0.5) * 20; 
                     }
                 }
             });
         }
 
-        // 연쇄 핵폭발 로직
         function triggerNuke(x, y) {
             playSound('nuke_start');
-            flashOpacity = 1.0; // 화면 화이트아웃
-
-            // 10번의 연쇄 폭발 예약
+            flashOpacity = 1.0; 
             for(let i=0; i<10; i++) {
                 setTimeout(() => {
-                    // 위치를 약간 랜덤하게 분산
                     const offsetX = (Math.random() - 0.5) * 200;
                     const offsetY = (Math.random() - 0.5) * 200;
-                    
-                    // 폭발력 150 (일반 폭탄의 3배)
                     explode(x + offsetX, y + offsetY, 150, 'nuke_fire'); 
-                    playSound('boom', 2.0); // 더 큰 소리
-                    shakeIntensity = 30; // 강한 화면 흔들림
-                }, i * 150); // 0.15초 간격으로 터짐
+                    playSound('boom', 2.0); 
+                    shakeIntensity = 30; 
+                }, i * 150); 
             }
         }
 
@@ -691,7 +692,6 @@
                     const dx = s.p1.x - s.p2.x;
                     const dy = s.p1.y - s.p2.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-
                     if (dist < reassembleDistance * 2.5) {
                          ctx.beginPath();
                          ctx.strokeStyle = '#0f0';
@@ -702,7 +702,6 @@
                          ctx.stroke();
                          ctx.setLineDash([]);
                     }
-
                     if (dist < reassembleDistance) {
                         s.visible = true;
                         playSound('reassemble');
@@ -712,7 +711,6 @@
             });
         }
 
-        // 입력 처리
         function handleStart(x, y) {
             initAudio();
             isMouseDown = true;
@@ -768,22 +766,35 @@
             dragPoint = null;
         });
 
-        resetRagdoll();
+        // 초기 실행을 맨 마지막에
+        resize();
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
+            
+            // 바닥 선 그리기 (모바일에서 구분용)
+            if (width <= 768) {
+                ctx.beginPath();
+                ctx.moveTo(0, floorY);
+                ctx.lineTo(width, floorY);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 바닥 아래 UI 영역 어둡게 표시
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(0, floorY, width, height - floorY);
+            }
 
-            // 화면 흔들림 효과
             if (shakeIntensity > 0) {
                 const dx = (Math.random() - 0.5) * shakeIntensity;
                 const dy = (Math.random() - 0.5) * shakeIntensity;
                 ctx.save();
                 ctx.translate(dx, dy);
-                shakeIntensity *= 0.9; // 흔들림 감소
+                shakeIntensity *= 0.9; 
                 if(shakeIntensity < 1) shakeIntensity = 0;
             }
 
-            // 바닥에 고인 피 그리기 (캐릭터보다 뒤에)
             bloodPuddles.forEach(p => p.draw());
 
             if (dragPoint) {
@@ -810,7 +821,6 @@
                 ctx.fill();
             });
             
-            // 머리 그리기
             const head = points[0];
             if(head) {
                 ctx.fillStyle = '#000';
@@ -851,7 +861,6 @@
                 ctx.strokeStyle = 'rgba(255, 100, 0, 0.8)';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                // 방사능 마크 심볼 (간단하게)
                 ctx.beginPath();
                 ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
                 ctx.arc(mouseX, mouseY, 10, 0, Math.PI*2);
@@ -861,18 +870,16 @@
                 ctx.fillText("☢️", mouseX - 12, mouseY + 8);
             }
 
-            // 화면 흔들림 복구
             if (shakeIntensity >= 0 && shakeIntensity < 100 && ctx.getTransform().e !== 0) { 
                  ctx.restore();
             } else if (shakeIntensity > 0) {
                  ctx.restore();
             }
 
-            // 핵폭발 섬광 (Flash Effect)
             if (flashOpacity > 0) {
                 ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`;
                 ctx.fillRect(0, 0, width, height);
-                flashOpacity -= 0.02; // 서서히 사라짐
+                flashOpacity -= 0.02; 
             }
 
             if(isSlowMotion) {
