@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>랙돌 물리 샌드박스 - 피바다 에디션</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        canvas {
+            display: block;
+        }
+        
+        #back-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #555;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 3px;
+            backdrop-filter: blur(4px);
+        }
+
+        #ui-panel {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 12px;
+            pointer-events: auto;
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            backdrop-filter: blur(4px);
+            max-width: 200px;
+        }
+
+        .panel-title {
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            text-align: center;
+            display: block;
+        }
+
+        .tool-btn {
+            background: #333;
+            border: 1px solid #555;
+            color: #ddd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .tool-btn:active {
+            transform: scale(0.95);
+        }
+        .tool-btn.active {
+            background: #007acc;
+            border-color: #0099ff;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* 핵폭탄 버튼 스타일 */
+        #btn-nuke {
+            background: #442200;
+            border-color: #ff8800;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        #btn-nuke.active {
+            background: #ff4400;
+            color: white;
+            box-shadow: 0 0 10px #ff4400;
+        }
+
+        .slider-container {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+            text-align: center;
+        }
+        #reset-btn {
+            background: #cc3333;
+            border-color: #ff4444;
+        }
+
+        #info {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #888;
+            pointer-events: none;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px black;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        #damage-text {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4444;
+            pointer-events: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        @media (max-width: 768px) {
+            #ui-panel {
+                top: auto;
+                bottom: 20px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+                max-width: none;
+                flex-direction: row;
+                overflow-x: auto;
+                justify-content: flex-start;
+                align-items: center;
+                padding: 10px;
+                gap: 8px;
+                -ms-overflow-style: none;
+                scrollbar-width: none; 
+            }
+            #ui-panel::-webkit-scrollbar {
+                display: none;
+            }
+
+            .panel-title {
+                display: none;
+            }
+
+            .tool-btn {
+                flex: 0 0 auto;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .slider-container {
+                display: none;
+            }
+
+            #info {
+                top: 15px;
+                bottom: auto;
+                font-size: 0.8rem;
+                padding-left: 60px;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+            #damage-text {
+                top: 50px;
+                right: 15px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="back-btn" onclick="location.href='https://won429.github.io/enjoysite/'">&lt;</button>
+
+    <div id="ui-panel">
+        <span class="panel-title">도구</span>
+        <button class="tool-btn active" id="btn-drag" onclick="setMode('drag')">✋ 잡기</button>
+        <button class="tool-btn" id="btn-boom" onclick="setMode('boom')">💣 폭발</button>
+        <button class="tool-btn" id="btn-nuke" onclick="setMode('nuke')">☢️ 핵폭발</button>
+        <button class="tool-btn" id="btn-clean" onclick="setMode('clean')">🧹 청소</button>
+        <button class="tool-btn" id="btn-slow" onclick="toggleSlow()">🐢 느리게</button>
+        <button class="tool-btn" id="btn-gravity" onclick="toggleGravity()">🌑 무중력</button>
+        <button class="tool-btn" id="reset-btn" onclick="resetRagdoll()">🔄 리셋</button>
+        <div class="slider-container">
+            물리 강도: <span id="stiffness-val">100%</span>
+        </div>
+    </div>
+
+    <div id="info">잡아당기거나(Drag), 핵폭탄(Nuke)으로 날려버리세요!</div>
+    <div id="damage-text">충격량: 0</div>
+    
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const damageEl = document.getElementById('damage-text');
+        
+        let width, height;
+        let points = [];
+        let sticks = [];
+        let particles = [];
+        let bloodPuddles = []; 
+        
+        // 설정
+        const friction = 0.99;
+        const bounce = 0.7;
+        let gravity = 0.5;
+        let originalGravity = 0.5;
+        let isSlowMotion = false;
+        let mode = 'drag'; // drag, boom, clean, nuke
+        let stiffness = 5;
+        const breakThreshold = 60; 
+        const reassembleDistance = 30;
+
+        // 시각 효과 변수
+        let shakeIntensity = 0;
+        let flashOpacity = 0;
+
+        // 상호작용
+        let dragPoint = null;
+        let mouseX = 0, mouseY = 0;
+        let isMouseDown = false;
+
+        // 오디오
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type, intensity = 1) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const now = audioCtx.currentTime;
+
+            if (type === 'hit') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(100 + Math.random()*50, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
+                gain.gain.setValueAtTime(Math.min(0.5, intensity * 0.02), now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'boom') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(10, now + 0.3);
+                gain.gain.setValueAtTime(1.0 * intensity, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'break') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'reassemble') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'clean') {
+                const noise = audioCtx.createOscillator();
+                noise.type = 'triangle';
+                noise.frequency.setValueAtTime(800, now);
+                noise.frequency.linearRampToValueAtTime(400, now + 0.1);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.linearRampToValueAtTime(0.0, now + 0.1);
+                noise.connect(gain);
+                gain.connect(audioCtx.destination);
+                noise.start(now);
+                noise.stop(now + 0.1);
+            } else if (type === 'nuke_start') {
+                // 핵폭탄 사이렌 느낌
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.linearRampToValueAtTime(600, now + 0.5);
+                osc.frequency.linearRampToValueAtTime(300, now + 1.0);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.linearRampToValueAtTime(0, now + 1.0);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 1.0);
+            }
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- 물리 엔진 ---
+        class Point {
+            constructor(x, y, radius = 5, isFixed = false) {
+                this.x = x;
+                this.y = y;
+                this.oldx = x; 
+                this.oldy = y;
+                this.radius = radius;
+                this.isFixed = isFixed;
+                this.mass = 1;
+            }
+
+            update() {
+                if (this.isFixed) return;
+                
+                const vx = (this.x - this.oldx) * friction;
+                const vy = (this.y - this.oldy) * friction;
+
+                this.oldx = this.x;
+                this.oldy = this.y;
+
+                this.x += vx;
+                this.y += vy;
+                this.y += gravity; 
+
+                // 벽 충돌
+                let hit = false;
+                let impact = 0;
+
+                if (this.x > width - this.radius) {
+                    impact = (this.x - this.oldx);
+                    this.x = width - this.radius;
+                    this.oldx = this.x + vx * bounce;
+                    hit = true;
+                } else if (this.x < this.radius) {
+                    impact = -(this.x - this.oldx);
+                    this.x = this.radius;
+                    this.oldx = this.x + vx * bounce;
+                    hit = true;
+                }
+
+                if (this.y > height - this.radius) {
+                    impact = (this.y - this.oldy);
+                    this.y = height - this.radius;
+                    this.oldy = this.y + vy * bounce;
+                    hit = true;
+                } else if (this.y < this.radius) {
+                    impact = -(this.y - this.oldy);
+                    this.y = this.radius;
+                    this.oldy = this.y + vy * bounce;
+                    hit = true;
+                }
+
+                if (hit && Math.abs(impact) > 2) {
+                    const impactVal = Math.abs(impact);
+                    playSound('hit', impactVal);
+                    totalDamage += Math.floor(impactVal * 10);
+                    updateDamageUI();
+
+                    if (impactVal > 5) {
+                        spawnBlood(this.x, this.y, impactVal);
+                    }
+                }
+            }
+        }
+
+        class Stick {
+            constructor(p1, p2, length, visible = true, width = 2, isBreakable = false) {
+                this.p1 = p1;
+                this.p2 = p2;
+                this.length = length || Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                this.visible = visible;
+                this.width = width;
+                this.color = '#fff';
+                this.isBreakable = isBreakable; 
+            }
+
+            update() {
+                if (!this.visible) return;
+
+                const dx = this.p2.x - this.p1.x;
+                const dy = this.p2.y - this.p1.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist === 0) return; 
+
+                const diff = this.length - dist;
+                const percent = diff / dist / 2;
+                const offsetX = dx * percent;
+                const offsetY = dy * percent;
+
+                // 부서짐 체크
+                if (this.isBreakable && Math.abs(diff) > breakThreshold) {
+                    this.visible = false;
+                    playSound('break');
+                    spawnBlood((this.p1.x + this.p2.x) / 2, (this.p1.y + this.p2.y) / 2, 20);
+                    return;
+                }
+
+                if (!this.p1.isFixed) {
+                    this.p1.x -= offsetX;
+                    this.p1.y -= offsetY;
+                }
+                if (!this.p2.isFixed) {
+                    this.p2.x += offsetX;
+                    this.p2.y += offsetY;
+                }
+            }
+
+            draw() {
+                if (!this.visible) return;
+                ctx.beginPath();
+                ctx.lineWidth = this.width;
+                ctx.strokeStyle = this.color;
+                ctx.moveTo(this.p1.x, this.p1.y);
+                ctx.lineTo(this.p2.x, this.p2.y);
+                ctx.stroke();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, type = 'fire') {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.life = 1.0;
+
+                if (this.type === 'blood') {
+                    this.vx = (Math.random() - 0.5) * 8;
+                    this.vy = (Math.random() - 0.5) * 8;
+                    this.color = `rgb(${150 + Math.random() * 105}, 0, 0)`; 
+                    this.decay = Math.random() * 0.01 + 0.01;
+                    this.size = Math.random() * 3 + 1;
+                } else if (this.type === 'nuke_fire') {
+                    // 핵폭발 파티클 (더 크고 오래감)
+                    this.vx = (Math.random() - 0.5) * 30;
+                    this.vy = (Math.random() - 0.5) * 30;
+                    this.color = `hsl(${Math.random()*40 + 10}, 100%, 70%)`; // 밝은 오렌지/노랑
+                    this.decay = 0.01;
+                    this.size = Math.random() * 10 + 5;
+                } else {
+                    this.vx = (Math.random() - 0.5) * 15;
+                    this.vy = (Math.random() - 0.5) * 15;
+                    this.color = `hsl(${Math.random()*60 + 10}, 100%, 50%)`;
+                    this.decay = 0.03;
+                    this.size = 4;
+                }
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.type === 'blood') {
+                    this.vy += 0.3; 
+                    if (this.y > height - 2) {
+                        this.life = 0; 
+                        spawnPuddle(this.x, height); 
+                    }
+                } else {
+                    this.vy += 0.2;
+                }
+
+                this.life -= this.decay;
+            }
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // 바닥에 고인 피 관리
+        class Puddle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 15 + 10; // 더 크게
+                this.scaleX = Math.random() * 2 + 1; 
+                this.alpha = 0.8 + Math.random() * 0.2;
+                this.color = `rgb(${130 + Math.random() * 50}, 0, 0)`;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.scaleX, 0.3); 
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function spawnPuddle(x, y) {
+            // 제한을 20,000개로 대폭 늘림 (성능상 한계치까지)
+            if (bloodPuddles.length > 20000) {
+                bloodPuddles.shift();
+            }
+            bloodPuddles.push(new Puddle(x, y));
+        }
+
+        function cleanAt(x, y) {
+            const cleanRadius = 50;
+            for (let i = bloodPuddles.length - 1; i >= 0; i--) {
+                const p = bloodPuddles[i];
+                const dx = p.x - x;
+                const dy = p.y - y; 
+                
+                if (Math.abs(dx) < cleanRadius && Math.abs(y - height) < 50) {
+                    p.alpha -= 0.1; 
+                    if (p.alpha <= 0) {
+                        bloodPuddles.splice(i, 1);
+                    }
+                    if (Math.random() > 0.8) playSound('clean');
+                }
+            }
+        }
+
+        function updateDamageUI() {
+            damageEl.innerText = `충격량: ${totalDamage.toLocaleString()}`;
+            damageEl.style.transform = "scale(1.2)";
+            setTimeout(() => damageEl.style.transform = "scale(1)", 100);
+        }
+
+        function spawnBlood(x, y, intensity) {
+            const count = Math.min(Math.floor(intensity * 1.5), 20);
+            for(let i=0; i<count; i++) {
+                particles.push(new Particle(x, y, 'blood'));
+            }
+        }
+
+        let totalDamage = 0;
+
+        function createRagdoll(x, y) {
+            points = [];
+            sticks = [];
+            totalDamage = 0;
+            updateDamageUI();
+
+            // 포인트
+            const head = new Point(x, y, 15);
+            const neck = new Point(x, y + 20, 5);
+            const shoulder = new Point(x, y + 25, 5);
+            
+            const elbowL = new Point(x - 30, y + 30, 5);
+            const handL = new Point(x - 50, y + 30, 8);
+            
+            const elbowR = new Point(x + 30, y + 30, 5);
+            const handR = new Point(x + 50, y + 30, 8);
+            
+            const pelvis = new Point(x, y + 80, 8);
+            
+            const kneeL = new Point(x - 15, y + 110, 5);
+            const footL = new Point(x - 15, y + 150, 8);
+            
+            const kneeR = new Point(x + 15, y + 110, 5);
+            const footR = new Point(x + 15, y + 150, 8);
+
+            points.push(head, neck, shoulder, elbowL, handL, elbowR, handR, pelvis, kneeL, footL, kneeR, footR);
+
+            // 스틱
+            sticks.push(new Stick(head, neck, null, true, 8, false)); 
+            sticks.push(new Stick(neck, shoulder, null, true, 8, false)); 
+            
+            sticks.push(new Stick(shoulder, elbowL, null, true, 2, true)); 
+            sticks.push(new Stick(elbowL, handL, null, true, 2, true));
+            sticks.push(new Stick(shoulder, elbowR, null, true, 2, true));
+            sticks.push(new Stick(elbowR, handR, null, true, 2, true));
+            
+            sticks.push(new Stick(shoulder, pelvis, null, true, 8, false)); 
+            
+            sticks.push(new Stick(pelvis, kneeL, null, true, 2, true)); 
+            sticks.push(new Stick(kneeL, footL, null, true, 2, true));
+            sticks.push(new Stick(pelvis, kneeR, null, true, 2, true));
+            sticks.push(new Stick(kneeR, footR, null, true, 2, true));
+
+            // 보조 구조
+            sticks.push(new Stick(head, shoulder, null, false)); 
+            sticks.push(new Stick(shoulder, handL, null, false));
+            sticks.push(new Stick(shoulder, handR, null, false));
+            sticks.push(new Stick(pelvis, footL, null, false));
+            sticks.push(new Stick(pelvis, footR, null, false));
+            sticks.push(new Stick(kneeL, kneeR, null, false));
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            if(newMode === 'drag') document.getElementById('btn-drag').classList.add('active');
+            if(newMode === 'boom') document.getElementById('btn-boom').classList.add('active');
+            if(newMode === 'nuke') document.getElementById('btn-nuke').classList.add('active');
+            if(newMode === 'clean') document.getElementById('btn-clean').classList.add('active');
+        }
+
+        function toggleSlow() {
+            isSlowMotion = !isSlowMotion;
+            document.getElementById('btn-slow').classList.toggle('active');
+        }
+
+        function toggleGravity() {
+            if (gravity === 0) {
+                gravity = originalGravity;
+                document.getElementById('btn-gravity').classList.remove('active');
+            } else {
+                gravity = 0;
+                document.getElementById('btn-gravity').classList.add('active');
+            }
+        }
+
+        function resetRagdoll() {
+            createRagdoll(width / 2, height / 3);
+            bloodPuddles = []; 
+        }
+
+        function explode(x, y, force, type='fire') {
+            for(let i=0; i<20; i++) particles.push(new Particle(x, y, type));
+            
+            points.forEach(p => {
+                const dx = p.x - x;
+                const dy = p.y - y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 400) { // 폭발 범위 증가
+                    const power = (1 - dist / 400) * force;
+                    p.oldx -= (dx / dist) * power;
+                    p.oldy -= (dy / dist) * power;
+                    
+                    // 핵폭발 시 더 잘 부서짐
+                    if(force > 100) {
+                         p.oldx -= (Math.random()-0.5) * 20; // 랜덤 충격 추가
+                    }
+                }
+            });
+        }
+
+        // 연쇄 핵폭발 로직
+        function triggerNuke(x, y) {
+            playSound('nuke_start');
+            flashOpacity = 1.0; // 화면 화이트아웃
+
+            // 10번의 연쇄 폭발 예약
+            for(let i=0; i<10; i++) {
+                setTimeout(() => {
+                    // 위치를 약간 랜덤하게 분산
+                    const offsetX = (Math.random() - 0.5) * 200;
+                    const offsetY = (Math.random() - 0.5) * 200;
+                    
+                    // 폭발력 150 (일반 폭탄의 3배)
+                    explode(x + offsetX, y + offsetY, 150, 'nuke_fire'); 
+                    playSound('boom', 2.0); // 더 큰 소리
+                    shakeIntensity = 30; // 강한 화면 흔들림
+                }, i * 150); // 0.15초 간격으로 터짐
+            }
+        }
+
+        function checkReassembly() {
+            sticks.forEach(s => {
+                if (!s.visible && s.isBreakable) {
+                    const dx = s.p1.x - s.p2.x;
+                    const dy = s.p1.y - s.p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < reassembleDistance * 2.5) {
+                         ctx.beginPath();
+                         ctx.strokeStyle = '#0f0';
+                         ctx.lineWidth = 1;
+                         ctx.setLineDash([5, 5]);
+                         ctx.moveTo(s.p1.x, s.p1.y);
+                         ctx.lineTo(s.p2.x, s.p2.y);
+                         ctx.stroke();
+                         ctx.setLineDash([]);
+                    }
+
+                    if (dist < reassembleDistance) {
+                        s.visible = true;
+                        playSound('reassemble');
+                        spawnBlood((s.p1.x + s.p2.x) / 2, (s.p1.y + s.p2.y) / 2, 5);
+                    }
+                }
+            });
+        }
+
+        // 입력 처리
+        function handleStart(x, y) {
+            initAudio();
+            isMouseDown = true;
+            mouseX = x;
+            mouseY = y;
+
+            if (mode === 'drag') {
+                let nearest = null;
+                let minDist = 100;
+                points.forEach(p => {
+                    const dx = p.x - mouseX;
+                    const dy = p.y - mouseY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = p;
+                    }
+                });
+                if (nearest) dragPoint = nearest;
+            } else if (mode === 'boom') {
+                explode(mouseX, mouseY, 50); 
+            } else if (mode === 'clean') {
+                cleanAt(mouseX, mouseY);
+            } else if (mode === 'nuke') {
+                triggerNuke(mouseX, mouseY);
+            }
+        }
+
+        function handleMove(x, y) {
+            mouseX = x; 
+            mouseY = y;
+            if (isMouseDown && mode === 'clean') {
+                cleanAt(mouseX, mouseY);
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY));
+        canvas.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', () => { isMouseDown = false; dragPoint = null; });
+        
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            handleStart(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: false});
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: false});
+
+        canvas.addEventListener('touchend', () => {
+            isMouseDown = false;
+            dragPoint = null;
+        });
+
+        resetRagdoll();
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 화면 흔들림 효과
+            if (shakeIntensity > 0) {
+                const dx = (Math.random() - 0.5) * shakeIntensity;
+                const dy = (Math.random() - 0.5) * shakeIntensity;
+                ctx.save();
+                ctx.translate(dx, dy);
+                shakeIntensity *= 0.9; // 흔들림 감소
+                if(shakeIntensity < 1) shakeIntensity = 0;
+            }
+
+            // 바닥에 고인 피 그리기 (캐릭터보다 뒤에)
+            bloodPuddles.forEach(p => p.draw());
+
+            if (dragPoint) {
+                dragPoint.x = mouseX;
+                dragPoint.y = mouseY;
+                dragPoint.oldx = mouseX - (mouseX - dragPoint.oldx) * 0.5;
+                dragPoint.oldy = mouseY - (mouseY - dragPoint.oldy) * 0.5;
+            }
+
+            const loops = isSlowMotion ? 1 : stiffness; 
+            
+            points.forEach(p => p.update());
+            for (let i = 0; i < loops; i++) {
+                sticks.forEach(s => s.update());
+            }
+
+            checkReassembly();
+
+            sticks.forEach(s => s.draw());
+            points.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+            });
+            
+            // 머리 그리기
+            const head = points[0];
+            if(head) {
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(head.x - 4, head.y - 2, 2, 0, Math.PI*2);
+                ctx.arc(head.x + 4, head.y - 2, 2, 0, Math.PI*2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(head.x, head.y + 5, 3, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if(particles[i].life <= 0) particles.splice(i, 1);
+            }
+
+            // 커서 표시
+            if(mode === 'boom') {
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 20, 0, Math.PI*2);
+                ctx.strokeStyle = 'rgba(255, 50, 50, 0.5)';
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            } else if (mode === 'clean') {
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 30, 0, Math.PI*2);
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
+                ctx.stroke();
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("🧹", mouseX - 10, mouseY + 10);
+            } else if (mode === 'nuke') {
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 40, 0, Math.PI*2);
+                ctx.strokeStyle = 'rgba(255, 100, 0, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                // 방사능 마크 심볼 (간단하게)
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+                ctx.arc(mouseX, mouseY, 10, 0, Math.PI*2);
+                ctx.fill();
+                ctx.font = "24px Arial";
+                ctx.fillStyle = "yellow";
+                ctx.fillText("☢️", mouseX - 12, mouseY + 8);
+            }
+
+            // 화면 흔들림 복구
+            if (shakeIntensity >= 0 && shakeIntensity < 100 && ctx.getTransform().e !== 0) { 
+                 ctx.restore();
+            } else if (shakeIntensity > 0) {
+                 ctx.restore();
+            }
+
+            // 핵폭발 섬광 (Flash Effect)
+            if (flashOpacity > 0) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`;
+                ctx.fillRect(0, 0, width, height);
+                flashOpacity -= 0.02; // 서서히 사라짐
+            }
+
+            if(isSlowMotion) {
+                requestAnimationFrame(() => { setTimeout(animate, 20); });
+            } else {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        animate();
+
+    </script>
+</body>
+</html>
