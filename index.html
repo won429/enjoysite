@@ -167,7 +167,7 @@
             </div>
         </div>
 
-        <!-- 섹션 1: OTT 서비스 준비중 (구 증권 자리) -->
+        <!-- 섹션 1: OTT 서비스 준비중 -->
         <div class="toss-card p-6 mb-4 fade-in-up delay-100 group" onclick="window.haptic(); window.showOttModal()">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-blue-50/80 flex items-center justify-center text-blue-500 text-xl shadow-sm">
@@ -180,17 +180,18 @@
             </div>
         </div>
 
-        <!-- 섹션 1.5: 엔조이 게임 (스트레스 풀기) - NEW -->
-        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group" onclick="window.haptic(); window.location.href='stress.html'">
+        <!-- 섹션 1.5: 대중교통 도착정보 (New Position with Badge) -->
+        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group flex items-center justify-between" onclick="window.haptic(); window.goToBus()">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-purple-50/80 flex items-center justify-center text-purple-500 text-xl shadow-sm">
-                    <i class="fa-solid fa-gamepad"></i>
+                <div class="w-12 h-12 rounded-full bg-emerald-50/80 flex items-center justify-center text-emerald-500 text-xl shadow-sm">
+                    <i class="fa-solid fa-bus"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-main">엔조이 게임</h2>
-                    <p class="text-sm font-medium text-sub">스트레스 풀기</p>
+                    <h2 class="text-xl font-bold text-main">대중교통 도착정보</h2>
+                    <p class="text-sm font-medium text-sub">실시간 정보 확인</p>
                 </div>
             </div>
+            <span class="bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded-full tracking-tight">NEW</span>
         </div>
 
         <!-- 섹션 2: 엔조이 서비스 -->
@@ -212,9 +213,9 @@
             </button>
         </div>
 
-        <!-- 2. 서브 서비스 (게임, 여행) -->
+        <!-- 2. 서브 서비스 (복불복, 여행, 게임) -->
         <div class="grid grid-cols-2 gap-3 mb-3 fade-in-up delay-200">
-            <!-- 게임 -->
+            <!-- 복불복 -->
             <button onclick="window.haptic(); window.playGame()" class="toss-card p-5 h-44 flex flex-col justify-between text-left group !bg-[#FFF0F0]/60 backdrop-blur-md border border-white/60 hover:!bg-[#FFE5E5]/70 transition-colors">
                 <div class="w-full flex justify-between items-start">
                     <div class="w-12 h-12 rounded-[18px] bg-white/60 backdrop-blur-sm flex items-center justify-center text-[#FF6B6B] text-xl group-hover:rotate-12 transition-transform duration-300 shadow-sm">
@@ -240,6 +241,20 @@
                     <h4 class="text-lg font-bold text-main mb-1">여행 기록</h4>
                     <p class="text-xs text-[#00C77D]/90 font-medium leading-snug">지난 추억을<br>떠올려봐요</p>
                 </div>
+            </button>
+            
+            <!-- 엔조이 게임 (Compact Horizontal with NEW Badge) -->
+            <button onclick="window.haptic(); window.location.href='stress.html'" class="toss-card w-full p-5 flex items-center justify-between group !bg-[#F3E8FF]/60 backdrop-blur-md border border-white/60 hover:!bg-[#E9D5FF]/70 transition-colors col-span-2">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-[18px] bg-white/60 backdrop-blur-sm flex items-center justify-center text-[#A855F7] text-xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="text-lg font-bold text-main">엔조이 게임</h4>
+                        <p class="text-xs text-[#A855F7]/90 font-medium">스트레스 풀기</p>
+                    </div>
+                </div>
+                <span class="bg-[#A855F7] text-white text-[9px] font-bold px-2 py-1 rounded-full tracking-tight">NEW</span>
             </button>
         </div>
 
@@ -881,11 +896,24 @@
             m.classList.remove('hidden'); m.classList.add('flex'); 
         };
 
+        // [New] 대중교통 모달
+        window.showTransportModal = () => { 
+            const m = document.getElementById('common-modal'); 
+            document.getElementById('modal-title').innerText = '서비스 준비 중'; 
+            document.getElementById('modal-desc').innerHTML = '실시간 대중교통 정보는<br>현재 준비 중인 기능입니다! 🚌'; 
+            document.getElementById('modal-icon').className = 'fa-solid fa-bus'; 
+            document.getElementById('modal-icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-50 text-emerald-500'; 
+            m.classList.remove('hidden'); m.classList.add('flex'); 
+        };
+        
+        // [New] 버스 페이지 연결 함수
+        window.goToBus = () => window.openBrowser("https://won429.github.io/bus/");
+
     </script>
 
     <!-- Firebase Module -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -902,14 +930,24 @@
 
         let meetingDb = null;
 
+        function getOrInitializeApp(config, name) {
+            const existingApps = getApps();
+            const found = existingApps.find(app => app.name === name);
+            if (found) return found;
+            return initializeApp(config, name);
+        }
+
         async function init() {
+            if (window.isFirebaseInitialized) return;
+            window.isFirebaseInitialized = true;
+
             try {
-                const stockApp = initializeApp(stockConfig, 'stockApp');
+                const stockApp = getOrInitializeApp(stockConfig, 'stockApp');
                 const stockDb = getFirestore(stockApp);
                 await signInAnonymously(getAuth(stockApp)).catch(()=>{});
-                onSnapshot(doc(stockDb, ...STOCK_PATH), (s) => { if(s.exists()) updateStockUI(s.data()); });
+                onSnapshot(doc(stockDb, ...STOCK_PATH), (s) => { if(s.exists()) updateStockUI(s.data()); }, (error) => { console.warn("Stock snapshot error:", error); });
 
-                const meetingApp = initializeApp(meetingConfig, 'meetingApp');
+                const meetingApp = getOrInitializeApp(meetingConfig, 'meetingApp');
                 const meetingAuth = getAuth(meetingApp);
                 window.meetingDb = getFirestore(meetingApp);
 
@@ -918,12 +956,12 @@
                 onSnapshot(doc(window.meetingDb, ...window.MEETING_PATH), (docSnap) => {
                     if (docSnap.exists()) { window.updateMeetingUI(docSnap.data()); } 
                     else { const initialData = getInitialMeetingData(); setDoc(doc(window.meetingDb, ...window.MEETING_PATH), initialData); }
-                });
+                }, (error) => { console.warn("Meeting snapshot error:", error); });
 
                 onSnapshot(doc(window.meetingDb, ...window.SCHEDULE_PATH), (docSnap) => {
                     if (docSnap.exists()) { window.dynamicEvents = docSnap.data(); window.renderCalendar(window.viewYear, window.viewMonth); } 
                     else { setDoc(doc(window.meetingDb, ...window.SCHEDULE_PATH), {}); }
-                });
+                }, (error) => { console.warn("Schedule snapshot error:", error); });
             } catch(e) { console.error("Firebase Init Error:", e); }
         }
 
