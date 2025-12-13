@@ -180,15 +180,15 @@
             </div>
         </div>
 
-        <!-- 섹션 1.5: 대중교통 도착정보 (New Position with Badge) -->
-        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group flex items-center justify-between" onclick="window.haptic(); window.goToBus()">
+        <!-- 섹션 1.5: 얘들아, 어디야? 나 여기! (New Position with Badge) -->
+        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group flex items-center justify-between" onclick="window.haptic(); window.location.href='map.html'">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-emerald-50/80 flex items-center justify-center text-emerald-500 text-xl shadow-sm">
-                    <i class="fa-solid fa-bus"></i>
+                    <i class="fa-solid fa-location-dot"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-main">대중교통 도착정보</h2>
-                    <p class="text-sm font-medium text-sub">실시간 정보 확인</p>
+                    <h2 class="text-xl font-bold text-main">얘들아, 어디야? 나 여기!</h2>
+                    <p class="text-sm font-medium text-sub">실시간 위치 공유</p>
                 </div>
             </div>
             <span class="bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded-full tracking-tight">NEW</span>
@@ -529,14 +529,14 @@
                     </p>
                 </div>
                 
-                <!-- 2. 대중교통 서비스 개시 (Blue) - Modified -->
+                <!-- 2. 실시간 위치공유 서비스 오픈 (Blue) - Modified -->
                 <div class="bg-blue-50 p-3.5 rounded-2xl border border-blue-100">
                     <p class="text-sm font-bold text-blue-600 mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-bus"></i> 대중교통 도착정보 서비스 개시 🚌
+                        <i class="fa-solid fa-location-dot"></i> 실시간 위치공유 서비스 오픈 📍
                     </p>
                     <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
-                        <span class="font-bold text-gray-800">이제 실시간 버스 정보를 확인하세요.</span><br>
-                        편리한 이동을 도와드릴게요!
+                        <span class="font-bold text-gray-800">이제 친구들의 위치를 실시간으로 확인하세요.</span><br>
+                        약속 장소에서 쉽게 만나요!
                     </p>
                 </div>
             </div>
@@ -902,6 +902,16 @@
             document.getElementById('modal-title').innerText = '서비스 준비 중'; 
             document.getElementById('modal-desc').innerHTML = '실시간 대중교통 정보는<br>현재 준비 중인 기능입니다! 🚌'; 
             document.getElementById('modal-icon').className = 'fa-solid fa-bus'; 
+            document.getElementById('modal-icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-50 text-emerald-500'; 
+            m.classList.remove('hidden'); m.classList.add('flex'); 
+        };
+        
+        // [New] 위치 공유 모달
+        window.showLocationModal = () => { 
+            const m = document.getElementById('common-modal'); 
+            document.getElementById('modal-title').innerText = '서비스 준비 중'; 
+            document.getElementById('modal-desc').innerHTML = '위치 공유 서비스는<br>현재 준비 중인 기능입니다! 📍'; 
+            document.getElementById('modal-icon').className = 'fa-solid fa-location-dot'; 
             document.getElementById('modal-icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-50 text-emerald-500'; 
             m.classList.remove('hidden'); m.classList.add('flex'); 
         };
