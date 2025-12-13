@@ -8,9 +8,8 @@
     <!-- 1. 꾸미기 도구 (Tailwind CSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. 지도 도구 (Leaflet) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- 2. 네이버 지도 API (Client ID 적용됨) -->
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9nl297jo77"></script>
 
     <!-- 3. 아이콘 (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -18,15 +17,15 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; -webkit-font-smoothing: antialiased; }
         
-        /* 파스텔 톤 글래스모피즘 */
+        /* 파스텔 톤 글래스모피즘 UI */
         .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .hide { display: none !important; }
         
-        /* 마커 스타일 (애플 지도 느낌의 깔끔한 핀) */
-        .custom-div-icon { background: transparent; border: none; }
-        .emoji-marker { background-color: white; border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 26px; margin-left: -22px; margin-top: -22px; border: 2.5px solid white; transition: transform 0.2s; }
+        /* 네이버 지도 마커 스타일 */
+        .marker-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 60px; pointer-events: none; }
+        .emoji-marker { pointer-events: auto; background-color: white; border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 26px; border: 2.5px solid white; transition: transform 0.2s; z-index: 10; }
         .emoji-marker:active { transform: scale(0.9); }
-        .marker-name { text-align: center; font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.95); padding: 4px 8px; border-radius: 12px; margin-top: 6px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-block; transform: translateX(-5px); color: #333; border: 1px solid rgba(0,0,0,0.05); }
+        .marker-name { pointer-events: auto; text-align: center; font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.95); padding: 4px 8px; border-radius: 12px; margin-top: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #333; border: 1px solid rgba(0,0,0,0.05); z-index: 20; }
         
         /* 스크롤바 숨기기 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -43,10 +42,9 @@
         }
     </style>
 </head>
-<!-- 배경: 부드러운 파스텔 그라데이션 -->
 <body class="bg-gradient-to-br from-[#E8F0FE] via-[#F3E8FF] to-[#E8F8F5] min-h-screen pb-24 overflow-x-hidden select-none">
 
-    <!-- === 로그인 화면 (모달) === -->
+    <!-- === 로그인 화면 === -->
     <div id="login-modal" class="fixed inset-0 z-[999] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-300">
         <div class="bg-white/95 w-full max-w-sm rounded-[32px] p-8 shadow-2xl border border-white transform transition-all scale-100">
             <div class="flex flex-col items-center mb-6">
@@ -81,21 +79,20 @@
 
         <div class="px-5 space-y-4">
             
-            <!-- [MAP] 탭 (기본 화면) -->
+            <!-- [MAP] 탭 -->
             <div id="view-map" class="space-y-4">
                 <div class="h-[65vh] w-full rounded-[32px] overflow-hidden shadow-lg border border-white/60 relative z-0 bg-gray-100">
-                    <div id="map" class="w-full h-full z-0"></div>
+                    <!-- 네이버 지도 들어갈 곳 -->
+                    <div id="map" class="w-full h-full z-0 outline-none"></div>
                 </div>
-                <!-- 하단 정보 카드 -->
                 <div class="glass rounded-[32px] p-4 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <div id="map-count" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">0</div>
                         <div class="flex flex-col">
                             <span class="font-bold text-sm text-gray-800">접속 중인 친구</span>
-                            <span class="text-[10px] text-gray-500">지도를 움직여 친구를 찾아보세요!</span>
+                            <span class="text-[10px] text-gray-500">네이버 지도로 확인해보세요!</span>
                         </div>
                     </div>
-                    <!-- 수동 갱신 버튼 -->
                     <button onclick="updateLocation()" class="bg-gray-900 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md active:scale-95 transition-transform flex items-center gap-1">
                         <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                         <span id="refresh-text">갱신</span>
@@ -103,29 +100,23 @@
                 </div>
             </div>
 
-            <!-- [FRIENDS] 탭 (카톡 스타일 리스트) -->
+            <!-- [FRIENDS] 탭 -->
             <div id="view-friends" class="hide space-y-4">
                 <div class="flex justify-between items-end px-1">
                     <h2 class="text-lg font-bold text-gray-800">친구 목록 (<span id="list-count">0</span>)</h2>
                     <span class="text-xs text-gray-400 mb-1">터치하면 위치 확인</span>
                 </div>
-                <div id="friends-grid" class="space-y-3 pb-20">
-                    <!-- 자바스크립트로 리스트 아이템이 여기에 들어갑니다 -->
-                </div>
+                <div id="friends-grid" class="space-y-3 pb-20"></div>
             </div>
 
-            <!-- [PROFILE] 탭 (설정 통합) -->
+            <!-- [PROFILE] 탭 -->
             <div id="view-profile" class="hide space-y-4">
                 <h2 class="text-lg font-bold text-gray-800">프로필 & 상태 설정</h2>
                 <div class="glass rounded-[32px] p-6 space-y-5">
-                    
-                    <!-- 이름 -->
                     <div>
                         <label class="text-xs font-bold text-gray-500 ml-1">내 이름</label>
                         <div id="profile-name" class="w-full mt-1 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 font-bold"></div>
                     </div>
-
-                    <!-- 상태 메시지 -->
                     <div>
                         <div class="flex justify-between items-center ml-1 mb-1">
                             <label class="text-xs font-bold text-gray-500">상태 메시지</label>
@@ -133,19 +124,13 @@
                         </div>
                         <input type="text" id="status-msg" placeholder="친구들에게 남길 말 (예: 이동중 🚗)" class="w-full bg-blue-50/50 border border-blue-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-200 outline-none placeholder-gray-400 text-gray-700">
                     </div>
-
-                    <!-- 이모지 -->
                     <div>
                         <label class="text-xs font-bold text-gray-500 ml-1">이모지 선택</label>
                         <div class="flex gap-2 mt-2 overflow-x-auto pb-2 no-scrollbar" id="emoji-list"></div>
                     </div>
-
-                    <!-- 저장 버튼 -->
                     <button onclick="updateLocation()" class="w-full bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all mt-4 flex items-center justify-center gap-2">
                         <i data-lucide="save" class="w-4 h-4"></i> 저장하고 위치 업데이트
                     </button>
-
-                    <!-- 로그아웃 -->
                     <div class="pt-4 border-t border-gray-100">
                         <button onclick="logout()" class="w-full bg-gray-200 text-gray-600 font-bold py-3 rounded-xl active:scale-95 transition-all text-sm">로그아웃</button>
                     </div>
@@ -175,7 +160,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase 설정
         const firebaseConfig = {
             apiKey: "AIzaSyDse4kjmrO-N8jqHV5sKHQ3T_UrS0eFpYo",
             authDomain: "friend-map-app.firebaseapp.com",
@@ -194,7 +178,7 @@
         let myEmoji = "🦊";
         let friendsData = [];
         let map = null;
-        let markers = {};
+        let markers = []; // 네이버 지도 마커 배열
 
         const ALL_MEMBERS = ['전시기', '오스틴', '이진누', '성원제', '류짱', '홍박사'];
         const ALLOWED_ENCODED = ["7KC07Iuc6riw", "7Jik7Iqk7Yu0", "7J207KeE64iE", "7ISx7JuQ7KCc", "66WY7Kex", "7ZmN67CV7IKs"];
@@ -205,15 +189,10 @@
             setupEmojiList();
         };
 
-        // --- 로그인 ---
         window.checkLogin = () => {
             const savedName = localStorage.getItem('friendMapUserName');
-            if (savedName) {
-                myName = savedName;
-                signIn();
-            } else {
-                document.getElementById('login-modal').classList.remove('hidden');
-            }
+            if (savedName) { myName = savedName; signIn(); }
+            else { document.getElementById('login-modal').classList.remove('hidden'); }
         };
 
         window.tryLogin = () => {
@@ -225,12 +204,8 @@
                     localStorage.setItem('friendMapUserName', input);
                     myName = input;
                     signIn();
-                } else {
-                    errorMsg.innerText = "등록된 멤버가 아닙니다.";
-                }
-            } catch(e) {
-                errorMsg.innerText = "이름을 확인해주세요.";
-            }
+                } else { errorMsg.innerText = "등록된 멤버가 아닙니다."; }
+            } catch(e) { errorMsg.innerText = "이름을 확인해주세요."; }
         };
 
         function signIn() {
@@ -241,30 +216,19 @@
                 document.getElementById('profile-name').innerText = myName;
                 startListening();
                 switchTab('map');
-            }).catch((error) => {
-                alert("로그인 오류: " + error.message);
-            });
+            }).catch((error) => { alert("로그인 오류: " + error.message); });
         }
 
-        window.logout = () => {
-            localStorage.removeItem('friendMapUserName');
-            location.reload();
-        };
+        window.logout = () => { localStorage.removeItem('friendMapUserName'); location.reload(); };
+        window.exitApp = () => { window.location.href = 'index.html'; };
 
-        window.exitApp = () => {
-            window.location.href = 'index.html';
-        };
-
-        // --- 자동 위치 공유 및 리스너 ---
         function startListening() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUser = user;
                     updateLocation(true); 
                     setInterval(() => { updateLocation(true); }, 180000); 
-
-                    const colRef = collection(db, 'friend_locations');
-                    onSnapshot(colRef, (snapshot) => {
+                    onSnapshot(collection(db, 'friend_locations'), (snapshot) => {
                         friendsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderFriends();
                         updateMapMarkers();
@@ -273,68 +237,41 @@
             });
         }
 
-        // --- 위치 업데이트 ---
         window.updateLocation = (silent = false) => {
             if (!currentUser) return;
-            
             const statusMsg = document.getElementById('status-msg').value;
             const navIcon = document.getElementById('nav-icon');
             const refreshText = document.getElementById('refresh-text');
 
-            if (!silent) {
-                navIcon.classList.add('animate-spin');
-                if(refreshText) refreshText.innerText = "갱신 중...";
-            }
-
-            if (!navigator.geolocation) {
-                if (!silent) alert("위치 정보를 지원하지 않는 브라우저입니다.");
-                return;
-            }
+            if (!silent) { navIcon.classList.add('animate-spin'); if(refreshText) refreshText.innerText = "갱신 중..."; }
+            if (!navigator.geolocation) { if (!silent) alert("위치 정보를 지원하지 않는 브라우저입니다."); return; }
 
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude, longitude } = pos.coords;
                 try {
                     await setDoc(doc(db, 'friend_locations', currentUser.uid), {
-                        uid: currentUser.uid,
-                        displayName: myName,
-                        emoji: myEmoji,
-                        statusMessage: statusMsg || "오늘도 좋은 하루! 🍀",
-                        latitude,
-                        longitude,
+                        uid: currentUser.uid, displayName: myName, emoji: myEmoji,
+                        statusMessage: statusMsg || "오늘도 좋은 하루! 🍀", latitude, longitude,
                         timestamp: serverTimestamp()
                     }, { merge: true });
-                    
                     if (!silent) {
-                        navIcon.classList.remove('animate-spin');
-                        if(refreshText) refreshText.innerText = "완료";
-                        setTimeout(() => { if(refreshText) refreshText.innerText = "갱신"; }, 2000);
+                        navIcon.classList.remove('animate-spin'); if(refreshText) refreshText.innerText = "갱신 완료!";
+                        setTimeout(() => { if(refreshText) refreshText.innerText = "내 위치 갱신"; }, 2000);
                         alert("내 위치와 상태가 친구들에게 공유되었습니다!");
                     }
-                } catch (e) {
-                    console.error(e);
-                    if (!silent) alert("전송 실패");
-                }
+                } catch (e) { console.error(e); if (!silent) alert("전송 실패"); }
             }, (err) => {
                 console.error(err);
-                if (!silent) {
-                    alert("위치 권한을 허용해주세요.");
-                    navIcon.classList.remove('animate-spin');
-                }
+                if (!silent) { alert("위치 권한을 허용해주세요."); navIcon.classList.remove('animate-spin'); }
             });
         };
 
-        // --- 뷰 렌더링 (카톡 스타일 리스트) ---
         function renderFriends() {
             const grid = document.getElementById('friends-grid');
             const mapCount = document.getElementById('map-count');
-            
             const now = new Date();
-            const onlineCount = friendsData.filter(f => {
-                if(!f.timestamp) return false;
-                const diff = now - f.timestamp.toDate();
-                return diff < 10 * 60 * 1000; 
-            }).length;
-
+            const onlineCount = friendsData.filter(f => f.timestamp && (now - f.timestamp.toDate()) < 600000).length;
+            
             mapCount.innerText = onlineCount;
             if(document.getElementById('list-count')) document.getElementById('list-count').innerText = friendsData.length;
             grid.innerHTML = "";
@@ -342,22 +279,17 @@
             ALL_MEMBERS.forEach(name => {
                 const friend = friendsData.find(f => f.displayName === name) || {};
                 const isMe = friend.uid === currentUser?.uid || name === myName;
-                
                 const hasData = friend.latitude !== undefined;
                 const emoji = friend.emoji || (isMe && myEmoji ? myEmoji : '👤');
                 const statusMsg = friend.statusMessage || (hasData ? "상태 메시지 없음" : "위치 정보 없음");
                 
-                let isOnline = false;
-                let timeStr = "-";
-                
+                let isOnline = false, timeStr = "-";
                 if (hasData && friend.timestamp) {
                     const date = friend.timestamp.toDate();
-                    const diff = now - date;
-                    isOnline = diff < 10 * 60 * 1000;
+                    isOnline = (now - date) < 600000;
                     timeStr = date.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
                 }
 
-                // 카톡 스타일 리스트 아이템
                 grid.innerHTML += `
                 <div class="w-full bg-white border border-gray-100 rounded-[20px] p-4 flex items-center gap-4 shadow-sm active:scale-[0.98] transition-transform" ${hasData ? `onclick="showOnMap(${friend.latitude}, ${friend.longitude})"` : ''}>
                     <div class="relative w-12 h-12 flex-shrink-0 bg-gray-50 rounded-[18px] flex items-center justify-center text-2xl border border-gray-100">
@@ -366,7 +298,6 @@
                             ${isOnline ? '<span class="online-dot"></span>' : '<span class="offline-dot"></span>'}
                         </div>
                     </div>
-
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2">
                             <h4 class="font-bold text-gray-900 text-base truncate">${name}</h4>
@@ -374,7 +305,6 @@
                         </div>
                         <p class="text-xs ${isOnline ? 'text-gray-600' : 'text-gray-400'} mt-0.5 truncate">${statusMsg}</p>
                     </div>
-
                     <div class="flex flex-col items-end justify-center gap-1">
                         ${hasData ? `<span class="text-[10px] text-gray-400 font-medium">${timeStr}</span>` : ''}
                         ${hasData ? `<div class="bg-gray-100 p-1.5 rounded-full text-gray-500"><i data-lucide="map-pin" class="w-3 h-3"></i></div>` : ''}
@@ -390,68 +320,63 @@
                 if(t === tabName) {
                     el.classList.remove('hide');
                     el.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-4');
-                } else {
-                    el.classList.add('hide');
-                }
+                } else { el.classList.add('hide'); }
             });
             const title = document.getElementById('page-title');
-            if(tabName === 'map') {
-                title.innerHTML = "우리 친구들,<br>지금 어디 있나요? 🗺️";
-                setTimeout(initMap, 100);
-            }
+            if(tabName === 'map') { title.innerHTML = "우리 친구들,<br>지금 어디 있나요? 🌙"; setTimeout(initMap, 100); }
             if(tabName === 'friends') title.innerHTML = "친구 목록<br>실시간 현황 👀";
             if(tabName === 'profile') title.innerHTML = "내 설정<br>프로필 꾸미기 ⚙️";
-            
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.replace('text-gray-900', 'text-gray-400'));
         };
 
+        // --- 네이버 지도 로직 ---
         function initMap() {
-            if (map) {
-                map.invalidateSize();
-                return;
-            }
-            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([36.5, 127.8], 7);
-            
-            // [지도 변경] 구글 지도 정밀 모드 (깔끔한 벡터 스타일)
-            L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=ko&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
-                attribution: 'Google Maps'
-            }).addTo(map);
-            
+            if (map || typeof naver === 'undefined') return;
+            const mapOptions = {
+                center: new naver.maps.LatLng(36.5, 127.8), // 초기 중심 좌표
+                zoom: 7,
+                scaleControl: false, logoControl: false, mapDataControl: false, zoomControl: false
+            };
+            map = new naver.maps.Map('map', mapOptions);
             updateMapMarkers();
         }
 
         function updateMapMarkers() {
-            if (!map) return;
-            for(let id in markers) { map.removeLayer(markers[id]); }
-            markers = {};
-            
+            if (!map || typeof naver === 'undefined') return;
+            markers.forEach(m => m.setMap(null));
+            markers = [];
             friendsData.forEach(f => {
-                if(f.latitude && f.longitude) {
-                    const icon = L.divIcon({
-                        className: 'custom-div-icon',
-                        html: `<div class="emoji-marker">${f.emoji || '🙂'}</div><div class="marker-name">${f.displayName}</div>`
+                if (f.latitude && f.longitude) {
+                    const position = new naver.maps.LatLng(f.latitude, f.longitude);
+                    const contentHtml = `
+                        <div class="marker-wrapper">
+                            <div class="emoji-marker">${f.emoji || '🙂'}</div>
+                            <div class="marker-name">${f.displayName}</div>
+                        </div>`;
+                    const marker = new naver.maps.Marker({
+                        position: position, map: map,
+                        icon: { content: contentHtml, size: new naver.maps.Size(44, 60), anchor: new naver.maps.Point(22, 22) }
                     });
-                    const marker = L.marker([f.latitude, f.longitude], {icon: icon}).addTo(map);
-                    markers[f.id] = marker;
+                    markers.push(marker);
                 }
             });
         }
 
         window.showOnMap = (lat, lng) => {
             switchTab('map');
-            setTimeout(() => { if(map) map.setView([lat, lng], 16); }, 300);
+            setTimeout(() => {
+                if(map && typeof naver !== 'undefined') {
+                    const moveLatLon = new naver.maps.LatLng(lat, lng);
+                    map.setCenter(moveLatLon); map.setZoom(16);
+                }
+            }, 300);
         };
 
         function setupEmojiList() {
             const emojis = ["🦊", "🐰", "🐸", "🐯", "🐶", "🐱", "🐼", "🐨", "🦄", "🐵"];
-            const container = document.getElementById('emoji-list');
-            container.innerHTML = emojis.map(e => `<button onclick="setEmoji('${e}')" class="text-2xl p-3 rounded-xl bg-gray-50 hover:bg-blue-100 transition-colors">${e}</button>`).join('');
+            document.getElementById('emoji-list').innerHTML = emojis.map(e => `<button onclick="setEmoji('${e}')" class="text-2xl p-3 rounded-xl bg-gray-50 hover:bg-blue-100 transition-colors">${e}</button>`).join('');
         }
-        window.setEmoji = (e) => {
-            myEmoji = e;
-            alert(`이모지가 ${e}로 변경되었습니다!`);
-        };
+        window.setEmoji = (e) => { myEmoji = e; alert(`이모지가 ${e}로 변경되었습니다!`); };
     </script>
 </body>
 </html>
