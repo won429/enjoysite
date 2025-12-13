@@ -8,7 +8,7 @@
     <!-- 1. 꾸미기 도구 (Tailwind CSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. 네이버 지도 API (Client ID 적용됨) -->
+    <!-- 2. 네이버 지도 API (회원님 Client ID 적용됨) -->
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9nl297jo77"></script>
 
     <!-- 3. 아이콘 (Lucide) -->
@@ -42,9 +42,10 @@
         }
     </style>
 </head>
+<!-- 배경: 부드러운 파스텔 그라데이션 -->
 <body class="bg-gradient-to-br from-[#E8F0FE] via-[#F3E8FF] to-[#E8F8F5] min-h-screen pb-24 overflow-x-hidden select-none">
 
-    <!-- === 로그인 화면 === -->
+    <!-- === 로그인 화면 (모달) === -->
     <div id="login-modal" class="fixed inset-0 z-[999] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-300">
         <div class="bg-white/95 w-full max-w-sm rounded-[32px] p-8 shadow-2xl border border-white transform transition-all scale-100">
             <div class="flex flex-col items-center mb-6">
@@ -93,6 +94,7 @@
                             <span class="text-[10px] text-gray-500">네이버 지도로 확인해보세요!</span>
                         </div>
                     </div>
+                    <!-- 수동 갱신 버튼 -->
                     <button onclick="updateLocation()" class="bg-gray-900 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md active:scale-95 transition-transform flex items-center gap-1">
                         <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                         <span id="refresh-text">갱신</span>
@@ -189,10 +191,15 @@
             setupEmojiList();
         };
 
+        // --- 로그인 ---
         window.checkLogin = () => {
             const savedName = localStorage.getItem('friendMapUserName');
-            if (savedName) { myName = savedName; signIn(); }
-            else { document.getElementById('login-modal').classList.remove('hidden'); }
+            if (savedName) {
+                myName = savedName;
+                signIn();
+            } else {
+                document.getElementById('login-modal').classList.remove('hidden');
+            }
         };
 
         window.tryLogin = () => {
@@ -204,8 +211,12 @@
                     localStorage.setItem('friendMapUserName', input);
                     myName = input;
                     signIn();
-                } else { errorMsg.innerText = "등록된 멤버가 아닙니다."; }
-            } catch(e) { errorMsg.innerText = "이름을 확인해주세요."; }
+                } else {
+                    errorMsg.innerText = "등록된 멤버가 아닙니다.";
+                }
+            } catch(e) {
+                errorMsg.innerText = "이름을 확인해주세요.";
+            }
         };
 
         function signIn() {
@@ -216,20 +227,48 @@
                 document.getElementById('profile-name').innerText = myName;
                 startListening();
                 switchTab('map');
-            }).catch((error) => { alert("로그인 오류: " + error.message); });
+            }).catch((error) => {
+                alert("로그인 오류: " + error.message);
+            });
         }
 
-        window.logout = () => { localStorage.removeItem('friendMapUserName'); location.reload(); };
-        window.exitApp = () => { window.location.href = 'index.html'; };
+        window.logout = () => {
+            localStorage.removeItem('friendMapUserName');
+            location.reload();
+        };
 
+        window.exitApp = () => {
+            window.location.href = 'index.html';
+        };
+
+        // --- 자동 위치 공유 및 리스너 ---
         function startListening() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUser = user;
+                    
+                    // 로그인 직후 자동 전송
                     updateLocation(true); 
+                    // 3분마다 자동 갱신
                     setInterval(() => { updateLocation(true); }, 180000); 
-                    onSnapshot(collection(db, 'friend_locations'), (snapshot) => {
+
+                    const colRef = collection(db, 'friend_locations');
+                    onSnapshot(colRef, (snapshot) => {
                         friendsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        
+                        // [추가] 내 저장된 정보 불러오기 (상태 메시지 유지)
+                        const myInfo = friendsData.find(f => f.uid === currentUser.uid);
+                        if (myInfo) {
+                            // 입력창이 비어있을 때만 서버 데이터로 채우기 (타이핑 방해 방지)
+                            const statusInput = document.getElementById('status-msg');
+                            if (document.activeElement !== statusInput && myInfo.statusMessage) {
+                                statusInput.value = myInfo.statusMessage;
+                            }
+                            if (myInfo.emoji) {
+                                myEmoji = myInfo.emoji;
+                            }
+                        }
+
                         renderFriends();
                         updateMapMarkers();
                     });
@@ -237,35 +276,57 @@
             });
         }
 
+        // --- 위치 업데이트 ---
         window.updateLocation = (silent = false) => {
             if (!currentUser) return;
+            
             const statusMsg = document.getElementById('status-msg').value;
             const navIcon = document.getElementById('nav-icon');
             const refreshText = document.getElementById('refresh-text');
 
-            if (!silent) { navIcon.classList.add('animate-spin'); if(refreshText) refreshText.innerText = "갱신 중..."; }
-            if (!navigator.geolocation) { if (!silent) alert("위치 정보를 지원하지 않는 브라우저입니다."); return; }
+            if (!silent) {
+                navIcon.classList.add('animate-spin');
+                if(refreshText) refreshText.innerText = "갱신 중...";
+            }
+
+            if (!navigator.geolocation) {
+                if (!silent) alert("위치 정보를 지원하지 않는 브라우저입니다.");
+                return;
+            }
 
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude, longitude } = pos.coords;
                 try {
                     await setDoc(doc(db, 'friend_locations', currentUser.uid), {
-                        uid: currentUser.uid, displayName: myName, emoji: myEmoji,
-                        statusMessage: statusMsg || "오늘도 좋은 하루! 🍀", latitude, longitude,
+                        uid: currentUser.uid,
+                        displayName: myName,
+                        emoji: myEmoji,
+                        statusMessage: statusMsg || "오늘도 좋은 하루! 🍀",
+                        latitude,
+                        longitude,
                         timestamp: serverTimestamp()
                     }, { merge: true });
+                    
                     if (!silent) {
-                        navIcon.classList.remove('animate-spin'); if(refreshText) refreshText.innerText = "갱신 완료!";
+                        navIcon.classList.remove('animate-spin');
+                        if(refreshText) refreshText.innerText = "갱신 완료!";
                         setTimeout(() => { if(refreshText) refreshText.innerText = "내 위치 갱신"; }, 2000);
                         alert("내 위치와 상태가 친구들에게 공유되었습니다!");
                     }
-                } catch (e) { console.error(e); if (!silent) alert("전송 실패"); }
+                } catch (e) {
+                    console.error(e);
+                    if (!silent) alert("전송 실패");
+                }
             }, (err) => {
                 console.error(err);
-                if (!silent) { alert("위치 권한을 허용해주세요."); navIcon.classList.remove('animate-spin'); }
+                if (!silent) {
+                    alert("위치 권한을 허용해주세요.");
+                    navIcon.classList.remove('animate-spin');
+                }
             });
         };
 
+        // --- 뷰 렌더링 ---
         function renderFriends() {
             const grid = document.getElementById('friends-grid');
             const mapCount = document.getElementById('map-count');
@@ -283,7 +344,9 @@
                 const emoji = friend.emoji || (isMe && myEmoji ? myEmoji : '👤');
                 const statusMsg = friend.statusMessage || (hasData ? "상태 메시지 없음" : "위치 정보 없음");
                 
-                let isOnline = false, timeStr = "-";
+                let isOnline = false;
+                let timeStr = "-";
+                
                 if (hasData && friend.timestamp) {
                     const date = friend.timestamp.toDate();
                     isOnline = (now - date) < 600000;
@@ -320,12 +383,18 @@
                 if(t === tabName) {
                     el.classList.remove('hide');
                     el.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-4');
-                } else { el.classList.add('hide'); }
+                } else {
+                    el.classList.add('hide');
+                }
             });
             const title = document.getElementById('page-title');
-            if(tabName === 'map') { title.innerHTML = "우리 친구들,<br>지금 어디 있나요? 🌙"; setTimeout(initMap, 100); }
+            if(tabName === 'map') {
+                title.innerHTML = "우리 친구들,<br>지금 어디 있나요? 🌙";
+                setTimeout(initMap, 100);
+            }
             if(tabName === 'friends') title.innerHTML = "친구 목록<br>실시간 현황 👀";
             if(tabName === 'profile') title.innerHTML = "내 설정<br>프로필 꾸미기 ⚙️";
+            
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.replace('text-gray-900', 'text-gray-400'));
         };
 
@@ -374,9 +443,13 @@
 
         function setupEmojiList() {
             const emojis = ["🦊", "🐰", "🐸", "🐯", "🐶", "🐱", "🐼", "🐨", "🦄", "🐵"];
-            document.getElementById('emoji-list').innerHTML = emojis.map(e => `<button onclick="setEmoji('${e}')" class="text-2xl p-3 rounded-xl bg-gray-50 hover:bg-blue-100 transition-colors">${e}</button>`).join('');
+            const container = document.getElementById('emoji-list');
+            container.innerHTML = emojis.map(e => `<button onclick="setEmoji('${e}')" class="text-2xl p-3 rounded-xl bg-gray-50 hover:bg-blue-100 transition-colors">${e}</button>`).join('');
         }
-        window.setEmoji = (e) => { myEmoji = e; alert(`이모지가 ${e}로 변경되었습니다!`); };
+        window.setEmoji = (e) => {
+            myEmoji = e;
+            alert(`이모지가 ${e}로 변경되었습니다!`);
+        };
     </script>
 </body>
 </html>
