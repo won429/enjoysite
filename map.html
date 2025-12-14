@@ -8,7 +8,7 @@
     <!-- 1. 꾸미기 도구 (Tailwind CSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. 네이버 지도 API (Geocoding 모듈 추가됨) -->
+    <!-- 2. 네이버 지도 API (Geocoding 모듈 포함) -->
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=9nl297jo77&submodules=geocoder"></script>
 
     <!-- 3. 아이콘 (Lucide) -->
@@ -104,7 +104,6 @@
                         <div id="profile-name" class="w-full mt-1 bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 font-bold"></div>
                     </div>
                     
-                    <!-- 상태 메시지 대신 현재 주소 표시 -->
                     <div>
                         <div class="flex justify-between items-center ml-1 mb-1">
                             <label class="text-xs font-bold text-gray-500">현재 위치 (자동 감지)</label>
@@ -228,12 +227,38 @@
 
                     const colRef = collection(db, 'friend_locations');
                     onSnapshot(colRef, (snapshot) => {
-                        friendsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        const myInfo = friendsData.find(f => f.uid === currentUser.uid);
+                        // 원본 데이터 가져오기
+                        const rawData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        
+                        // [중복 제거 로직] 이름(displayName)이 같으면 가장 최근(timestamp) 데이터 1개만 남김
+                        const uniqueMap = {};
+                        rawData.forEach(data => {
+                            const name = data.displayName;
+                            if(!name) return;
+                            
+                            // 기존에 같은 이름의 데이터가 없다면 저장
+                            if (!uniqueMap[name]) {
+                                uniqueMap[name] = data;
+                            } else {
+                                // 이미 있다면 시간 비교해서 최신 데이터로 교체
+                                const existingTime = uniqueMap[name].timestamp?.seconds || 0;
+                                const newTime = data.timestamp?.seconds || 0;
+                                if (newTime > existingTime) {
+                                    uniqueMap[name] = data;
+                                }
+                            }
+                        });
+                        
+                        // 중복 제거된 리스트로 friendsData 업데이트
+                        friendsData = Object.values(uniqueMap);
+
+                        // 내 정보 업데이트 (UI 반영용)
+                        const myInfo = friendsData.find(f => f.displayName === myName); // 이름으로 찾기
                         if (myInfo) {
                             if (myInfo.emoji) myEmoji = myInfo.emoji;
                             if (myInfo.address) document.getElementById('current-address-display').innerText = myInfo.address;
                         }
+                        
                         renderFriends();
                         updateMapMarkers();
                     });
@@ -241,7 +266,7 @@
             });
         }
 
-        // --- 위치 및 주소 업데이트 (핵심 변경) ---
+        // --- 위치 및 주소 업데이트 ---
         window.updateLocation = (silent = false) => {
             if (!currentUser) return;
             
@@ -262,7 +287,7 @@
                 const { latitude, longitude } = pos.coords;
                 let address = "위치 확인 불가";
 
-                // 네이버 Geocoding API 호출
+                // 네이버 Geocoding API
                 try {
                     if (naver && naver.maps && naver.maps.Service) {
                         await new Promise((resolve) => {
@@ -273,8 +298,8 @@
                                 if (status === naver.maps.Service.Status.OK) {
                                     try {
                                         const item = response.v2.results[0];
-                                        const region1 = item.region.area1.name; // 경상북도
-                                        const region2 = item.region.area2.name; // 안동시
+                                        const region1 = item.region.area1.name; 
+                                        const region2 = item.region.area2.name; 
                                         address = `${region1} ${region2}`;
                                     } catch(e) { console.log(e); }
                                 }
@@ -285,11 +310,12 @@
                 } catch(e) { console.log("Geocoding Error", e); }
 
                 try {
-                    await setDoc(doc(db, 'friend_locations', currentUser.uid), {
+                    // [핵심 변경] 저장 ID를 UID가 아닌 '이름(myName)'으로 설정하여 중복 방지
+                    await setDoc(doc(db, 'friend_locations', myName), {
                         uid: currentUser.uid,
-                        displayName: myName,
+                        displayName: myName, // 내 이름을 ID로 사용
                         emoji: myEmoji,
-                        address: address, // 주소 저장
+                        address: address, 
                         latitude,
                         longitude,
                         timestamp: serverTimestamp()
@@ -314,7 +340,7 @@
             });
         };
 
-        // --- 뷰 렌더링 (주소 표시) ---
+        // --- 뷰 렌더링 ---
         function renderFriends() {
             const grid = document.getElementById('friends-grid');
             const mapCount = document.getElementById('map-count');
@@ -327,7 +353,9 @@
 
             ALL_MEMBERS.forEach(name => {
                 const friend = friendsData.find(f => f.displayName === name) || {};
-                const isMe = friend.uid === currentUser?.uid || name === myName;
+                // 내 구분: 로그인한 이름과 데이터의 이름이 같거나, UID가 같을 때
+                const isMe = name === myName;
+                
                 const hasData = friend.latitude !== undefined;
                 const emoji = friend.emoji || (isMe && myEmoji ? myEmoji : '👤');
                 
@@ -340,7 +368,6 @@
                     isOnline = diff < 10 * 60 * 1000;
                     
                     const timeStr = date.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
-                    // [변경] 주소 + 시간 표시
                     const addr = friend.address || "주소 미상";
                     infoStr = `${addr} · ${timeStr}`;
                 }
@@ -358,7 +385,7 @@
                             <h4 class="font-bold text-gray-900 text-base truncate">${name}</h4>
                             ${isMe ? '<span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md">나</span>' : ''}
                         </div>
-                        <p class="text-xs ${isOnline ? 'text-gray-600' : 'text-gray-400'} mt-0.5 truncate">${infoStr}</p>
+                        <p class="text-xs text-gray-500 mt-0.5 truncate">${infoStr}</p>
                     </div>
                     <div class="flex flex-col items-end justify-center gap-1">
                         ${hasData ? `<div class="bg-gray-100 p-1.5 rounded-full text-gray-500"><i data-lucide="map-pin" class="w-3 h-3"></i></div>` : ''}
