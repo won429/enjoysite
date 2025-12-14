@@ -8,7 +8,7 @@
     <!-- 1. 꾸미기 도구 (Tailwind CSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. 네이버 지도 API (Geocoding 모듈 포함) -->
+    <!-- 2. 네이버 지도 API (Geocoding 포함) -->
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=9nl297jo77&submodules=geocoder"></script>
 
     <!-- 3. 아이콘 (Lucide) -->
@@ -143,12 +143,13 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        // [수정] getDoc 추가됨
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // [확인 완료] databaseURL 적용됨
         const firebaseConfig = {
             apiKey: "AIzaSyDse4kjmrO-N8jqHV5sKHQ3T_UrS0eFpYo",
             authDomain: "friend-map-app.firebaseapp.com",
+            databaseURL: "https://friend-map-app-default-rtdb.firebaseio.com", 
             projectId: "friend-map-app",
             storageBucket: "friend-map-app.firebasestorage.app",
             messagingSenderId: "366133879234",
@@ -157,7 +158,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const database = getDatabase(app);
 
         let currentUser = null;
         let myName = "";
@@ -224,43 +225,33 @@
                 if (user) {
                     currentUser = user;
                     
-                    // [수정] 이모지 초기화 방지 로직
-                    // 1. 서버에서 내 데이터를 먼저 가져와서 이모지 복구
-                    getDoc(doc(db, 'friend_locations', myName)).then(snap => {
-                        if(snap.exists()) {
-                            const data = snap.data();
-                            if(data.emoji) myEmoji = data.emoji; // 저장된 이모지 복구
+                    // [이모지 복구 로직] 데이터베이스에서 내 정보를 먼저 가져옴
+                    const dbRef = ref(database);
+                    get(child(dbRef, `friend_locations/${myName}`)).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            if(data.emoji) myEmoji = data.emoji; // 이모지가 있다면 복구
                         }
-                        // 2. 그 다음 위치 전송 (이제 안전함)
+                        // 복구 후 위치 업데이트
                         updateLocation(true);
-                    }).catch(err => {
-                        console.error("데이터 로드 실패, 기본값 사용", err);
+                    }).catch((error) => {
+                        console.error(error);
                         updateLocation(true);
                     });
 
                     setInterval(() => { updateLocation(true); }, 180000); 
 
-                    const colRef = collection(db, 'friend_locations');
-                    onSnapshot(colRef, (snapshot) => {
-                        const rawData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        
-                        const uniqueMap = {};
-                        rawData.forEach(data => {
-                            const name = data.displayName;
-                            if(!name) return;
-                            if (!uniqueMap[name]) {
-                                uniqueMap[name] = data;
-                            } else {
-                                const existingTime = uniqueMap[name].timestamp?.seconds || 0;
-                                const newTime = data.timestamp?.seconds || 0;
-                                if (newTime > existingTime) {
-                                    uniqueMap[name] = data;
-                                }
-                            }
-                        });
-                        
-                        friendsData = Object.values(uniqueMap);
+                    const friendsRef = ref(database, 'friend_locations');
+                    onValue(friendsRef, (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            // RTDB 객체를 배열로 변환
+                            friendsData = Object.values(data);
+                        } else {
+                            friendsData = [];
+                        }
 
+                        // 내 정보 업데이트 (화면 표시용)
                         const myInfo = friendsData.find(f => f.displayName === myName);
                         if (myInfo) {
                             if (myInfo.emoji) myEmoji = myInfo.emoji;
@@ -274,7 +265,6 @@
             });
         }
 
-        // --- 위치 및 주소 업데이트 ---
         window.updateLocation = (silent = false) => {
             if (!currentUser) return;
             
@@ -317,15 +307,16 @@
                 } catch(e) { console.log("Geocoding Error", e); }
 
                 try {
-                    await setDoc(doc(db, 'friend_locations', myName), {
+                    // [중요] 'myName'을 키값으로 저장 -> 같은 이름이면 덮어쓰기 (중복 방지)
+                    await set(ref(database, 'friend_locations/' + myName), {
                         uid: currentUser.uid,
-                        displayName: myName,
-                        emoji: myEmoji, // 이제 안전하게 복구된 이모지 사용
+                        displayName: myName, // 고유 ID로 이름 사용
+                        emoji: myEmoji,
                         address: address, 
                         latitude,
                         longitude,
-                        timestamp: serverTimestamp()
-                    }, { merge: true });
+                        timestamp: Date.now()
+                    });
                     
                     if (!silent) {
                         navIcon.classList.remove('animate-spin');
@@ -346,12 +337,12 @@
             });
         };
 
-        // --- 뷰 렌더링 ---
         function renderFriends() {
             const grid = document.getElementById('friends-grid');
             const mapCount = document.getElementById('map-count');
-            const now = new Date();
-            const onlineCount = friendsData.filter(f => f.timestamp && (now - f.timestamp.toDate()) < 600000).length;
+            const now = Date.now();
+            
+            const onlineCount = friendsData.filter(f => f.timestamp && (now - f.timestamp) < 600000).length;
             
             mapCount.innerText = onlineCount;
             if(document.getElementById('list-count')) document.getElementById('list-count').innerText = friendsData.length;
@@ -368,8 +359,8 @@
                 let infoStr = "위치 정보 없음";
                 
                 if (hasData && friend.timestamp) {
-                    const date = friend.timestamp.toDate();
-                    const diff = now - date;
+                    const date = new Date(friend.timestamp);
+                    const diff = now - friend.timestamp;
                     isOnline = diff < 10 * 60 * 1000;
                     
                     const timeStr = date.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
