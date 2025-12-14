@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Enjoy - Toss Style</title>
+    <title>Enjoy - Toss Style (Cloud Backup)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 폰트 및 아이콘 -->
@@ -153,6 +153,18 @@
         
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 공지사항 롤링 애니메이션 */
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 15s linear infinite;
+            padding-left: 100%; /* 오른쪽 끝에서 시작 */
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
@@ -164,6 +176,14 @@
             <div class="relative z-10">
                 <h1 class="text-2xl font-bold text-main leading-tight mb-1">엔조이 여러분,</h1>
                 <p id="time-msg" class="text-2xl font-bold text-main leading-tight opacity-90"></p>
+            </div>
+        </div>
+
+        <!-- 공지사항 롤링 배너 (알약 모양, 파스텔 레드) -->
+        <div class="fade-in-up delay-100 mb-3 overflow-hidden rounded-full bg-[#FFEFF1] border border-[#FFD1D6] py-1.5 relative mx-1 shadow-sm">
+            <div class="whitespace-nowrap animate-marquee text-xs font-bold text-[#F43F5E]">
+                <span class="mr-8">📢 엔조이 2026년 첫 정기 모임 개최 임박!! 많은 의견 바람.</span>
+                <span>📍 실시간 위치 공유 서비스 조용히 오픈!</span>
             </div>
         </div>
 
@@ -180,18 +200,18 @@
             </div>
         </div>
 
-        <!-- 섹션 1.5: 얘들아, 어디야? 나 여기! (New Position with Badge) -->
-        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group flex items-center justify-between" onclick="window.haptic(); window.location.href='map.html'">
+        <!-- 섹션 1.5: 위치 공유 서비스 (Updated - Pastel Yellow) -->
+        <div class="toss-card p-6 mb-4 fade-in-up delay-100 group flex items-center justify-between !bg-[#FFFBEB]/60 backdrop-blur-md border border-white/60 hover:!bg-[#FEF3C7]/70 transition-colors" onclick="window.haptic(); window.location.href='map.html'">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-emerald-50/80 flex items-center justify-center text-emerald-500 text-xl shadow-sm">
-                    <i class="fa-solid fa-location-dot"></i>
+                <div class="w-12 h-12 rounded-full bg-white/60 flex items-center justify-center text-amber-500 text-xl shadow-sm">
+                    <i class="fa-solid fa-map-location-dot"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-main">얘들아, 어디야? 나 여기!</h2>
-                    <p class="text-sm font-medium text-sub">실시간 위치 공유</p>
+                    <h2 class="text-xl font-bold text-main">얘들아 어디야? 나 여기!</h2>
+                    <p class="text-sm font-medium text-amber-600/80">실시간 위치 공유</p>
                 </div>
             </div>
-            <span class="bg-emerald-500 text-white text-[9px] font-bold px-2 py-1 rounded-full tracking-tight">NEW</span>
+            <span class="bg-amber-400 text-white text-[9px] font-bold px-2 py-1 rounded-full tracking-tight">NEW</span>
         </div>
 
         <!-- 섹션 2: 엔조이 서비스 -->
@@ -443,6 +463,25 @@
                 <button onclick="window.haptic(); window.closeModal('admin-modal')" class="text-gray-400 hover:text-gray-600 active:scale-90"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="overflow-y-auto flex-1 pr-1">
+                <!-- NEW: 진짜 클라우드 백업 기능 -->
+                <div class="mb-6 bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <label class="block text-xs text-blue-600 font-bold mb-2">☁️ 클라우드 백업 (서버 저장)</label>
+                    <div class="flex gap-2 mb-2">
+                        <button onclick="window.createCloudBackup()" class="flex-1 bg-white border border-blue-200 text-blue-600 font-bold py-2 rounded-lg text-xs shadow-sm hover:bg-blue-50 active:bg-blue-100">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 현재 상태 저장
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <select id="backup-select" class="w-full bg-white border border-gray-200 text-gray-600 text-xs rounded-lg p-2 mb-2 h-9 focus:ring-1 focus:ring-blue-500 outline-none">
+                            <option value="">백업 기록을 불러오는 중...</option>
+                        </select>
+                        <button onclick="window.restoreCloudBackup()" class="w-full bg-red-100 text-red-500 border border-red-200 font-bold py-2 rounded-lg text-xs shadow-sm hover:bg-red-200 active:bg-red-300">
+                            <i class="fa-solid fa-clock-rotate-left mr-1"></i> 선택한 날짜로 되돌리기
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1.5 leading-snug">* '현재 상태 저장'을 누르면 서버에 안전하게 보관됩니다. 문제가 생기면 목록에서 선택해 되돌리세요.</p>
+                </div>
+
                 <div class="mb-6">
                     <label class="block text-xs text-gray-500 font-bold mb-1">총 회비 잔액</label>
                     <input type="number" id="admin-total-balance" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-lg text-main focus:outline-none focus:border-blue-500 transition-colors" placeholder="금액 입력">
@@ -481,9 +520,16 @@
                         <option value="etc">기타</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs text-gray-500 font-bold mb-1.5">날짜</label>
-                    <input type="date" id="add-sch-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-main focus:outline-none focus:border-blue-500 transition-colors">
+                <!-- 날짜 입력 필드 수정: 시작일/종료일 분리 -->
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-500 font-bold mb-1.5">시작일</label>
+                        <input type="date" id="add-sch-start-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-main focus:outline-none focus:border-blue-500 transition-colors">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-500 font-bold mb-1.5">종료일</label>
+                        <input type="date" id="add-sch-end-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-main focus:outline-none focus:border-blue-500 transition-colors">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs text-gray-500 font-bold mb-1.5">시간</label>
@@ -512,42 +558,6 @@
         </div>
     </div>
 
-    <!-- 수정된 스타트업 팝업: 공지사항 -->
-    <div id="startup-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-left relative overflow-hidden">
-            <h3 class="text-xl font-bold text-main mb-4 mt-1 text-center">공지사항 🔔</h3>
-            
-            <div class="space-y-3 mb-6">
-                <!-- 1. 엔조이 증권 종료 (Red) -->
-                <div class="bg-red-50 p-3.5 rounded-2xl border border-red-100">
-                    <p class="text-sm font-bold text-red-500 mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-chart-line-down"></i> 엔조이 증권 서비스 종료 📉
-                    </p>
-                    <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
-                        <span class="font-bold text-gray-800">엔조이 증권 서비스가 종료되었습니다.</span><br>
-                        그동안 이용해 주셔서 감사합니다.
-                    </p>
-                </div>
-                
-                <!-- 2. 실시간 위치공유 서비스 오픈 (Blue) - Modified -->
-                <div class="bg-blue-50 p-3.5 rounded-2xl border border-blue-100">
-                    <p class="text-sm font-bold text-blue-600 mb-1 flex items-center gap-1.5">
-                        <i class="fa-solid fa-location-dot"></i> 실시간 위치공유 서비스 오픈 📍
-                    </p>
-                    <p class="text-xs text-gray-600 leading-relaxed pl-0.5">
-                        <span class="font-bold text-gray-800">이제 친구들의 위치를 실시간으로 확인하세요.</span><br>
-                        약속 장소에서 쉽게 만나요!
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="window.haptic(); window.closeModal('startup-modal')" class="flex-1 bg-[#F2F4F6] text-[#4E5968] font-bold py-3.5 rounded-xl hover:bg-gray-200 transition-colors active:scale-95">닫기</button>
-                <button onclick="window.haptic(); window.closeModal('startup-modal')" class="flex-1 bg-[#3182F6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md shadow-blue-500/20 active:scale-95">확인했어요</button>
-            </div>
-        </div>
-    </div>
-
     <!-- 일반 스크립트 (UI Logic) - 먼저 로드 -->
     <script>
         // Global Variables
@@ -568,38 +578,23 @@
             const screen = document.getElementById('browser-screen');
             const frame = document.getElementById('internal-browser-frame');
             const loader = document.getElementById('browser-loader');
-            
-            // 브라우저 히스토리 상태 추가 (뒤로가기 버튼으로 닫을 수 있게 함)
             window.history.pushState({modal: 'browser'}, '', '');
-
-            // UI 세팅
-            loader.style.display = 'flex'; // 로딩 표시
+            loader.style.display = 'flex';
             frame.src = url;
-            
-            // 화면 표시
             screen.classList.remove('hidden');
             screen.classList.add('flex');
-            
-            // 하단 탭 숨기기
             document.getElementById('bottom-nav').classList.add('hidden');
         };
 
         window.closeBrowser = function() {
             const screen = document.getElementById('browser-screen');
             const frame = document.getElementById('internal-browser-frame');
-            
-            // 화면 숨기기
             screen.classList.add('hidden');
             screen.classList.remove('flex');
-            
-            // iframe 초기화
             frame.src = '';
-            
-            // 하단 탭 다시 보이기
             document.getElementById('bottom-nav').classList.remove('hidden');
         };
 
-        // 브라우저 뒤로가기 이벤트 감지 (앱 내 모달 닫기)
         window.onpopstate = function(event) {
             const screen = document.getElementById('browser-screen');
             if (screen && !screen.classList.contains('hidden')) {
@@ -634,13 +629,11 @@
             document.getElementById('admin-month-title').innerText = `${window.currentDuesMonth}월`; 
             document.getElementById('admin-total-balance').value = window.meetingData.totalBalance || 0; 
             
-            // 멤버 납부 상태 렌더링
             const list = document.getElementById('admin-member-list'); list.innerHTML = ''; 
             if (!window.meetingData.records[window.currentDuesMonth]) window.meetingData.records[window.currentDuesMonth] = createEmptyMonthData(); 
             const records = window.meetingData.records[window.currentDuesMonth]; 
             records.forEach((m, i) => { const isPaid = m.status === 'paid'; list.innerHTML += `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><span class="font-bold text-sm text-main">${m.name}</span><div class="flex items-center gap-2"><input type="number" id="edit-amt-${i}" class="w-20 text-right text-xs p-1 border rounded" value="${m.amount}"><button onclick="window.togglePay(${i})" class="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isPaid ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}">${isPaid ? '납부' : '미납'}</button></div></div>`; }); 
             
-            // 면제권 관리 렌더링 (기본값 처리 추가)
             const ticketList = document.getElementById('admin-ticket-list'); ticketList.innerHTML = '';
             const members = ['홍박사', '류짱', '오스틴', '전시기', '이진누', '성원제'];
             const exemptions = window.meetingData.exemptions || { '류짱': 1, '성원제': 1, '전시기': 1 };
@@ -648,8 +641,11 @@
                 const count = exemptions[name] || 0;
                 ticketList.innerHTML += `<div class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl"><span class="font-bold text-sm text-main">${name}</span><div class="flex items-center gap-2"><button onclick="window.updateExemption('${name}', -1)" class="w-7 h-7 rounded-full bg-white text-emerald-600 flex items-center justify-center font-bold shadow-sm active:scale-90">-</button><span id="admin-ticket-${name}" class="font-bold text-sm w-4 text-center">${count}</span><button onclick="window.updateExemption('${name}', 1)" class="w-7 h-7 rounded-full bg-white text-emerald-600 flex items-center justify-center font-bold shadow-sm active:scale-90">+</button></div></div>`;
             });
+            
+            // 모달 열 때 백업 리스트 불러오기
+            if(window.fetchBackupList) window.fetchBackupList();
         };
-        
+
         window.updateExemption = function(name, delta) {
             const el = document.getElementById(`admin-ticket-${name}`);
             let val = parseInt(el.innerText);
@@ -668,19 +664,65 @@
             window.meetingData.totalBalance = bal; 
             const records = window.meetingData.records[window.currentDuesMonth]; 
             if(records) { records.forEach((m, i) => { const val = document.getElementById(`edit-amt-${i}`).value; m.amount = parseInt(val) || 0; }); } 
-            
-            // 면제권 데이터는 updateExemption에서 실시간으로 객체에 반영됨
             if(!window.meetingData.exemptions) window.meetingData.exemptions = { '류짱': 1, '성원제': 1, '전시기': 1 };
 
             try { await window.setDoc(window.doc(window.meetingDb, ...window.MEETING_PATH), window.meetingData); alert('저장 완료! ✅'); window.closeModal('admin-modal'); } catch (e) { console.error(e); alert('저장 실패'); } 
         };
-        window.saveScheduleToFirebase = async function() { if (!window.meetingDb) { alert('DB 연결 확인 중...'); return; } const category = document.getElementById('add-sch-category').value; const date = document.getElementById('add-sch-date').value; const time = document.getElementById('add-sch-time').value || '하루 종일'; const title = document.getElementById('add-sch-title').value; const editKey = document.getElementById('sch-edit-date-key').value; const editIdx = document.getElementById('sch-edit-index').value; const isEdit = (editKey && editIdx !== ''); if (!date || !title) { alert('날짜와 내용을 입력해주세요.'); return; } const newEvent = { type: category, title: title, time: time }; try { if(isEdit) { const docSnap = await window.getDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH)); if(docSnap.exists()) { const data = docSnap.data(); if(editKey !== date) { const oldList = data[editKey]; if(oldList) { oldList.splice(editIdx, 1); if(oldList.length === 0) delete data[editKey]; else data[editKey] = oldList; } const newList = data[date] || []; newList.push(newEvent); data[date] = newList; } else { const list = data[date]; if(list) { list[editIdx] = newEvent; } } await window.setDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH), data); } } else { await window.setDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH), { [date]: window.arrayUnion(newEvent) }, { merge: true }); } alert(isEdit ? '수정되었습니다!' : '등록되었습니다!'); window.closeModal('schedule-modal'); } catch (e) { console.error(e); alert('처리 실패'); } };
+        
+        // 일정 저장 로직 수정 (다중 날짜 지원)
+        window.saveScheduleToFirebase = async function() { 
+            if (!window.meetingDb) { alert('DB 연결 확인 중...'); return; } 
+            const category = document.getElementById('add-sch-category').value; 
+            const startDateStr = document.getElementById('add-sch-start-date').value; 
+            let endDateStr = document.getElementById('add-sch-end-date').value; 
+            const time = document.getElementById('add-sch-time').value || '하루 종일'; 
+            const title = document.getElementById('add-sch-title').value; 
+            const editKey = document.getElementById('sch-edit-date-key').value; 
+            const editIdx = document.getElementById('sch-edit-index').value; 
+            const isEdit = (editKey && editIdx !== ''); 
+
+            if (!startDateStr || !title) { alert('시작일과 내용을 입력해주세요.'); return; }
+            if (!endDateStr) endDateStr = startDateStr; // 종료일 없으면 시작일과 동일
+            if (endDateStr < startDateStr) { alert('종료일이 시작일보다 빠를 수 없습니다.'); return; }
+
+            const newEvent = { type: category, title: title, time: time }; 
+            
+            try { 
+                const docRef = window.doc(window.meetingDb, ...window.SCHEDULE_PATH);
+                const docSnap = await window.getDoc(docRef);
+                let data = docSnap.exists() ? docSnap.data() : {};
+
+                if(isEdit) { 
+                    // 수정 시: 기존 데이터 삭제 후 새로 추가 (범위 변경 가능성 때문)
+                    const oldList = data[editKey]; 
+                    if(oldList) { 
+                        oldList.splice(editIdx, 1); 
+                        if(oldList.length === 0) delete data[editKey]; 
+                        else data[editKey] = oldList; 
+                    } 
+                } 
+
+                // 날짜 범위 루프 (시작일 ~ 종료일)
+                const start = new Date(startDateStr);
+                const end = new Date(endDateStr);
+                
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateKey = d.toISOString().split('T')[0];
+                    const list = data[dateKey] || [];
+                    list.push(newEvent);
+                    data[dateKey] = list;
+                }
+
+                await window.setDoc(docRef, data); 
+                alert(isEdit ? '수정되었습니다!' : '등록되었습니다!'); 
+                window.closeModal('schedule-modal'); 
+            } catch (e) { console.error(e); alert('처리 실패'); } 
+        };
+
         window.deleteSchedule = async function() { if(!confirm('정말 삭제하시겠습니까?')) return; const dateKey = document.getElementById('sch-edit-date-key').value; const index = document.getElementById('sch-edit-index').value; try { const docSnap = await window.getDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH)); if(docSnap.exists()) { const data = docSnap.data(); const list = data[dateKey]; if(list) { list.splice(index, 1); if(list.length === 0) delete data[dateKey]; else data[dateKey] = list; await window.setDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH), data); alert('삭제되었습니다.'); window.closeModal('schedule-modal'); } } } catch(e) { console.error(e); alert('삭제 실패'); } }
         window.changeDuesMonth = function(delta) { window.currentDuesMonth += delta; if (window.currentDuesMonth < 1) window.currentDuesMonth = 1; if (window.currentDuesMonth > 12) window.currentDuesMonth = 12; window.renderDues(window.currentDuesMonth); }
         
-        // [Modified] updateMeetingUI: DB 데이터 마이그레이션 (지노 -> 이진누 자동 변환)
         window.updateMeetingUI = function(data) { 
-            // 1. 기존 데이터 내 '지노'를 '이진누'로 실시간 변환
             if (data.records) {
                 Object.keys(data.records).forEach(month => {
                     data.records[month].forEach(member => {
@@ -695,7 +737,6 @@
 
             window.meetingData = data; 
             
-            // 데이터 없을 시 기본값 주입
             if (!window.meetingData.exemptions) {
                 window.meetingData.exemptions = { '류짱': 1, '성원제': 1, '전시기': 1 };
             }
@@ -704,11 +745,44 @@
             window.renderDues(window.currentDuesMonth); 
         };
         
-        window.openAddScheduleModal = () => { document.getElementById('sch-modal-title').innerText = '일정 추가'; document.getElementById('sch-delete-btn').classList.add('hidden'); document.getElementById('sch-save-btn').innerText = '등록하기'; document.getElementById('sch-edit-date-key').value = ''; document.getElementById('sch-edit-index').value = ''; document.getElementById('add-sch-title').value = ''; document.getElementById('add-sch-time').value = ''; document.getElementById('add-sch-date').value = ''; document.getElementById('schedule-modal').classList.remove('hidden'); document.getElementById('schedule-modal').classList.add('flex'); };
-        window.openEditScheduleModal = (dateStr, index) => { if (!dateStr) { window.openAddScheduleModal(); return; } document.getElementById('sch-modal-title').innerText = '일정 수정'; document.getElementById('sch-delete-btn').classList.remove('hidden'); document.getElementById('sch-save-btn').innerText = '수정하기'; document.getElementById('sch-edit-date-key').value = dateStr; document.getElementById('sch-edit-index').value = index; const list = window.dynamicEvents[dateStr]; if(list && list[index]) { const event = list[index]; document.getElementById('add-sch-category').value = event.type; document.getElementById('add-sch-date').value = dateStr; document.getElementById('add-sch-time').value = event.time; document.getElementById('add-sch-title').value = event.title; } document.getElementById('schedule-modal').classList.remove('hidden'); document.getElementById('schedule-modal').classList.add('flex'); };
+        // 모달 열기 함수 수정
+        window.openAddScheduleModal = () => { 
+            document.getElementById('sch-modal-title').innerText = '일정 추가'; 
+            document.getElementById('sch-delete-btn').classList.add('hidden'); 
+            document.getElementById('sch-save-btn').innerText = '등록하기'; 
+            document.getElementById('sch-edit-date-key').value = ''; 
+            document.getElementById('sch-edit-index').value = ''; 
+            document.getElementById('add-sch-title').value = ''; 
+            document.getElementById('add-sch-time').value = ''; 
+            document.getElementById('add-sch-start-date').value = ''; 
+            document.getElementById('add-sch-end-date').value = ''; 
+            document.getElementById('schedule-modal').classList.remove('hidden'); 
+            document.getElementById('schedule-modal').classList.add('flex'); 
+        };
+
+        window.openEditScheduleModal = (dateStr, index) => { 
+            if (!dateStr) { window.openAddScheduleModal(); return; } 
+            document.getElementById('sch-modal-title').innerText = '일정 수정'; 
+            document.getElementById('sch-delete-btn').classList.remove('hidden'); 
+            document.getElementById('sch-save-btn').innerText = '수정하기'; 
+            document.getElementById('sch-edit-date-key').value = dateStr; 
+            document.getElementById('sch-edit-index').value = index; 
+            
+            const list = window.dynamicEvents[dateStr]; 
+            if(list && list[index]) { 
+                const event = list[index]; 
+                document.getElementById('add-sch-category').value = event.type; 
+                document.getElementById('add-sch-start-date').value = dateStr; 
+                document.getElementById('add-sch-end-date').value = dateStr; // 수정 시 기본적으로 해당 날짜로 세팅
+                document.getElementById('add-sch-time').value = event.time; 
+                document.getElementById('add-sch-title').value = event.title; 
+            } 
+            document.getElementById('schedule-modal').classList.remove('hidden'); 
+            document.getElementById('schedule-modal').classList.add('flex'); 
+        };
+
         window.checkStock = () => { window.location.href = "stock.html"; };
         
-        // 링크 연결 방식 변경 (iframe 사용)
         window.goToMusic = () => window.openBrowser("https://won429.github.io/enjoy/");
         window.playGame = () => window.location.href = "game.html";
         window.goToTravel = () => window.openBrowser("https://won429.github.io/enjoy_trip/");
@@ -718,7 +792,6 @@
         window.goMeeting = () => { window.activeTabIndex = 2; window.updateTabUI(2); }
         window.changeMonth = (delta) => { window.viewMonth += delta; if (window.viewMonth < 0) { window.viewYear--; window.viewMonth = 11; } else if (window.viewMonth > 11) { window.viewYear++; window.viewMonth = 0; } window.renderCalendar(window.viewYear, window.viewMonth); }
 
-        // Data Helpers
         function createEmptyMonthData() { const members = ['홍박사', '류짱', '오스틴', '전시기', '이진누', '성원제']; return members.map(name => ({ name: name, status: 'unpaid', amount: 0, isLeader: name === '전시기' })); }
         function getInitialMeetingData() { 
             return { 
@@ -735,16 +808,13 @@
         const memberColors = { '홍박사': { bg: 'bg-blue-100/80', text: 'text-blue-600', char: '홍' }, '류짱': { bg: 'bg-purple-100/80', text: 'text-purple-600', char: '류' }, '오스틴': { bg: 'bg-emerald-100/80', text: 'text-emerald-600', char: '오' }, '전시기': { bg: 'bg-orange-100/80', text: 'text-orange-600', char: '전' }, '이진누': { bg: 'bg-indigo-100/80', text: 'text-indigo-600', char: '이' }, '성원제': { bg: 'bg-pink-100/80', text: 'text-pink-600', char: '성' } };
         
         window.renderMeetingStatus = function() {
-            // 부과금 렌더링
             const penaltyListMini = document.getElementById('penalty-list-mini');
             const ticketListMini = document.getElementById('ticket-list-mini');
             
             if (!penaltyListMini || !ticketListMini) return;
 
-            // [추가된 안전장치] 데이터가 아직 로드되지 않았으면 초기값 사용
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             
-            // 1. 부과금 로직
             const now = new Date(); const currentRealMonth = now.getMonth() + 1;
             let htmlPenalty = ''; let hasPenalty = false;
             
@@ -775,9 +845,7 @@
             if (!hasPenalty) htmlPenalty = `<div class="h-full flex items-center justify-center text-xs text-red-300">없음</div>`;
             penaltyListMini.innerHTML = htmlPenalty;
 
-            // 2. 면제권 로직
             let htmlTicket = '';
-            // Fix: Use defaults if missing in fetched data
             const exemptions = window.meetingData.exemptions || { '류짱': 1, '성원제': 1, '전시기': 1 };
             let hasTicket = false;
             for (const [name, count] of Object.entries(exemptions)) {
@@ -792,13 +860,8 @@
 
         window.renderDues = function(month) {
             const list = document.getElementById('dues-list'); const title = document.getElementById('dues-month-title'); if(!list) return; title.innerText = `${month}월 기준`; list.innerHTML = '';
-            
-            // [추가된 안전장치] 데이터 로드 전 호출 시 초기 데이터 할당
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
-
-            // 탭이 모임통장일 때 현황판 업데이트
             if(window.activeTabIndex === 2) window.renderMeetingStatus();
-            
             let records = []; if (window.meetingData && window.meetingData.records) { records = window.meetingData.records[month] || []; }
             if (records.length === 0) { list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">내역이 없습니다.</div>`; return; }
             records.forEach((m, i) => {
@@ -807,7 +870,6 @@
             });
         };
         
-        // 기존 checkAndRenderPenalty 함수는 renderMeetingStatus로 대체되었으므로 제거하거나 비워둠
         window.checkAndRenderPenalty = function() {}; 
 
         window.getHolidays = function(y, m) {
@@ -881,7 +943,7 @@
         };
 
         window.onload = () => {
-            setTimeout(() => { document.getElementById('startup-modal').classList.remove('hidden'); document.getElementById('startup-modal').classList.add('flex'); }, 500);
+            // setTimeout(() => { document.getElementById('startup-modal').classList.remove('hidden'); document.getElementById('startup-modal').classList.add('flex'); }, 500); // 팝업 제거
             window.setGreeting();
             window.renderCalendar(window.viewYear, window.viewMonth);
             window.updateTabUI(0);
@@ -896,7 +958,6 @@
             m.classList.remove('hidden'); m.classList.add('flex'); 
         };
 
-        // [New] 대중교통 모달
         window.showTransportModal = () => { 
             const m = document.getElementById('common-modal'); 
             document.getElementById('modal-title').innerText = '서비스 준비 중'; 
@@ -906,17 +967,6 @@
             m.classList.remove('hidden'); m.classList.add('flex'); 
         };
         
-        // [New] 위치 공유 모달
-        window.showLocationModal = () => { 
-            const m = document.getElementById('common-modal'); 
-            document.getElementById('modal-title').innerText = '서비스 준비 중'; 
-            document.getElementById('modal-desc').innerHTML = '위치 공유 서비스는<br>현재 준비 중인 기능입니다! 📍'; 
-            document.getElementById('modal-icon').className = 'fa-solid fa-location-dot'; 
-            document.getElementById('modal-icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-50 text-emerald-500'; 
-            m.classList.remove('hidden'); m.classList.add('flex'); 
-        };
-        
-        // [New] 버스 페이지 연결 함수
         window.goToBus = () => window.openBrowser("https://won429.github.io/bus/");
 
     </script>
@@ -925,14 +975,22 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, getDoc, addDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         window.getDoc = getDoc; 
         window.doc = doc;
         window.setDoc = setDoc;
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.limit = limit;
+        window.getDocs = getDocs;
         window.arrayUnion = arrayUnion;
+        
         window.MEETING_PATH = ['meeting_account', 'dues_status'];
         window.SCHEDULE_PATH = ['meeting_account', 'schedules'];
+        window.BACKUP_PATH = ['meeting_account', 'backups', 'history']; // 백업 경로
 
         const stockConfig = { apiKey: "AIzaSyABn9xi7a-3LyLpvS6HT03gJUGTlQkgHmk", authDomain: "enjoystock.firebaseapp.com", projectId: "enjoystock", storageBucket: "enjoystock.firebasestorage.app", messagingSenderId: "981969177924", appId: "1:981969177924:web:51b0093a0d1b001ead9b11" };
         const meetingConfig = { apiKey: "AIzaSyAVQ_WdMXKuU2CgTgvSHqLKuAVGPeeDuOQ", authDomain: "enjoy-meeting-account.firebaseapp.com", projectId: "enjoy-meeting-account", storageBucket: "enjoy-meeting-account.firebasestorage.app", messagingSenderId: "956113498506", appId: "1:956113498506:web:b520f2b77fdb3295cb9873" };
@@ -963,32 +1021,131 @@
 
                 await signInAnonymously(meetingAuth).catch((e) => console.warn('Meeting Auth Failed', e));
 
+                // [Safety Patch Applied] - 자동 초기화 방지
                 onSnapshot(doc(window.meetingDb, ...window.MEETING_PATH), (docSnap) => {
-                    if (docSnap.exists()) { window.updateMeetingUI(docSnap.data()); } 
-                    else { const initialData = getInitialMeetingData(); setDoc(doc(window.meetingDb, ...window.MEETING_PATH), initialData); }
+                    if (docSnap.exists()) { 
+                        window.updateMeetingUI(docSnap.data()); 
+                    } else { 
+                        console.warn("데이터가 없습니다.");
+                    }
                 }, (error) => { console.warn("Meeting snapshot error:", error); });
 
                 onSnapshot(doc(window.meetingDb, ...window.SCHEDULE_PATH), (docSnap) => {
-                    if (docSnap.exists()) { window.dynamicEvents = docSnap.data(); window.renderCalendar(window.viewYear, window.viewMonth); } 
-                    else { setDoc(doc(window.meetingDb, ...window.SCHEDULE_PATH), {}); }
+                    if (docSnap.exists()) { 
+                        window.dynamicEvents = docSnap.data(); 
+                        window.renderCalendar(window.viewYear, window.viewMonth); 
+                    } else { 
+                        window.dynamicEvents = {};
+                    }
                 }, (error) => { console.warn("Schedule snapshot error:", error); });
             } catch(e) { console.error("Firebase Init Error:", e); }
         }
 
+        // [New] 클라우드 백업 생성
+        window.createCloudBackup = async function() {
+            if (!window.meetingData || !window.meetingDb) { alert("저장할 데이터가 없습니다."); return; }
+            const confirmSave = confirm("현재 상태를 서버에 백업하시겠습니까?");
+            if (!confirmSave) return;
+
+            try {
+                // 현재 시간으로 백업 데이터 생성
+                const backupData = {
+                    ...window.meetingData,
+                    savedAt: new Date().toISOString()
+                };
+                
+                // 백업 컬렉션에 추가
+                await addDoc(collection(window.meetingDb, ...window.BACKUP_PATH), backupData);
+                alert("✅ 안전하게 백업되었습니다!");
+                
+                // 리스트 갱신
+                window.fetchBackupList();
+            } catch (e) {
+                console.error(e);
+                alert("백업 중 오류가 발생했습니다.");
+            }
+        };
+
+        // [New] 백업 리스트 불러오기
+        window.fetchBackupList = async function() {
+            if (!window.meetingDb) return;
+            const selectEl = document.getElementById('backup-select');
+            selectEl.innerHTML = '<option>불러오는 중...</option>';
+
+            try {
+                // 최근 5개 백업 가져오기
+                const q = query(collection(window.meetingDb, ...window.BACKUP_PATH), orderBy('savedAt', 'desc'), limit(5));
+                const querySnapshot = await getDocs(q);
+                
+                selectEl.innerHTML = '';
+                if (querySnapshot.empty) {
+                    selectEl.innerHTML = '<option value="">저장된 백업이 없습니다.</option>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const date = new Date(data.savedAt);
+                    const label = `${date.getMonth()+1}월 ${date.getDate()}일 ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')} 저장됨`;
+                    
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.innerText = label;
+                    // 데이터 전체를 value에 넣을 수 없으므로, ID만 넣고 복원 시 다시 fetch하거나
+                    // 간단하게는 여기서는 docID만 사용
+                    selectEl.appendChild(option);
+                });
+            } catch (e) {
+                console.error(e);
+                selectEl.innerHTML = '<option>백업 목록 로드 실패</option>';
+            }
+        };
+
+        // [New] 선택한 백업으로 복원
+        window.restoreCloudBackup = async function() {
+            const selectEl = document.getElementById('backup-select');
+            const docId = selectEl.value;
+            if (!docId) { alert("복원할 백업을 선택해주세요."); return; }
+
+            if (!confirm("⚠️ 정말 이 시점으로 되돌리시겠습니까?\n현재 데이터는 사라지고 선택한 백업으로 덮어씌워집니다.")) return;
+
+            try {
+                // 선택한 백업 문서 가져오기
+                const backupDocRef = doc(window.meetingDb, ...window.BACKUP_PATH, docId);
+                const backupSnap = await getDoc(backupDocRef);
+
+                if (!backupSnap.exists()) {
+                    alert("백업 데이터를 찾을 수 없습니다.");
+                    return;
+                }
+
+                const backupData = backupSnap.data();
+                // savedAt 필드는 실제 데이터엔 불필요하므로 제거 (선택사항)
+                delete backupData.savedAt;
+
+                // 메인 데이터 덮어쓰기
+                await setDoc(doc(window.meetingDb, ...window.MEETING_PATH), backupData);
+                alert("✅ 복원 완료! 데이터가 성공적으로 되돌려졌습니다.");
+                window.closeModal('admin-modal');
+            } catch (e) {
+                console.error(e);
+                alert("복원 중 오류가 발생했습니다.");
+            }
+        };
+
         function updateStockUI(data) {
             const priceEl = document.getElementById('ticker-price'); const changeEl = document.getElementById('ticker-change');
-            if (!priceEl || !changeEl) return; // 메뉴가 삭제되었으므로 오류 방지
+            if (!priceEl || !changeEl) return;
 
             const base = data.basePrice || 1250; const currentPrice = data.currentPrice;
             
-            // 1. 가격 및 등락률 업데이트
             priceEl.innerText = currentPrice.toLocaleString() + "원";
             const diff = currentPrice - base; const rate = ((diff / base) * 100).toFixed(1); const sign = diff > 0 ? '+' : '';
             
             const isUp = diff > 0;
             const isDown = diff < 0;
             const colorClass = isUp ? 'text-red-500' : (isDown ? 'text-blue-500' : 'text-gray-400');
-            const colorHex = isUp ? '#F04452' : '#3182F6'; // 상승: 빨강, 하락/보합: 파랑
+            const colorHex = isUp ? '#F04452' : '#3182F6';
 
             if (isUp) { 
                 priceEl.className = `text-2xl font-bold tabular-nums tracking-tight ${colorClass} price-up`; 
@@ -1004,20 +1161,15 @@
                 changeEl.innerText = "0.0%"; 
             }
 
-            // 2. 차트 그리기 (SVG)
             const history = data.history || [];
-            // 데이터가 없으면 기준가와 현재가로 단순 직선 생성
             const chartData = history.length > 0 ? history : [base, currentPrice];
             
             const svg = document.getElementById('mini-chart');
             if (svg && chartData.length > 1) {
                 const min = Math.min(...chartData);
                 const max = Math.max(...chartData);
-                const range = max - min || 1; // 0으로 나누기 방지
+                const range = max - min || 1;
                 
-                // 좌표 계산 (SVG viewBox 0 0 100 50 기준)
-                // x: 0 ~ 100
-                // y: 0 ~ 50 (값이 클수록 y는 작아야 함 - 위로 올라감)
                 const points = chartData.map((val, i) => {
                     const x = (i / (chartData.length - 1)) * 100;
                     const y = 50 - ((val - min) / range) * 50; 
@@ -1028,19 +1180,16 @@
                 const fill = document.getElementById('chart-fill');
                 const gradStops = document.getElementById('chart-grad').children;
 
-                // 라인 및 채우기 업데이트
                 if (line) {
                     line.setAttribute('points', points);
                     line.setAttribute('stroke', colorHex);
                 }
                 if (fill) {
-                    // 시작점과 끝점을 바닥(y=60)으로 내려서 닫힌 도형 만들기
                     const firstX = points.split(' ')[0].split(',')[0];
                     const lastX = points.split(' ')[points.split(' ').length-1].split(',')[0];
                     fill.setAttribute('d', `M ${points} L ${lastX},60 L ${firstX},60 Z`);
                 }
                 
-                // 그라디언트 색상 업데이트
                 if (gradStops && gradStops.length >= 2) {
                     gradStops[0].setAttribute('stop-color', colorHex);
                     gradStops[1].setAttribute('stop-color', colorHex);
