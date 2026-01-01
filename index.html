@@ -182,8 +182,8 @@
         <!-- 공지사항 롤링 배너 (알약 모양, 파스텔 레드) -->
         <div class="fade-in-up delay-100 mb-3 overflow-hidden rounded-full bg-[#FFEFF1] border border-[#FFD1D6] py-1.5 relative mx-1 shadow-sm">
             <div class="whitespace-nowrap animate-marquee text-xs font-bold text-[#F43F5E]">
-                <span class="mr-8">📢 엔조이 2026년 첫 정기 모임 개최 임박!! 많은 의견 바람.</span>
-                <span>📍 실시간 위치 공유 서비스 조용히 오픈!</span>
+                <span class="mr-8">📢 엔조이 2026년 첫 모임 1월 26일 ~ 27일 개최 확정!</span>
+                <span>☀️ 2026년 병오년이 밝았습니다. 엔조이 여러분, 새해 복 많이 받으십시오.</span>
             </div>
         </div>
 
@@ -562,7 +562,7 @@
     <script>
         // Global Variables
         window.meetingData = null;
-        window.currentDuesMonth = 12;
+        window.currentDuesMonth = new Date().getMonth() + 1;
         window.dynamicEvents = {};
         window.viewYear = new Date().getFullYear();
         window.viewMonth = new Date().getMonth();
@@ -720,7 +720,7 @@
         };
 
         window.deleteSchedule = async function() { if(!confirm('정말 삭제하시겠습니까?')) return; const dateKey = document.getElementById('sch-edit-date-key').value; const index = document.getElementById('sch-edit-index').value; try { const docSnap = await window.getDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH)); if(docSnap.exists()) { const data = docSnap.data(); const list = data[dateKey]; if(list) { list.splice(index, 1); if(list.length === 0) delete data[dateKey]; else data[dateKey] = list; await window.setDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH), data); alert('삭제되었습니다.'); window.closeModal('schedule-modal'); } } } catch(e) { console.error(e); alert('삭제 실패'); } }
-        window.changeDuesMonth = function(delta) { window.currentDuesMonth += delta; if (window.currentDuesMonth < 1) window.currentDuesMonth = 1; if (window.currentDuesMonth > 12) window.currentDuesMonth = 12; window.renderDues(window.currentDuesMonth); }
+        window.changeDuesMonth = function(delta) { window.currentDuesMonth += delta; if (window.currentDuesMonth < 1) window.currentDuesMonth = 12; if (window.currentDuesMonth > 12) window.currentDuesMonth = 1; window.renderDues(window.currentDuesMonth); }
         
         window.updateMeetingUI = function(data) { 
             if (data.records) {
@@ -862,7 +862,15 @@
             const list = document.getElementById('dues-list'); const title = document.getElementById('dues-month-title'); if(!list) return; title.innerText = `${month}월 기준`; list.innerHTML = '';
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             if(window.activeTabIndex === 2) window.renderMeetingStatus();
-            let records = []; if (window.meetingData && window.meetingData.records) { records = window.meetingData.records[month] || []; }
+            
+            let records = []; 
+            // 데이터가 있으면 가져오고, 없으면 기본 6명(미납 상태) 생성
+            if (window.meetingData && window.meetingData.records && window.meetingData.records[month]) { 
+                records = window.meetingData.records[month]; 
+            } else {
+                records = createEmptyMonthData(); 
+            }
+
             if (records.length === 0) { list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">내역이 없습니다.</div>`; return; }
             records.forEach((m, i) => {
                 const c = memberColors[m.name] || { bg: 'bg-gray-100', text: 'text-gray-600', char: '?' }; const isPaid = m.status === 'paid'; const cardClass = isPaid ? 'glass-card' : 'glass-card-unpaid'; const amtClass = isPaid ? 'text-blue-500' : 'text-red-500'; const penalty = m.penalty ? `<p class="text-[10px] text-red-500 font-bold mt-1">⚠️ ${m.penalty}</p>` : ''; const badge = m.isLeader ? `<span class="ml-1 bg-yellow-100 text-yellow-700 text-[10px] px-1 rounded border border-yellow-200">회장 👑</span>` : '';
