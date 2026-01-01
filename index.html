@@ -443,7 +443,6 @@
                 </div>
                 <iframe id="internal-browser-frame" class="w-full h-full border-0 relative z-10 bg-transparent" allow="autoplay; encrypted-media" onload="document.getElementById('browser-loader').style.display='none'"></iframe>
             </div>
-            <button onclick="window.closeBrowser()" class="absolute bottom-24 left-1/2 -translate-x-1/2 bg-[#4A4036] text-white px-6 py-3 rounded-xl text-lg shadow-lg z-20 active:scale-95 transform rotate-1 border-2 border-[#3E2723]">덮기 📕</button>
         </div>
 
         <!-- =======================
@@ -943,7 +942,22 @@
             if (year === 2025 && month === 12) { events[`${keyPrefix}-12`] = (events[`${keyPrefix}-12`]||[]).concat([{type:'school', title:'우송대 종강', time:'학교'}]); events[`${keyPrefix}-20`] = (events[`${keyPrefix}-20`]||[]).concat([{type:'school', title:'안동대 종강', time:'학교'}]); }
             if (year === 2025 && month === 2) { ['05', '06', '07'].forEach(day => { const k = `${keyPrefix}-${day}`; events[k] = (events[k]||[]).concat([{type:'meet', title:'대구 여행', time:'여행'}]); }); }
             if (year === 2025 && month === 8) { ['29', '30'].forEach(day => { const k = `${keyPrefix}-${day}`; events[k] = (events[k]||[]).concat([{type:'meet', title:'진주 여행', time:'여행'}]); }); }
-            const lastDay = new Date(year, month, 0).getDate(); for(let i=1; i<=lastDay; i++) { const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`; const currentDate = new Date(dateStr); const sanghoonStart = new Date('2025-12-23'); const sanghoonEnd = new Date('2026-01-22'); if (currentDate >= sanghoonStart && currentDate <= sanghoonEnd) { if(i===1 || currentDate.getTime() === sanghoonStart.getTime()) { events[dateStr] = (events[dateStr]||[]).concat([{type:'personal', title:'상훈 일정', time:'장기'}]); } else { events[dateStr] = (events[dateStr]||[]).concat([{type:'personal_dot', title:'상훈 일정', time:''}]); } } }
+            const lastDay = new Date(year, month, 0).getDate(); 
+            for(let i=1; i<=lastDay; i++) { 
+                const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`; 
+                const currentDate = new Date(dateStr); 
+                const sanghoonStart = new Date('2025-12-23'); 
+                const sanghoonEnd = new Date('2026-01-22'); 
+                if (currentDate >= sanghoonStart && currentDate <= sanghoonEnd) { 
+                    if(i===1 || currentDate.getTime() === sanghoonStart.getTime()) { 
+                        let t = '장기';
+                        if(currentDate.getMonth() === 0 && currentDate.getFullYear() === 2026) t = '1월 1일 ~ 22일';
+                        events[dateStr] = (events[dateStr]||[]).concat([{type:'personal', title:'상훈 일정', time:t}]); 
+                    } else { 
+                        events[dateStr] = (events[dateStr]||[]).concat([{type:'personal_dot', title:'상훈 일정', time:''}]); 
+                    } 
+                } 
+            }
             if (window.dynamicEvents) { Object.keys(window.dynamicEvents).forEach(k => { const [dy, dm, dd] = k.split('-').map(Number); if (dy === year && dm === month) { const list = window.dynamicEvents[k]; if(Array.isArray(list)) { const taggedList = list.map(e => ({...e, isFirebase: true})); events[k] = (events[k] || []).concat(taggedList); } } }); }
             return events;
         }
