@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>축하 메시지 - Enjoy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 폰트 및 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --paper-bg: #FDFBF7;
+            --paper-texture: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            --text-ink: #4A4036;
+            --shadow-paper: 2px 4px 10px rgba(74, 64, 54, 0.1);
+        }
+
+        body { 
+            font-family: 'Jua', sans-serif;
+            background-color: #E6E2DA;
+            color: var(--text-ink);
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            touch-action: pan-y;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 100dvh;
+        }
+
+        #mobile-frame {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            background-color: var(--paper-bg);
+            background-image: var(--paper-texture);
+            position: relative;
+            overflow-y: auto; /* 스크롤 가능 */
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            border-left: 1px solid #E0D8D0;
+            border-right: 1px solid #E0D8D0;
+        }
+
+        /* 스크롤바 숨기기 */
+        #mobile-frame::-webkit-scrollbar { display: none; }
+        #mobile-frame { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
+        .pb-safe { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+
+        /* Header Safe Area Fix */
+        .header-safe {
+            padding-top: calc(max(20px, env(safe-area-inset-top)) + 16px);
+            padding-bottom: 16px;
+        }
+
+        /* Paper Card Style */
+        .paper-card {
+            background-color: #FFFFFF;
+            background-image: var(--paper-texture);
+            border-radius: 20px;
+            box-shadow: var(--shadow-paper);
+            border: 1px solid rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        /* Tape Style */
+        .tape {
+            position: absolute;
+            height: 24px;
+            width: 80px;
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            z-index: 10;
+            border-left: 1px dashed rgba(0,0,0,0.1);
+            border-right: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        /* Input Style */
+        .input-line {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px dashed #D7CCC8;
+            padding: 8px 4px;
+            font-family: 'Jua', sans-serif;
+            font-size: 16px;
+            color: var(--text-ink);
+            outline: none;
+            border-radius: 0;
+            transition: border-color 0.3s;
+        }
+        .input-line:focus {
+            border-bottom-color: #FF8BA7;
+        }
+
+        /* Post-it Animation */
+        @keyframes popIn {
+            0% { transform: scale(0.8) rotate(0deg); opacity: 0; }
+            100% { transform: scale(1) rotate(var(--rotate)); opacity: 1; }
+        }
+        .message-item {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 3px 5px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Photo Preview Style */
+        #photo-preview-container {
+            display: none;
+            margin-top: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        #photo-preview {
+            max-height: 100px;
+            border-radius: 8px;
+            border: 2px dashed #D7CCC8;
+            display: none;
+        }
+        .remove-photo-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #FF8BA7;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: none; /* JS로 제어 */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- pt-safe 제거됨 (헤더에서 처리) -->
+    <div id="mobile-frame" class="pb-safe">
+        
+        <!-- Header: py-4 대신 header-safe 클래스 사용 -->
+        <header class="sticky top-0 z-50 bg-[#FDFBF7]/95 backdrop-blur-sm px-6 flex items-center justify-between border-b-2 border-dashed border-[#D7CCC8] header-safe">
+            <button onclick="location.href='index.html'" class="w-10 h-10 rounded-full bg-[#EFEBE9] text-[#8D6E63] flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 class="text-xl text-[#5D4037]">축하 메시지 🎂</h2>
+            <div class="w-10"></div> <!-- Spacer -->
+        </header>
+
+        <div class="px-6 py-6 pb-20">
+            
+            <!-- 입력 폼 (Note Pad Style) -->
+            <div class="paper-card p-6 mb-10 bg-[#FFF9C4] transform rotate-1">
+                <div class="tape" style="background-color: rgba(255,255,255,0.5);"></div>
+                
+                <h3 class="text-lg text-[#5D4037] mb-4 text-center">
+                    <span class="border-b-4 border-[#FF8BA7]/50">전시기에게 한마디!</span> 🖍️
+                </h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-[#8D6E63] ml-1">보내는 사람</label>
+                        <input type="text" id="sender-name" class="input-line" placeholder="닉네임 (예: 홍박사)" maxlength="10">
+                    </div>
+                    <div>
+                        <label class="text-xs text-[#8D6E63] ml-1">내용</label>
+                        <textarea id="message-content" class="input-line h-20 resize-none leading-relaxed" placeholder="생일 축하해! 맛있는 거 많이 먹어~"></textarea>
+                    </div>
+                    
+                    <!-- 사진 첨부 영역 -->
+                    <div class="flex items-center gap-2">
+                        <label for="photo-input" class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#EFEBE9] text-[#5D4037] rounded-lg text-sm hover:bg-[#D7CCC8] transition-colors">
+                            <i class="fa-solid fa-camera"></i> 사진 추가
+                        </label>
+                        <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="previewImage(this)">
+                        
+                        <!-- 미리보기 -->
+                        <div class="relative inline-block">
+                            <img id="photo-preview" src="" alt="Preview">
+                            <button id="remove-photo" class="remove-photo-btn" onclick="removeImage()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="send-btn" class="w-full bg-[#FF8BA7] text-white py-3 rounded-xl shadow-md border-b-4 border-[#F06292] active:border-b-0 active:translate-y-1 transition-all mt-2 font-bold">
+                        벽에 붙이기 📌
+                    </button>
+                </div>
+            </div>
+
+            <!-- 메시지 리스트 (Corkboard Style Grid) -->
+            <div class="mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-thumbtack text-[#FFD166] text-xl transform -rotate-45"></i>
+                <span class="text-[#5D4037] text-lg">도착한 마음들</span>
+            </div>
+
+            <div id="message-grid" class="grid grid-cols-2 gap-4">
+                <!-- 여기에 파이어베이스 데이터가 들어옵니다 -->
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="empty-state" class="hidden text-center py-10 text-[#8D6E63] opacity-60">
+                <p>아직 메시지가 없어요.<br>첫 번째 축하를 남겨주세요!</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 설정 (사용자 제공)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKyUETp59M8RKEX4bgzbaIYbiuVtBpPnE",
+            authDomain: "birthday-message-57512.firebaseapp.com",
+            projectId: "birthday-message-57512",
+            storageBucket: "birthday-message-57512.firebasestorage.app",
+            messagingSenderId: "481279116870",
+            appId: "1:481279116870:web:6f35596837739467192c47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // 데이터 경로 설정을 위한 ID (없으면 기본값 사용)
+        const appId = 'birthday-message-57512'; 
+
+        // 전역 함수 및 변수 설정
+        window.haptic = function() { if (navigator.vibrate) navigator.vibrate(10); }
+
+        const postItColors = [
+            { bg: 'bg-[#FFF7D1]', text: 'text-[#FBC02D]' }, // Yellow
+            { bg: 'bg-[#E0F7FA]', text: 'text-[#006064]' }, // Blue
+            { bg: 'bg-[#FCE4EC]', text: 'text-[#880E4F]' }, // Pink
+            { bg: 'bg-[#E8F5E9]', text: 'text-[#1B5E20]' }, // Green
+            { bg: 'bg-[#F3E5F5]', text: 'text-[#4A148C]' }  // Purple
+        ];
+
+        let selectedImageBase64 = null;
+
+        // 이미지 미리보기 함수
+        window.previewImage = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // 이미지 리사이징 로직 (용량 절약을 위해)
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 300; // DB 저장용으로 다시 작게 조정 (300px)
+                        const scaleSize = MAX_WIDTH / img.width;
+                        
+                        if (scaleSize < 1) {
+                            canvas.width = MAX_WIDTH;
+                            canvas.height = img.height * scaleSize;
+                        } else {
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                        }
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // 압축된 Base64 문자열 저장
+                        selectedImageBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        // 미리보기 표시
+                        const preview = document.getElementById('photo-preview');
+                        const removeBtn = document.getElementById('remove-photo');
+                        preview.src = selectedImageBase64;
+                        preview.style.display = 'block';
+                        removeBtn.style.display = 'flex';
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        window.removeImage = function() {
+            const input = document.getElementById('photo-input');
+            input.value = '';
+            selectedImageBase64 = null;
+            document.getElementById('photo-preview').style.display = 'none';
+            document.getElementById('remove-photo').style.display = 'none';
+        }
+
+        // 인증 및 데이터 로드 시작
+        async function init() {
+            try {
+                // 내 프로젝트이므로 익명 로그인만 수행
+                await signInAnonymously(auth);
+
+                // 실시간 리스너 등록
+                const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+                
+                onSnapshot(messagesRef, (snapshot) => {
+                    const grid = document.getElementById('message-grid');
+                    const emptyState = document.getElementById('empty-state');
+                    
+                    if (snapshot.empty) {
+                        grid.innerHTML = '';
+                        emptyState.classList.remove('hidden');
+                        return;
+                    }
+
+                    emptyState.classList.add('hidden');
+                    
+                    const messages = [];
+                    snapshot.forEach(doc => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    messages.sort((a, b) => {
+                        const timeA = a.timestamp ? a.timestamp.toMillis() : Date.now();
+                        const timeB = b.timestamp ? b.timestamp.toMillis() : Date.now();
+                        return timeB - timeA;
+                    });
+
+                    grid.innerHTML = messages.map(msg => createMessageHTML(msg)).join('');
+                });
+
+            } catch (error) {
+                console.error("Firebase Auth/DB Error:", error);
+            }
+        }
+
+        // HTML 생성 헬퍼
+        function createMessageHTML(data) {
+            const { name, content, style, image } = data; 
+            const pinOrTape = style.type === 'pin'
+                ? `<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#E57373] shadow-inner border border-[#EF9A9A]"></div>`
+                : `<div class="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-6 bg-white/40 rotate-1 shadow-sm"></div>`;
+
+            // 이미지가 있으면 HTML 생성 (Base64 직접 표시)
+            const imageHtml = image 
+                ? `<div class="mb-2 rounded-lg overflow-hidden border border-black/5"><img src="${image}" class="w-full h-auto object-cover" loading="lazy"></div>` 
+                : '';
+
+            return `
+                <div class="message-item ${style.bg} p-4 rounded-sm relative min-h-[140px] flex flex-col justify-between" style="--rotate: ${style.rotate}deg;">
+                    ${pinOrTape}
+                    <div class="flex-1">
+                        ${imageHtml}
+                        <p class="text-[#4A4036] text-sm leading-relaxed mb-2 break-words">${content.replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="text-right mt-2">
+                        <span class="text-xs ${style.text} font-bold">- ${name}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 메시지 추가 함수
+        async function addMessageToDB() {
+            window.haptic();
+            
+            const nameInput = document.getElementById('sender-name');
+            const contentInput = document.getElementById('message-content');
+            
+            const name = nameInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (!name || !content) {
+                alert("이름과 내용을 모두 적어주세요! ✍️");
+                return;
+            }
+
+            if (!auth.currentUser) {
+                alert("잠시만 기다려주세요, 연결 중입니다...");
+                return;
+            }
+
+            const sendBtn = document.getElementById('send-btn');
+            const originalBtnText = sendBtn.innerHTML;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 저장 중...';
+
+            try {
+                // 랜덤 스타일 생성
+                const randomColor = postItColors[Math.floor(Math.random() * postItColors.length)];
+                const randomRotate = (Math.random() * 6 - 3).toFixed(1);
+                const type = Math.random() > 0.5 ? 'pin' : 'tape';
+
+                // 데이터 객체 생성 (이미지도 글자처럼 DB에 바로 저장)
+                const docData = {
+                    name: name,
+                    content: content,
+                    timestamp: serverTimestamp(),
+                    style: {
+                        bg: randomColor.bg,
+                        text: randomColor.text,
+                        rotate: randomRotate,
+                        type: type
+                    }
+                };
+
+                // Base64 이미지 데이터 직접 포함
+                if (selectedImageBase64) {
+                    docData.image = selectedImageBase64;
+                }
+
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), docData);
+
+                // 입력창 초기화
+                nameInput.value = '';
+                contentInput.value = '';
+                window.removeImage();
+                
+                const listTop = document.querySelector('.fa-thumbtack').offsetTop;
+                document.getElementById('mobile-frame').scrollTo({ top: listTop - 100, behavior: 'smooth' });
+
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("메시지 전송에 실패했어요 😢");
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = originalBtnText;
+            }
+        }
+
+        document.getElementById('send-btn').addEventListener('click', addMessageToDB);
+
+        init();
+
+    </script>
+</body>
+</html>
