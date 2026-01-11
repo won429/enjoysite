@@ -277,6 +277,85 @@
             </div>
         </div>
 
+        <!-- [수정] 엔비씨 프로그램: 세로 포스터 스타일 (작은 글씨 삭제 + 순위 숫자 추가) -->
+        <div class="mb-6 fade-in-up delay-200">
+            <div class="flex justify-between items-center mb-3 px-1">
+                <h3 class="text-lg font-bold text-main">엔비씨 프로그램 📺</h3>
+                <button onclick="window.haptic(); window.showNbcModal()" class="text-xs text-gray-400 font-medium">전체보기</button>
+            </div>
+            
+            <!-- 가로 스크롤 컨테이너 (세로형 포스터) -->
+            <div class="flex overflow-x-auto gap-3 pb-4 -mx-5 px-5 scrollbar-hide snap-x snap-mandatory">
+                
+                <!-- 1. 출장엔조이 -->
+                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-white">
+                        <div class="absolute inset-0 bg-gradient-to-br from-[#FFD1D1] to-[#FFE6E6] group-hover:scale-105 transition-transform duration-500"></div>
+                        
+                        <!-- 순위 숫자 (좌측 상단) -->
+                        <div class="absolute top-0 left-2 text-3xl font-black text-white italic drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] z-10">1</div>
+
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                            <i class="fa-solid fa-suitcase-rolling text-red-300 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-red-400 font-black text-lg tracking-tighter leading-tight drop-shadow-sm">출장<br>엔조이</span>
+                        </div>
+                        <div class="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm">ON AIR</div>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800 leading-tight text-center truncate">출장엔조이</p>
+                </div>
+
+                <!-- 2. 그날 엔조이 이야기 -->
+                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-white">
+                        <div class="absolute inset-0 bg-gradient-to-br from-[#E2E8F0] to-[#F1F5F9] group-hover:scale-105 transition-transform duration-500"></div>
+                        
+                        <!-- 순위 숫자 -->
+                        <div class="absolute top-0 left-2 text-3xl font-black text-white italic drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] z-10">2</div>
+
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                            <i class="fa-solid fa-book-open-reader text-gray-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-gray-500 font-black text-lg tracking-tighter leading-tight drop-shadow-sm">그날<br>이야기</span>
+                        </div>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800 leading-tight text-center truncate">그날 엔조이 이야기</p>
+                </div>
+
+                <!-- 3. 엔조이 인기가요 -->
+                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-white">
+                        <div class="absolute inset-0 bg-gradient-to-br from-[#F3E8FF] to-[#FAF5FF] group-hover:scale-105 transition-transform duration-500"></div>
+                        
+                        <!-- 순위 숫자 -->
+                        <div class="absolute top-0 left-2 text-3xl font-black text-white italic drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] z-10">3</div>
+
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                            <i class="fa-solid fa-microphone-lines text-purple-300 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-purple-400 font-black text-lg tracking-tighter leading-tight drop-shadow-sm">엔조이<br>인기가요</span>
+                        </div>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800 leading-tight text-center truncate">엔조이 인기가요</p>
+                </div>
+
+                <!-- 4. 엔쪽이 -->
+                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-white">
+                        <div class="absolute inset-0 bg-gradient-to-br from-[#FEF3C7] to-[#FFFBEB] group-hover:scale-105 transition-transform duration-500"></div>
+                        
+                        <!-- 순위 숫자 -->
+                        <div class="absolute top-0 left-2 text-3xl font-black text-white italic drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] z-10">4</div>
+
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
+                            <i class="fa-solid fa-baby text-amber-300 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-amber-400 font-black text-lg tracking-tighter leading-tight drop-shadow-sm">금쪽같은<br>엔쪽이</span>
+                        </div>
+                        <div class="absolute top-1.5 right-1.5 bg-amber-400 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm">HOT</div>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800 leading-tight text-center truncate">엔쪽이</p>
+                </div>
+
+            </div>
+        </div>
+
         <!-- 섹션 2: 엔조이 서비스 -->
         <h3 class="text-lg font-bold text-main mb-3 px-1 fade-in-up delay-200">엔조이 서비스</h3>
         
