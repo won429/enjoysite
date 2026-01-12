@@ -320,17 +320,44 @@
                     </div>
                 </div>
 
+                <!-- [추가] 슬라이드 6: 출장엔조이 2화 연기 -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3F4F6] via-[#E5E7EB] to-[#D1D5DB] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
+                    <!-- 배경 데코레이션 -->
+                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-gray-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    
+                    <!-- 이모지 -->
+                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
+                        <span class="text-[80px] drop-shadow-md filter brightness-105">🌧️</span>
+                    </div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-gray-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-500 animate-pulse"></span>
+                                DELAY
+                            </span>
+                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
+                                출장엔조이 2화<br>
+                                <span class="text-gray-500">공개 무기한 연기</span>
+                            </h2>
+                            <p class="text-gray-500 font-bold mt-2 text-sm">일정이 확정되면 공지할게요 🙏</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             
-            <!-- [수정] 슬라이드 인디케이터: 5개 + 재생/정지 버튼 추가 (items-center 추가) -->
+            <!-- [수정] 슬라이드 인디케이터: 6개로 증가 -->
             <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 z-30">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-black/60 transition-colors"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
+                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 
-                <!-- [추가] 배너 재생/일시정지 버튼 -->
+                <!-- 배너 재생/일시정지 버튼 -->
                 <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="ml-1 w-4 h-4 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors active:scale-90">
                     <i id="banner-ctrl-icon" class="fa-solid fa-pause text-[8px] text-white"></i>
                 </button>
@@ -1072,10 +1099,10 @@
                 
                 // 현재 위치 기준으로 다음 인덱스 계산
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 5; // 5개 슬라이드 순환
+                const nextIndex = (currentIndex + 1) % 6; // [수정] 6개 슬라이드 순환
                 
                 window.moveBanner(nextIndex);
-            }, 2000); // [수정] 2초(2000ms) 간격으로 변경
+            }, 2000); // 2초(2000ms) 간격
         };
 
         window.stopAutoBanner = function() {
@@ -1099,13 +1126,14 @@
 
         function initBannerScrollListener() {
             const slider = document.getElementById('banner-slider');
-            // [수정] 5개의 인디케이터를 모두 가져옵니다.
+            // [수정] 6개의 인디케이터를 모두 가져옵니다.
             const inds = [
                 document.getElementById('ind-0'),
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4')
+                document.getElementById('ind-4'),
+                document.getElementById('ind-5')
             ];
             
             if(!slider) return;
