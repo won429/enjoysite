@@ -190,7 +190,33 @@
             <!-- [수정] ID 추가: banner-slider -->
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- 슬라이드 1: 새해 인사 -->
+                <!-- [추가] 슬라이드 1: 인터페이스 개편 (첫번째로 추가됨) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF7ED] via-[#FFEDD5] to-[#FED7AA] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
+                    <!-- 배경 데코레이션 -->
+                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+                    
+                    <!-- 이모지 -->
+                    <div class="absolute right-4 bottom-4 transform rotate-[-10deg]">
+                        <span class="text-[80px] drop-shadow-md filter brightness-105">🛠️</span>
+                    </div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-orange-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                                SYSTEM
+                            </span>
+                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
+                                엔조이 사이트<br>
+                                <span class="text-orange-600">인터페이스 개편 중</span>
+                            </h2>
+                            <p class="text-gray-600 font-bold mt-2 text-sm">매일 조금씩 변경되는 걸<br>구경해보세요~ 👀</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 2: 새해 인사 (기존 1번) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F7FF] via-[#E6F4FF] to-[#DBEAFE] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -216,7 +242,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 2: 정기 모임 -->
+                <!-- 슬라이드 3: 정기 모임 (기존 2번) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3F0FF] via-[#E9E6FF] to-[#DCD6FF] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -242,7 +268,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 3: 출장엔조이 1화 -->
+                <!-- 슬라이드 4: 출장엔조이 1화 (기존 3번) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FFDAB9] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -268,7 +294,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 모임비 인상 (확실하게 추가 확인) -->
+                <!-- 슬라이드 5: 모임비 인상 (기존 4번) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -296,12 +322,18 @@
 
             </div>
             
-            <!-- [수정] 슬라이드 인디케이터: 4개 (z-index 30으로 상향) -->
-            <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-30">
+            <!-- [수정] 슬라이드 인디케이터: 5개 + 재생/정지 버튼 추가 (items-center 추가) -->
+            <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 z-30">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-black/60 transition-colors"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
+                <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
+                
+                <!-- [추가] 배너 재생/일시정지 버튼 -->
+                <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="ml-1 w-4 h-4 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors active:scale-90">
+                    <i id="banner-ctrl-icon" class="fa-solid fa-pause text-[8px] text-white"></i>
+                </button>
             </div>
         </div>
 
@@ -701,13 +733,13 @@
                         <option value="etc">기타</option>
                     </select>
                 </div>
-                <!-- 날짜 입력 필드 수정: 시작일/종료일 분리 -->
-                <div class="flex gap-2">
-                    <div class="flex-1">
+                <!-- 날짜 입력 필드 수정: 시작일/종료일 세로 배치로 변경 (겹침 방지) -->
+                <div class="flex flex-col gap-3">
+                    <div class="w-full">
                         <label class="block text-xs text-gray-500 font-bold mb-1.5">시작일</label>
                         <input type="date" id="add-sch-start-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-main focus:outline-none focus:border-blue-500 transition-colors">
                     </div>
-                    <div class="flex-1">
+                    <div class="w-full">
                         <label class="block text-xs text-gray-500 font-bold mb-1.5">종료일</label>
                         <input type="date" id="add-sch-end-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-main focus:outline-none focus:border-blue-500 transition-colors">
                     </div>
@@ -1023,14 +1055,57 @@
             slider.scrollTo({ left: w * index, behavior: 'smooth' });
         };
 
+        // [수정] 배너 자동 슬라이드 제어 변수 및 함수
+        window.bannerInterval = null;
+
+        window.startAutoBanner = function() {
+            // 이미 실행 중이면 중복 실행 방지
+            if (window.bannerInterval) clearInterval(window.bannerInterval);
+
+            // 아이콘을 '일시정지' 모양으로 변경 (현재 재생 중임을 의미)
+            const icon = document.getElementById('banner-ctrl-icon');
+            if(icon) icon.className = 'fa-solid fa-pause text-[8px] text-white';
+
+            window.bannerInterval = setInterval(() => {
+                const slider = document.getElementById('banner-slider');
+                if(!slider) return;
+                
+                // 현재 위치 기준으로 다음 인덱스 계산
+                const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
+                const nextIndex = (currentIndex + 1) % 5; // 5개 슬라이드 순환
+                
+                window.moveBanner(nextIndex);
+            }, 2000); // [수정] 2초(2000ms) 간격으로 변경
+        };
+
+        window.stopAutoBanner = function() {
+            if (window.bannerInterval) {
+                clearInterval(window.bannerInterval);
+                window.bannerInterval = null;
+            }
+            // 아이콘을 '재생' 모양으로 변경 (현재 멈춰있음을 의미)
+            const icon = document.getElementById('banner-ctrl-icon');
+            if(icon) icon.className = 'fa-solid fa-play text-[8px] text-white ml-0.5';
+        };
+
+        window.toggleBanner = function(e) {
+            e.stopPropagation(); // 버튼 클릭 시 배너 클릭 이벤트(링크 이동 등) 방지
+            if (window.bannerInterval) {
+                window.stopAutoBanner();
+            } else {
+                window.startAutoBanner();
+            }
+        };
+
         function initBannerScrollListener() {
             const slider = document.getElementById('banner-slider');
-            // [수정] 4개의 인디케이터를 모두 가져옵니다.
+            // [수정] 5개의 인디케이터를 모두 가져옵니다.
             const inds = [
                 document.getElementById('ind-0'),
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
-                document.getElementById('ind-3')
+                document.getElementById('ind-3'),
+                document.getElementById('ind-4')
             ];
             
             if(!slider) return;
@@ -1233,6 +1308,7 @@
             window.renderCalendar(window.viewYear, window.viewMonth);
             window.updateTabUI(2); // 초기 화면: 홈 (인덱스 2)
             initBannerScrollListener(); // [추가] 배너 스크롤 리스너 등록
+            window.startAutoBanner(); // [추가] 자동 배너 시작
         };
 
         window.showOttModal = () => { 
