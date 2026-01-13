@@ -106,7 +106,6 @@
             updateNavState('screen-game-menu');
         });
 
-        // 뒤로가기 버튼 삭제로 인한 함수 제거 (또는 홈으로 이동 로직만 남김)
         function handleGlobalBack() {
             window.haptic();
             window.location.href = 'index.html';
@@ -114,6 +113,12 @@
 
         function switchScreen(screenId) {
             window.haptic();
+            if (screenId === 'admin-login') {
+                updateNavState('admin-login');
+                openAdminLogin();
+                return;
+            }
+
             document.querySelectorAll('[id^="screen-"]').forEach(el => {
                 el.classList.add('hidden-screen');
                 el.classList.remove('flex', 'fade-in-up');
@@ -128,9 +133,10 @@
             const homeBtn = document.getElementById('nav-btn-home');
             const randomBtn = document.getElementById('nav-btn-random');
             const membersBtn = document.getElementById('nav-btn-members');
+            const settingsBtn = document.getElementById('nav-btn-settings');
             const ind = document.getElementById('nav-indicator');
             
-            [homeBtn, randomBtn, membersBtn].forEach(btn => {
+            [homeBtn, randomBtn, membersBtn, settingsBtn].forEach(btn => {
                 if(btn) {
                     const icon = btn.querySelector('i');
                     const text = btn.querySelector('span');
@@ -142,15 +148,11 @@
             let activeBtn = null;
 
             if (screenId === 'screen-game-menu' || screenId === 'screen-car-game' || screenId === 'screen-chore-game' || screenId === 'screen-trip-game') {
-                // 게임 메뉴 화면(복불복 화면) 또는 개별 게임 화면일 때 '복불복' 버튼 활성화
                 activeBtn = randomBtn;
             } else if (screenId === 'screen-members') {
                 activeBtn = membersBtn;
-            } else {
-                // 기본적으로 홈(뒤로가기) 버튼은 스타일 변경 없음 (항상 비활성 스타일 유지하거나 필요시 추가)
-                // 하지만 여기서는 홈 버튼은 클릭 시 이동이므로 스타일 변경 불필요 할 수 있음.
-                // 요청하신대로 "홈화면은 누르면 뒤로가기 버튼과 같은 경로"이므로, 
-                // 현재 화면이 게임 화면들이면 복불복 버튼 활성화 상태 유지.
+            } else if (screenId === 'admin-login') {
+                activeBtn = settingsBtn;
             }
 
             if (activeBtn) {
@@ -292,24 +294,17 @@
 </head>
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
 
-    <!-- 배경 이모지 (토스 스타일 디테일) -->
-    <div class="bg-emoji right-4 bottom-20"><span class="text-4xl">🍀</span></div>
-    <div class="bg-emoji left-4 top-20" style="animation-delay: 1s;"><span class="text-3xl">🎲</span></div>
-    
+    <!-- 배경 이모지 제거됨 -->
     <div id="notification-container" class="absolute top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none"></div>
 
     <!-- 네비게이션 버튼 (뒤로가기 삭제됨) -->
     
-    <!-- 관리자 버튼 -->
-    <div class="absolute top-6 right-5 z-50">
-        <button onclick="window.haptic(); openAdminLogin()" class="w-10 h-10 bg-white/60 backdrop-blur-md rounded-full shadow-sm border border-white/60 text-gray-600 flex items-center justify-center active:scale-90 transition-transform">
-            <i class="fa-solid fa-gear"></i>
-        </button>
-    </div>
+    <!-- 관리자 버튼 (삭제됨 - 하단 메뉴로 이동) -->
 
     <!-- 1. 메인 메뉴 (복불복 화면) -->
-    <div id="screen-game-menu" class="flex-1 w-full h-full flex flex-col p-5 pt-24 pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
-        <div class="mt-2 mb-6 px-1">
+    <div id="screen-game-menu" class="flex-1 w-full h-full flex flex-col p-5 pt-safe pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
+        <!-- 인사말 상단으로 이동 및 마진 조정 -->
+        <div class="mt-4 mb-4 px-1">
             <h1 class="text-2xl font-bold text-main leading-snug">
                 엔조이 여러분,<br>
                 <span id="dynamic-greeting" class="text-blue-600">활기찬 하루 보내세요</span>
@@ -355,8 +350,8 @@
     </div>
 
     <!-- 2. 멤버 리스트 -->
-    <div id="screen-members" class="hidden-screen flex-1 w-full h-full flex-col p-5 pt-24 pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
-        <h2 class="text-2xl font-bold text-main mb-5 px-1">엔조이 멤버들</h2>
+    <div id="screen-members" class="hidden-screen flex-1 w-full h-full flex-col p-5 pt-safe pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
+        <h2 class="text-2xl font-bold text-main mb-5 px-1 mt-4">엔조이 멤버들</h2>
         <div class="grid grid-cols-2 gap-3">
             <!-- 전시기 (회장) -->
             <div class="toss-card p-4 flex items-center gap-3 !bg-gradient-to-br from-white to-yellow-50 border-yellow-100 shadow-yellow-100/50">
@@ -380,8 +375,8 @@
     </div>
 
     <!-- 3. 차량 배치 -->
-    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-24 pb-8 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-xl font-bold text-main mb-4">차량 좌석 배치</h2>
+    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-xl font-bold text-main mb-4 mt-4">차량 좌석 배치</h2>
 
         <div class="w-full flex flex-col gap-4">
             <!-- 설정 버튼 -->
@@ -456,8 +451,8 @@
     </div>
 
     <!-- 4. 당번 뽑기 화면 -->
-    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-24 pb-8 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-xl font-bold text-main mb-6">당번 뽑기</h2>
+    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-xl font-bold text-main mb-6 mt-4">당번 뽑기</h2>
 
         <div class="w-full flex flex-col gap-4 h-full">
             <div class="toss-card p-6 !bg-white flex items-center justify-between shadow-sm">
@@ -483,8 +478,8 @@
     </div>
 
     <!-- 5. 여행지 뽑기 화면 -->
-    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-24 pb-8 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-xl font-bold text-main mb-6">여행지 뽑기</h2>
+    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-xl font-bold text-main mb-6 mt-4">여행지 뽑기</h2>
 
         <div class="w-full flex flex-col gap-4">
             <div class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-purple-50 shadow-sm">
@@ -530,6 +525,13 @@
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
                     <i class="fa-solid fa-users text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
                     <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">멤버</span>
+                </div>
+            </button>
+
+            <button id="nav-btn-settings" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('admin-login')">
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
+                    <i class="fa-solid fa-gear text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">설정</span>
                 </div>
             </button>
         </div>
