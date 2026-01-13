@@ -79,7 +79,8 @@
 
     <!-- UI Logic -->
     <script>
-        const MEMBERS = ['전시기', '오스틴', '지노', '홍박사', '성원제', '류짱'];
+        // [수정] 멤버 이름 변경: 지노 -> 이진누
+        const MEMBERS = ['전시기', '오스틴', '이진누', '홍박사', '성원제', '류짱'];
         const TRIP_REGIONS_SIMPLE = ['서울특별시', '대전광역시', '대구광역시', '부산광역시', '인천광역시', '광주광역시', '세종특별자치시'];
         const TRIP_REGIONS_COMPLEX = {
             '경기도': ['수원시', '고양시', '용인시', '성남시', '부천시', '화성시', '안산시', '남양주시', '안양시', '평택시', '시흥시', '파주시', '의정부시', '김포시', '광주시', '광명시', '군포시', '하남시', '오산시', '양주시', '이천시', '구리시', '안성시', '포천시', '의왕시', '양평군', '여주시', '동두천시', '가평군', '과천시', '연천군'],
@@ -258,8 +259,9 @@
         }
 
         window.activateStep2UI = () => {
-            document.getElementById('box-trip-step2').className = "toss-card p-8 !bg-purple-50 flex flex-col items-center justify-center relative border border-purple-200";
-            document.getElementById('label-step2').className = "text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-2";
+            // [색상 변경] 여행 2단계 활성화 시 오렌지 테마 적용
+            document.getElementById('box-trip-step2').className = "toss-card p-8 !bg-orange-50 flex flex-col items-center justify-center relative border border-orange-200";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-2";
         }
 
         // Sound & Animation
@@ -297,13 +299,11 @@
     <!-- 배경 이모지 제거됨 -->
     <div id="notification-container" class="absolute top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none"></div>
 
-    <!-- 네비게이션 버튼 (뒤로가기 삭제됨) -->
-    
     <!-- 관리자 버튼 (삭제됨 - 하단 메뉴로 이동) -->
 
     <!-- 1. 메인 메뉴 (복불복 화면) -->
     <div id="screen-game-menu" class="flex-1 w-full h-full flex flex-col p-5 pt-safe pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
-        <!-- 인사말 상단으로 이동 및 마진 조정 -->
+        <!-- 인사말 -->
         <div class="mt-4 mb-4 px-1">
             <h1 class="text-2xl font-bold text-main leading-snug">
                 엔조이 여러분,<br>
@@ -312,7 +312,7 @@
         </div>
 
         <div class="flex flex-col gap-3">
-            <!-- 차량 배치 (BEST) -->
+            <!-- [1] 차량 배치 (Blue - 기존 유지) -->
             <div onclick="window.haptic(); switchScreen('screen-car-game');" class="toss-card p-6 !bg-gradient-to-br from-[#E8F3FF] to-[#D6E8FF] border-white/60 h-32 flex items-center justify-between group">
                 <div class="relative z-10">
                     <span class="inline-block px-2 py-0.5 bg-white/60 text-[10px] font-bold text-blue-600 rounded-md mb-2 backdrop-blur-sm shadow-sm">BEST</span>
@@ -324,25 +324,25 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <!-- 당번 뽑기 -->
-                <div onclick="window.haptic(); switchScreen('screen-chore-game');" class="toss-card p-5 !bg-gradient-to-br from-[#FFF0F0] to-[#FFE0E0] border-white/60 h-44 flex flex-col justify-between group">
-                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#F04452] text-lg group-hover:rotate-12 transition-transform backdrop-blur-sm">
+                <!-- [2] 당번 뽑기 (Red -> Emerald 변경) -->
+                <div onclick="window.haptic(); switchScreen('screen-chore-game');" class="toss-card p-5 !bg-gradient-to-br from-[#E3FAEB] to-[#D1F7DE] border-white/60 h-44 flex flex-col justify-between group">
+                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#00C77D] text-lg group-hover:rotate-12 transition-transform backdrop-blur-sm">
                         <i class="fa-solid fa-broom"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-main mb-1">당번 뽑기</h3>
-                        <p class="text-xs text-[#F04452]/90 font-medium">청소와 설거지<br>주인공은?</p>
+                        <p class="text-xs text-[#00C77D]/90 font-medium">청소와 설거지<br>주인공은?</p>
                     </div>
                 </div>
 
-                <!-- 여행지 뽑기 -->
-                <div onclick="window.haptic(); switchScreen('screen-trip-game');" class="toss-card p-5 !bg-gradient-to-br from-[#F3E8FF] to-[#E5D4FF] border-white/60 h-44 flex flex-col justify-between group">
-                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#9333EA] text-lg group-hover:scale-110 transition-transform backdrop-blur-sm">
+                <!-- [3] 여행지 뽑기 (Purple -> Orange 변경) -->
+                <div onclick="window.haptic(); switchScreen('screen-trip-game');" class="toss-card p-5 !bg-gradient-to-br from-[#FFF7ED] to-[#FFEDD5] border-white/60 h-44 flex flex-col justify-between group">
+                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#F97316] text-lg group-hover:scale-110 transition-transform backdrop-blur-sm">
                         <i class="fa-solid fa-plane-departure"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-main mb-1">여행지 뽑기</h3>
-                        <p class="text-xs text-[#9333EA]/90 font-medium">어디로 떠날까요?<br>두근두근</p>
+                        <p class="text-xs text-[#F97316]/90 font-medium">어디로 떠날까요?<br>두근두근</p>
                     </div>
                 </div>
             </div>
@@ -366,7 +366,7 @@
             </div>
             <!-- 멤버들 -->
             <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold shrink-0 shadow-inner">오</div><span class="font-bold text-main text-sm">오스틴</span></div>
-            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold shrink-0 shadow-inner">지</div><span class="font-bold text-main text-sm">지노</span></div>
+            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold shrink-0 shadow-inner">이</div><span class="font-bold text-main text-sm">이진누</span></div>
             <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0 shadow-inner">홍</div><span class="font-bold text-main text-sm">홍박사</span></div>
             <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0 shadow-inner">성</div><span class="font-bold text-main text-sm">성원제</span></div>
             <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0 shadow-inner">류</div><span class="font-bold text-main text-sm">류짱</span></div>
@@ -477,18 +477,18 @@
         </div>
     </div>
 
-    <!-- 5. 여행지 뽑기 화면 -->
+    <!-- 5. 여행지 뽑기 화면 (색상 변경: Purple -> Orange) -->
     <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
         <h2 class="text-xl font-bold text-main mb-6 mt-4">여행지 뽑기</h2>
 
         <div class="w-full flex flex-col gap-4">
-            <div class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-purple-50 shadow-sm">
-                <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2 bg-purple-50 px-2 py-0.5 rounded">REGION</span>
+            <div class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-orange-50 shadow-sm">
+                <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2 bg-orange-50 px-2 py-0.5 rounded">REGION</span>
                 <div id="result-trip-step1" class="text-3xl font-bold text-main break-keep text-center">?</div>
             </div>
 
             <div class="flex justify-center -my-3 z-10">
-                <div class="bg-purple-50 p-2 rounded-full border-4 border-[#F2F4F6] text-purple-300">
+                <div class="bg-orange-50 p-2 rounded-full border-4 border-[#F2F4F6] text-orange-300">
                     <i class="fa-solid fa-arrow-down"></i>
                 </div>
             </div>
@@ -498,7 +498,7 @@
                 <div id="result-trip-step2" class="text-3xl font-bold text-gray-300 break-keep text-center transition-colors">-</div>
             </div>
 
-            <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-[20px] shadow-lg shadow-purple-200 mt-6 active:scale-95 transition-all text-base">여행지 확인하기</button>
+            <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-[20px] shadow-lg shadow-orange-200 mt-6 active:scale-95 transition-all text-base">여행지 확인하기</button>
         </div>
     </div>
 
@@ -774,8 +774,9 @@
         function displayTripResult(data) {
             if(!data.step1) return;
             window.resetTripGameUI();
-            const el1 = document.getElementById('result-trip-step1'); el1.textContent = data.step1; el1.style.color = "#9333ea";
-            if (data.step2) { window.activateStep2UI(); const el2 = document.getElementById('result-trip-step2'); el2.textContent = data.step2; el2.style.color = "#9333ea"; }
+            const el1 = document.getElementById('result-trip-step1'); el1.textContent = data.step1; el1.style.color = "#F97316"; // [수정] 오렌지 색상
+            if (data.step2) { window.activateStep2UI(); const el2 = document.getElementById('result-trip-step2'); el2.textContent = data.step2; el2.style.color = "#F97316"; // [수정] 오렌지 색상
+            }
             else document.getElementById('result-trip-step2').textContent = "해당 없음";
         }
     </script>
