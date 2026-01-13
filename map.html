@@ -90,10 +90,12 @@
             <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl text-blue-500 shadow-sm">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h2 class="text-xl font-bold text-main mb-2">당신은 누구십니까?</h2>
-            <p class="text-sub text-sm mb-6">우리 6명만 들어올 수 있어요.<br>이름을 입력해주세요.</p>
+            <!-- ID 추가: 텍스트 변경을 위해 -->
+            <h2 id="login-title" class="text-xl font-bold text-main mb-2">당신은 누구십니까?</h2>
+            <p id="login-desc" class="text-sub text-sm mb-6">우리 6명만 들어올 수 있어요.<br>이름을 입력해주세요.</p>
             
-            <div class="space-y-3">
+            <!-- ID 추가: 폼 영역 제어를 위해 -->
+            <div id="login-form" class="space-y-3">
                 <input type="text" id="login-input" placeholder="이름 입력" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-center text-base font-bold text-main focus:outline-none focus:border-blue-500 focus:bg-white transition-all placeholder-gray-400">
                 <p id="login-error" class="text-red-500 text-xs font-bold h-4"></p>
                 <button onclick="tryLogin()" class="w-full bg-[#3182F6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md shadow-blue-500/20 active:scale-95">
@@ -142,7 +144,7 @@
 
         <!-- 프로필 탭 -->
         <div id="view-profile" class="absolute inset-0 flex flex-col pt-safe pb-24 px-5 h-full hidden overflow-y-auto scrollbar-hide">
-            <h2 class="text-2xl font-bold text-main mb-6 mt-4 px-1 fade-in-up">프로필 설정 ⚙️</h2>
+            <h2 class="text-2xl font-bold text-main mb-6 mt-4 px-1 fade-in-up">프로필 설정</h2>
             
             <div class="toss-card p-6 mb-4 fade-in-up delay-100 !cursor-default active:transform-none">
                 <label class="block text-xs font-bold text-sub mb-1.5 ml-1">내 이름</label>
@@ -249,6 +251,15 @@
         window.checkLogin = () => {
             const savedName = localStorage.getItem('friendMapUserName');
             if (savedName) {
+                // UI 변경: 자동 로그인 모드로 전환
+                document.getElementById('login-title').innerText = "자동 로그인 중";
+                document.getElementById('login-desc').innerText = "잠시만 기다려주세요...";
+                document.getElementById('login-form').innerHTML = `
+                    <div class="flex justify-center py-4">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-blue-500"></i>
+                    </div>
+                `;
+
                 myName = savedName;
                 signIn();
             } else {
