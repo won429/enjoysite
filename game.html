@@ -292,6 +292,8 @@
                 else { cb(); }
             }, dur);
         }
+        // [FIX] Alias for animateShuffleCallback used in playTripGameAnimation
+        window.animateShuffleCallback = window.animateShuffle;
     </script>
 </head>
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
