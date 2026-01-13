@@ -2,62 +2,82 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Random Enjoy - Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Random Enjoy - Toss Style</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 폰트 추가 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/HakgyoansimDunggeunmiso/HakgyoansimDunggeunmiso.css" type="text/css"/>
+    <!-- 폰트 및 아이콘 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" type="text/css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         @font-face {
-            font-family: 'Pretendard-Bold';
-            src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
-            font-weight: 700;
-            font-style: normal;
+            font-family: 'TossFaceFontMac';
+            src: url('https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface-font-mac.css');
         }
 
         body { 
-            font-family: 'Pretendard-Bold', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
             background-color: #F2F4F6;
-            -webkit-tap-highlight-color: transparent;
             color: #191F28;
+            -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
+            touch-action: pan-y;
         }
 
-        .btn-scale { transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-scale:active { transform: scale(0.96); }
+        /* [업그레이드] 유리 질감 카드 (그림자/블러 강화) */
+        .toss-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 26px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); 
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        .toss-card:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            filter: brightness(0.98);
+        }
 
-        .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* 배경 이모지 애니메이션 (index.html과 통일) */
+        @keyframes floatEmoji {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        .bg-emoji {
+            animation: floatEmoji 6s ease-in-out infinite;
+            position: fixed;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
 
-        .hidden-screen { display: none; }
-        .shuffling { opacity: 0.7; }
+        .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        .slide-down { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
-        @keyframes slideUp { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+        .hidden-screen { display: none !important; }
+        .shuffling { opacity: 0.7; transform: scale(0.95); transition: all 0.1s; }
 
+        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
+        .pb-safe { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+        
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        #nav-indicator { will-change: transform, width; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        
-        .mobile-container {
-            max-width: 480px;
-            margin: 0 auto;
-            width: 100%;
-            height: 100%;
-        }
+        .text-main { color: #191F28; }
+        .text-sub { color: #6B7684; }
+        .text-blue { color: #3182F6; }
     </style>
 
-    <!-- [UI Helper Script] -->
+    <!-- UI Logic -->
     <script>
         const MEMBERS = ['전시기', '오스틴', '지노', '홍박사', '성원제', '류짱'];
         const TRIP_REGIONS_SIMPLE = ['서울특별시', '대전광역시', '대구광역시', '부산광역시', '인천광역시', '광주광역시', '세종특별자치시'];
@@ -74,159 +94,130 @@
         };
         const REGION_POOL = [...TRIP_REGIONS_SIMPLE, ...Object.keys(TRIP_REGIONS_COMPLEX)];
 
-        const GREETING_MESSAGES = [
-            "오늘 꽝 걸려도 울지 않기!",
-            "제 탓은 하지 마세요, 운명입니다.",
-            "손에 땀 좀 쥐어보실까요?",
-            "과연 오늘은 행운의 여신이?",
-            "결과는 냉정합니다. 받아들이세요.",
-            "벌칙 걸릴 관상이신데요?",
-            "인생은 한방! 여기서 터질까요?",
-            "심장 부여잡고 결과 확인하세요.",
-            "오늘따라 느낌이 쎄~한데요?",
-            "도망쳐도 소용없습니다."
-        ];
+        const GREETING_MESSAGES = ["오늘 꽝 걸려도 울지 않기!", "제 탓은 하지 마세요, 운명입니다.", "손에 땀 좀 쥐어보실까요?", "과연 오늘은 행운의 여신이?", "결과는 냉정합니다.", "벌칙 걸릴 관상이신데요?", "인생은 한방!", "심장 부여잡으세요.", "오늘따라 느낌이 쎄~한데요?", "도망쳐도 소용없습니다."];
+
+        window.haptic = function() { if (navigator.vibrate) navigator.vibrate(10); }
 
         document.addEventListener('DOMContentLoaded', () => {
             const greetingEl = document.getElementById('dynamic-greeting');
             if (greetingEl) {
-                const randomMsg = GREETING_MESSAGES[Math.floor(Math.random() * GREETING_MESSAGES.length)];
-                greetingEl.textContent = randomMsg;
+                greetingEl.textContent = GREETING_MESSAGES[Math.floor(Math.random() * GREETING_MESSAGES.length)];
             }
+            updateNavState('screen-game-menu');
         });
 
+        // 뒤로가기 버튼 삭제로 인한 함수 제거 (또는 홈으로 이동 로직만 남김)
         function handleGlobalBack() {
-            const home = document.getElementById('screen-game-menu');
-            if (!home.classList.contains('hidden-screen')) {
-                 // 홈 화면일 때: index.html로 이동 (메인 사이트로 연결)
-                 window.location.href = 'index.html';
-            } else {
-                 // 게임 화면일 때: 홈으로 이동
-                 switchScreen('screen-game-menu');
-            }
+            window.haptic();
+            window.location.href = 'index.html';
         }
 
         function switchScreen(screenId) {
+            window.haptic();
             document.querySelectorAll('[id^="screen-"]').forEach(el => {
                 el.classList.add('hidden-screen');
-                el.classList.remove('flex', 'fade-in');
+                el.classList.remove('flex', 'fade-in-up');
             });
             const target = document.getElementById(screenId);
             target.classList.remove('hidden-screen');
-            target.classList.add('flex', 'fade-in');
-
+            target.classList.add('flex', 'fade-in-up');
             updateNavState(screenId);
         }
 
         function updateNavState(screenId) {
-            const navHome = document.getElementById('nav-home');
-            const navMembers = document.getElementById('nav-members');
-            const mainNav = document.getElementById('main-nav'); // 하단 메뉴 컨테이너
+            const homeBtn = document.getElementById('nav-btn-home');
+            const randomBtn = document.getElementById('nav-btn-random');
+            const membersBtn = document.getElementById('nav-btn-members');
+            const ind = document.getElementById('nav-indicator');
             
-            navHome.classList.replace('opacity-100', 'opacity-40');
-            navMembers.classList.replace('opacity-100', 'opacity-40');
+            [homeBtn, randomBtn, membersBtn].forEach(btn => {
+                if(btn) {
+                    const icon = btn.querySelector('i');
+                    const text = btn.querySelector('span');
+                    icon.className = icon.className.replace('text-[#191F28]', 'text-[#4E5968]');
+                    text.className = text.className.replace('font-bold', 'font-medium').replace('text-[#191F28]', 'text-[#4E5968]');
+                }
+            });
 
-            // 하단 메뉴 표시 조건: 홈 또는 멤버 화면일 때만 표시
-            if (screenId === 'screen-game-menu') {
-                navHome.classList.replace('opacity-40', 'opacity-100');
-                mainNav.classList.remove('hidden');
+            let activeBtn = null;
+
+            if (screenId === 'screen-game-menu' || screenId === 'screen-car-game' || screenId === 'screen-chore-game' || screenId === 'screen-trip-game') {
+                // 게임 메뉴 화면(복불복 화면) 또는 개별 게임 화면일 때 '복불복' 버튼 활성화
+                activeBtn = randomBtn;
             } else if (screenId === 'screen-members') {
-                navMembers.classList.replace('opacity-40', 'opacity-100');
-                mainNav.classList.remove('hidden');
+                activeBtn = membersBtn;
             } else {
-                // 게임 화면 등에서는 숨김
-                mainNav.classList.add('hidden');
+                // 기본적으로 홈(뒤로가기) 버튼은 스타일 변경 없음 (항상 비활성 스타일 유지하거나 필요시 추가)
+                // 하지만 여기서는 홈 버튼은 클릭 시 이동이므로 스타일 변경 불필요 할 수 있음.
+                // 요청하신대로 "홈화면은 누르면 뒤로가기 버튼과 같은 경로"이므로, 
+                // 현재 화면이 게임 화면들이면 복불복 버튼 활성화 상태 유지.
+            }
+
+            if (activeBtn) {
+                const icon = activeBtn.querySelector('i');
+                const text = activeBtn.querySelector('span');
+                icon.className = icon.className.replace('text-[#4E5968]', 'text-[#191F28]');
+                text.className = text.className.replace('font-medium', 'font-bold').replace('text-[#4E5968]', 'text-[#191F28]');
+                
+                ind.style.width = `${activeBtn.offsetWidth}px`;
+                ind.style.transform = `translateX(${activeBtn.offsetLeft - 6}px)`;
             }
         }
 
-        // --- Car Game UI Logic ---
-        let carConfig = 1; 
-        let driverMode = 'random';
-        let selectedDrivers = [];
-
+        // --- Game Logic ---
+        let carConfig = 1; let driverMode = 'random'; let selectedDrivers = [];
         window.getCarConfig = () => carConfig;
         window.getDriverMode = () => driverMode;
         window.getSelectedDrivers = () => selectedDrivers;
 
         window.setCarConfig = (cfg) => {
-            carConfig = cfg;
-            selectedDrivers = []; 
-            updateCarConfigBtn();
-            window.updateCarView(cfg);
-            window.setDriverMode(driverMode);
+            window.haptic();
+            carConfig = cfg; selectedDrivers = []; 
+            updateCarConfigBtn(); window.updateCarView(cfg); window.setDriverMode(driverMode);
         }
 
         function updateCarConfigBtn() {
             const btn1 = document.getElementById('btn-car-1');
             const btn2 = document.getElementById('btn-car-2');
-            
-            const activeClasses = ['bg-blue-600', 'text-white', 'border-blue-600', 'shadow-md'];
-            const inactiveClasses = ['bg-white', 'text-gray-400', 'border-gray-200', 'hover:bg-gray-50'];
-
             if (carConfig === 1) {
-                btn1.classList.add(...activeClasses);
-                btn1.classList.remove(...inactiveClasses.filter(c => !c.startsWith('hover')));
-                btn2.classList.add(...inactiveClasses);
-                btn2.classList.remove(...activeClasses);
+                btn1.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all bg-blue-500 text-white shadow-md';
+                btn2.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all text-gray-400 bg-white hover:bg-gray-50';
             } else {
-                btn2.classList.add(...activeClasses);
-                btn2.classList.remove(...inactiveClasses.filter(c => !c.startsWith('hover')));
-                btn1.classList.add(...inactiveClasses);
-                btn1.classList.remove(...activeClasses);
+                btn2.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all bg-blue-500 text-white shadow-md';
+                btn1.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all text-gray-400 bg-white hover:bg-gray-50';
             }
         }
 
         window.updateCarView = (cfg) => {
-            const view1 = document.getElementById('view-car-1');
-            const view2 = document.getElementById('view-car-2');
-            if (cfg === 1) {
-                view1.classList.remove('hidden'); view1.classList.add('flex');
-                view2.classList.add('hidden'); view2.classList.remove('flex');
-            } else {
-                view1.classList.add('hidden'); view1.classList.remove('flex');
-                view2.classList.remove('hidden'); view2.classList.add('flex');
-            }
+            document.getElementById('view-car-1').classList.toggle('hidden', cfg !== 1);
+            document.getElementById('view-car-1').classList.toggle('flex', cfg === 1);
+            document.getElementById('view-car-2').classList.toggle('hidden', cfg === 1);
+            document.getElementById('view-car-2').classList.toggle('flex', cfg !== 1);
         }
 
         function getDriverSeatElements() {
-            if (carConfig === 1) {
-                return [document.getElementById('seat-driver-1')];
-            } else {
-                return [document.getElementById('seat-driver-a'), document.getElementById('seat-driver-b')];
-            }
+            return carConfig === 1 ? [document.getElementById('seat-driver-1')] : [document.getElementById('seat-driver-a'), document.getElementById('seat-driver-b')];
         }
 
         window.setDriverMode = (mode) => {
-            driverMode = mode;
-            selectedDrivers = [];
+            window.haptic();
+            driverMode = mode; selectedDrivers = [];
             const btnRandom = document.getElementById('mode-random');
             const btnManual = document.getElementById('mode-manual');
             const selector = document.getElementById('manual-selector');
             const driverSeats = getDriverSeatElements();
 
             if (mode === 'random') {
-                btnRandom.classList.replace('text-gray-400', 'bg-white'); btnRandom.classList.add('text-black', 'shadow-sm');
-                btnManual.classList.remove('bg-white', 'text-black', 'shadow-sm'); btnManual.classList.add('text-gray-400');
+                btnRandom.className = 'px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all';
+                btnManual.className = 'px-3 py-1.5 rounded-lg text-gray-400 transition-all';
                 selector.classList.add('hidden'); selector.classList.remove('flex');
-                
-                driverSeats.forEach(seat => {
-                    if(seat && seat.textContent === '선택필요') {
-                        seat.textContent = '?';
-                        seat.style.color = '';
-                    }
-                });
+                driverSeats.forEach(seat => { if(seat && seat.textContent === '선택필요') { seat.textContent = '?'; seat.style.color = ''; } });
             } else {
-                btnManual.classList.replace('text-gray-400', 'bg-white'); btnManual.classList.add('text-black', 'shadow-sm');
-                btnRandom.classList.remove('bg-white', 'text-black', 'shadow-sm'); btnRandom.classList.add('text-gray-400');
+                btnManual.className = 'px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all';
+                btnRandom.className = 'px-3 py-1.5 rounded-lg text-gray-400 transition-all';
                 selector.classList.remove('hidden'); selector.classList.add('flex');
                 renderManualSelector();
-                
-                driverSeats.forEach(seat => {
-                    if(seat && (seat.textContent === '?' || seat.textContent === '...')) {
-                        seat.textContent = '선택필요';
-                        seat.style.color = 'gray';
-                    }
-                });
+                driverSeats.forEach(seat => { if(seat && (seat.textContent === '?' || seat.textContent === '...')) { seat.textContent = '선택필요'; seat.style.color = '#9CA3AF'; } });
             }
         }
 
@@ -237,425 +228,353 @@
             MEMBERS.forEach(member => {
                 const btn = document.createElement('button');
                 const isSelected = selectedDrivers.includes(member);
-                btn.className = `px-3 py-1.5 text-sm rounded-full border transition-all mr-1 mb-1 ${isSelected ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'}`;
+                btn.className = `px-3 py-1.5 text-xs font-bold rounded-full border transition-all mr-1 mb-1 ${isSelected ? 'bg-blue-500 text-white border-blue-500 shadow-sm' : 'bg-white text-gray-600 border-gray-200'}`;
                 btn.textContent = member;
                 btn.onclick = () => {
-                    if (isSelected) {
-                        selectedDrivers = selectedDrivers.filter(m => m !== member);
-                    } else {
-                        if (selectedDrivers.length < max) selectedDrivers.push(member);
-                        else alert(`운전자는 최대 ${max}명까지만 선택 가능합니다.`);
-                    }
+                    window.haptic();
+                    if (isSelected) { selectedDrivers = selectedDrivers.filter(m => m !== member); }
+                    else { if (selectedDrivers.length < max) selectedDrivers.push(member); else alert(`운전자는 최대 ${max}명까지만 선택 가능합니다.`); }
                     
                     const driverSeats = getDriverSeatElements();
-                    driverSeats.forEach(seat => { if(seat) { seat.textContent = '선택필요'; seat.style.color = 'gray'; }});
-                    
-                    selectedDrivers.forEach((driver, index) => {
-                        if (driverSeats[index]) {
-                            driverSeats[index].textContent = driver;
-                            driverSeats[index].style.color = '#3182ce';
-                        }
-                    });
-
+                    driverSeats.forEach(seat => { if(seat) { seat.textContent = '선택필요'; seat.style.color = '#9CA3AF'; }});
+                    selectedDrivers.forEach((driver, index) => { if (driverSeats[index]) { driverSeats[index].textContent = driver; driverSeats[index].style.color = '#3182F6'; } });
                     renderManualSelector();
                 };
                 container.appendChild(btn);
             });
         }
 
-        // --- Reset UI Functions ---
-        window.resetCarGameUI = () => {
-            const seats = document.querySelectorAll('[id^="seat-"]');
-            seats.forEach(el => { el.textContent = '?'; el.style.color = ''; el.classList.remove('shuffling'); });
-        }
-
-        window.resetChoreGameUI = () => {
-            document.getElementById('result-cleaning').textContent = '?'; document.getElementById('result-cleaning').style.color = '';
-            document.getElementById('result-dishes').textContent = '?'; document.getElementById('result-dishes').style.color = '';
-        }
-
+        window.resetCarGameUI = () => { document.querySelectorAll('[id^="seat-"]').forEach(el => { el.textContent = '?'; el.style.color = ''; el.classList.remove('shuffling'); }); }
+        window.resetChoreGameUI = () => { document.getElementById('result-cleaning').textContent = '?'; document.getElementById('result-dishes').textContent = '?'; }
         window.resetTripGameUI = () => {
             const el1 = document.getElementById('result-trip-step1');
             const el2 = document.getElementById('result-trip-step2');
-            
-            if (el1) { el1.textContent = '?'; el1.style.color = ''; el1.classList.remove('shuffling'); }
-            if (el2) { el2.textContent = '-'; el2.style.color = ''; el2.classList.remove('shuffling'); }
-            
-            const box2 = document.getElementById('box-trip-step2');
-            const label2 = document.getElementById('label-step2');
-            
-            if (box2) { box2.classList.replace('border-purple-200', 'border-gray-100'); box2.classList.replace('bg-purple-50', 'bg-white'); }
-            if (label2) { label2.classList.replace('text-purple-600', 'text-gray-400'); }
+            el1.textContent = '?'; el1.style.color = '';
+            el2.textContent = '-'; el2.style.color = '';
+            document.getElementById('box-trip-step2').className = "toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-gray-100";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-2";
         }
 
         window.activateStep2UI = () => {
-            const box2 = document.getElementById('box-trip-step2');
-            const text2 = document.getElementById('result-trip-step2');
-            const label2 = document.getElementById('label-step2');
-            
-            if (box2) { box2.classList.replace('border-gray-100', 'border-purple-200'); box2.classList.replace('bg-white', 'bg-purple-50'); }
-            if (text2) { text2.classList.replace('text-gray-300', 'text-gray-900'); }
-            if (label2) { label2.classList.replace('text-gray-400', 'text-purple-600'); }
+            document.getElementById('box-trip-step2').className = "toss-card p-8 !bg-purple-50 flex flex-col items-center justify-center relative border border-purple-200";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-2";
         }
 
-        // --- Sound & Animations ---
+        // Sound & Animation
         let audioCtx = null;
         window.initAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
-        
         window.playWinSound = () => {
             window.initAudio();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(659, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
-            gainNode.gain.setValueAtTime(3.0, audioCtx.currentTime); 
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.4);
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(659, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.3, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.4);
         }
-        
         window.playTickSound = () => {
             window.initAudio();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = 'triangle';
-            oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.05);
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.type = 'triangle'; o.frequency.setValueAtTime(200, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.2, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.05);
         }
 
-        window.animateShuffle = (element, candidates, finalValue, duration) => window.animateShuffleCallback(element, candidates, finalValue, duration, null);
-        
-        window.animateShuffleCallback = (element, candidates, finalValue, duration, callback) => {
-            element.classList.add('shuffling');
-            let tickCount = 0;
-            const interval = setInterval(() => {
-                const randomVal = candidates[Math.floor(Math.random() * candidates.length)];
-                element.textContent = randomVal;
-                tickCount++;
-                if(tickCount % 3 === 0) window.playTickSound(); 
-            }, 80); 
-
+        window.animateShuffle = (el, list, final, dur, cb) => {
+            el.classList.add('shuffling');
+            let c = 0;
+            const i = setInterval(() => { el.textContent = list[Math.floor(Math.random() * list.length)]; c++; if(c%3===0) window.playTickSound(); }, 80);
             setTimeout(() => {
-                clearInterval(interval);
-                element.textContent = finalValue;
-                element.classList.remove('shuffling');
-                
-                if (!callback) {
-                    window.playWinSound();
-                    element.style.transform = "scale(1.1)";
-                    if(element.id.includes('cleaning')) element.style.color = "#2563eb"; 
-                    else if(element.id.includes('dishes')) element.style.color = "#16a34a"; 
-                    else if(element.id.includes('seat')) element.style.color = "#3182ce"; 
-                    else if(element.id.includes('trip')) element.style.color = "#9333ea";
-                    setTimeout(() => { element.style.transform = "scale(1)"; }, 300);
-                } else {
-                    callback();
-                    if(element.id.includes('trip')) {
-                        element.style.transform = "scale(1.05)";
-                        element.style.color = "#9333ea";
-                        setTimeout(() => { element.style.transform = "scale(1)"; }, 300);
-                    }
-                }
-            }, duration);
+                clearInterval(i); el.textContent = final; el.classList.remove('shuffling');
+                if(!cb) { window.playWinSound(); el.style.transform = "scale(1.1)"; setTimeout(() => el.style.transform = "scale(1)", 300); }
+                else { cb(); }
+            }, dur);
         }
     </script>
 </head>
-<body class="h-[100dvh] w-full bg-[#F2F4F6] overflow-hidden relative">
+<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
 
-    <div class="mobile-container relative bg-[#F2F4F6] h-full shadow-2xl">
+    <!-- 배경 이모지 (토스 스타일 디테일) -->
+    <div class="bg-emoji right-4 bottom-20"><span class="text-4xl">🍀</span></div>
+    <div class="bg-emoji left-4 top-20" style="animation-delay: 1s;"><span class="text-3xl">🎲</span></div>
+    
+    <div id="notification-container" class="absolute top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none"></div>
 
-        <!-- ==================== 상단 알림 컨테이너 ==================== -->
-        <div id="notification-container" class="absolute top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none"></div>
-
-        <!-- ==================== 1. 뒤로가기 버튼 (Global) ==================== -->
-        <div class="absolute top-6 left-6 z-50">
-            <button id="global-back-btn" onclick="handleGlobalBack()" class="p-2 bg-white/50 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-blue-600 transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </button>
-        </div>
-
-        <!-- ==================== 2. 관리자 버튼 (우측 상단) ==================== -->
-        <div class="absolute top-6 right-6 z-50">
-            <button onclick="openAdminLogin()" class="p-2 bg-white/50 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-blue-600 transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </button>
-        </div>
-
-        <!-- ==================== 3. 메인 메뉴 ==================== -->
-        <div id="screen-game-menu" class="h-full w-full flex flex-col p-6 pt-24 pb-24 overflow-y-auto fade-in no-scrollbar">
-            
-            <div class="mt-4 mb-8">
-                <h1 class="text-[26px] leading-[1.3] font-bold text-[#191F28]">
-                    엔조이 여러분,<br>
-                    <span id="dynamic-greeting">활기찬 하루 보내세요</span> <span class="inline-block animate-bounce">🍀</span>
-                </h1>
-            </div>
-
-            <div class="flex flex-col gap-4">
-                
-                <button onclick="switchScreen('screen-car-game');" class="btn-scale w-full bg-[#E8F3FF] rounded-[26px] p-6 text-left relative overflow-hidden h-[120px] flex items-center justify-between group shadow-sm">
-                    <div class="z-10">
-                        <span class="inline-block px-2 py-0.5 bg-white/60 text-[10px] font-bold text-blue-600 rounded-md mb-2 backdrop-blur-sm">BEST</span>
-                        <h3 class="text-xl font-bold text-[#1B64DA] leading-tight">차량 & 운전자<br>배치하기</h3>
-                    </div>
-                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm z-10 group-active:scale-110 transition-transform">
-                        <svg class="text-[#1B64DA]" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-                    </div>
-                    <div class="absolute right-[-20px] top-[-30px] w-40 h-40 bg-white/30 rounded-full blur-2xl"></div>
-                </button>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="switchScreen('screen-chore-game');" class="btn-scale bg-[#FFF0F0] rounded-[26px] p-5 text-left h-[160px] flex flex-col justify-between relative overflow-hidden group shadow-sm">
-                        <div class="flex justify-between items-start z-10">
-                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-[#F04452]">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                            </div>
-                        </div>
-                        <div class="z-10">
-                            <h3 class="text-lg font-bold text-[#333D4B] mb-1">개인임무분담제<br>당번 뽑기</h3>
-                            <p class="text-xs text-gray-500">오늘의 주인공은?</p>
-                        </div>
-                    </button>
-
-                    <button onclick="switchScreen('screen-trip-game');" class="btn-scale bg-[#E8F7F0] rounded-[26px] p-5 text-left h-[160px] flex flex-col justify-between relative overflow-hidden group shadow-sm">
-                        <div class="flex justify-between items-start z-10">
-                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-[#00BFA5]">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                            </div>
-                        </div>
-                        <div class="z-10">
-                            <h3 class="text-lg font-bold text-[#333D4B] mb-1">여행지<br>뽑기</h3>
-                            <p class="text-xs text-gray-500">어디로 떠날까요?</p>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================== 멤버 리스트 화면 ==================== -->
-        <div id="screen-members" class="hidden-screen h-full w-full flex-col p-6 pt-24 pb-24 overflow-y-auto fade-in no-scrollbar">
-            <h2 class="text-2xl font-bold text-[#333D4B] mb-6">엔조이 멤버들</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <!-- 전시기 (회장 배지 추가) -->
-                <div class="bg-white p-4 rounded-[20px] shadow-sm flex items-center gap-3 ring-1 ring-yellow-400 relative overflow-hidden bg-yellow-50/10">
-                    <div class="absolute -right-8 -top-8 w-16 h-16 bg-yellow-100 rounded-full opacity-50 blur-xl"></div>
-                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold relative shrink-0">
-                        전
-                        <span class="absolute -top-2 -right-1 text-sm animate-bounce">👑</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-bold text-[#333D4B]">전시기</span>
-                        <span class="text-[10px] text-yellow-600 font-bold bg-yellow-100 px-1.5 py-0.5 rounded-full w-fit">회장</span>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-[20px] shadow-sm flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold shrink-0">오</div><span class="font-bold text-[#333D4B]">오스틴</span></div>
-                <div class="bg-white p-4 rounded-[20px] shadow-sm flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold shrink-0">지</div><span class="font-bold text-[#333D4B]">지노</span></div>
-                <div class="bg-white p-4 rounded-[20px] shadow-sm flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold shrink-0">홍</div><span class="font-bold text-[#333D4B]">홍박사</span></div>
-                <div class="bg-white p-4 rounded-[20px] shadow-sm flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0">성</div><span class="font-bold text-[#333D4B]">성원제</span></div>
-                <div class="bg-white p-4 rounded-[20px] shadow-sm flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0">류</div><span class="font-bold text-[#333D4B]">류짱</span></div>
-            </div>
-            <div class="mt-auto pt-8 text-center"><p class="text-xs text-gray-400">Random Enjoy With Members</p></div>
-        </div>
-
-        <!-- ==================== 4. 차량 배치 화면 ==================== -->
-        <div id="screen-car-game" class="hidden-screen h-full w-full flex-col items-center justify-start p-6 pt-24 bg-[#F2F4F6] overflow-y-auto no-scrollbar">
-            <!-- Header Title Only (Sticky) -->
-            <div class="w-full flex items-center justify-center mb-4">
-                <h2 class="text-lg font-bold text-[#333D4B]">차량 좌석 배치</h2>
-            </div>
-
-            <div class="w-full flex flex-col gap-4">
-                <div class="bg-white rounded-[24px] p-2 flex gap-2 shadow-sm">
-                    <button id="btn-car-1" onclick="setCarConfig(1)" class="flex-1 py-3 rounded-2xl font-bold text-sm transition-all bg-blue-600 text-white border border-blue-600 shadow-md">1대 (6인승)</button>
-                    <button id="btn-car-2" onclick="setCarConfig(2)" class="flex-1 py-3 rounded-2xl font-bold text-sm transition-all text-gray-400 bg-white border border-gray-200 hover:bg-gray-50">2대 (3인승)</button>
-                </div>
-
-                <div class="bg-white p-5 rounded-[24px] shadow-sm flex flex-col gap-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-gray-700">운전자 선정</span>
-                        <div class="bg-gray-100 p-1 rounded-xl flex text-xs font-bold">
-                            <button id="mode-random" onclick="setDriverMode('random')" class="px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all">랜덤</button>
-                            <button id="mode-manual" onclick="setDriverMode('manual')" class="px-3 py-1.5 rounded-lg text-gray-400 transition-all">수동</button>
-                        </div>
-                    </div>
-                    <div id="manual-selector" class="hidden flex-wrap pt-2 border-t border-gray-100"></div>
-                </div>
-
-                <div id="car-view-container" class="w-full">
-                    <!-- 1대 (6인승) -->
-                    <div id="view-car-1" class="relative w-full aspect-[3/4] bg-[#E8F3FF] rounded-[32px] border-4 border-white p-5 flex flex-col justify-between shadow-sm mt-2">
-                        <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-3/4 h-8 bg-white/50 rounded-b-3xl"></div>
-                        <div class="flex gap-4 mb-2">
-                            <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm">
-                                <span class="absolute top-2 left-2 text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">DRIVER</span>
-                                <div id="seat-driver-1" class="text-lg font-bold text-gray-800">?</div>
-                            </div>
-                            <div class="w-1/2 aspect-square bg-white rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm">
-                                <span class="absolute top-2 left-2 text-[10px] text-gray-400">PASSENGER</span>
-                                <div id="seat-p-1" class="text-lg font-bold text-gray-800">?</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 mb-2">
-                            <div class="flex-1 aspect-video bg-white rounded-2xl border border-white flex items-center justify-center shadow-sm relative"><span class="absolute top-1 left-2 text-[8px] text-gray-300">MID</span><div id="seat-m-1" class="text-sm font-bold text-gray-800">?</div></div>
-                            <div class="flex-1 aspect-video bg-white rounded-2xl border border-white flex items-center justify-center shadow-sm relative"><span class="absolute top-1 left-2 text-[8px] text-gray-300">MID</span><div id="seat-m-2" class="text-sm font-bold text-gray-800">?</div></div>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="flex-1 aspect-video bg-white rounded-2xl border border-white flex items-center justify-center shadow-sm relative"><span class="absolute top-1 left-2 text-[8px] text-gray-300">BACK</span><div id="seat-b-1" class="text-sm font-bold text-gray-800">?</div></div>
-                            <div class="flex-1 aspect-video bg-white rounded-2xl border border-white flex items-center justify-center shadow-sm relative"><span class="absolute top-1 left-2 text-[8px] text-gray-300">BACK</span><div id="seat-b-2" class="text-sm font-bold text-gray-800">?</div></div>
-                        </div>
-                    </div>
-
-                    <!-- 2대 뷰 -->
-                    <div id="view-car-2" class="hidden w-full flex-col gap-4 mt-2">
-                        <div class="bg-[#E8F3FF] rounded-[32px] border-4 border-white p-4 shadow-sm">
-                            <p class="text-center text-xs font-bold text-blue-400 mb-2">CAR 1</p>
-                            <div class="flex gap-2 mb-2">
-                                <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm"><span class="absolute top-1 left-1 text-[8px] text-blue-600 font-bold bg-blue-50 px-1 rounded">DRV</span><div id="seat-driver-a" class="text-sm font-bold text-black">?</div></div>
-                                <div class="w-1/2 aspect-square bg-white rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm"><div id="seat-p-a" class="text-sm font-bold text-gray-800">?</div></div>
-                            </div>
-                            <div class="w-full h-12 bg-white rounded-2xl border border-white flex items-center justify-center shadow-sm"><div id="seat-b-a" class="text-sm font-bold text-gray-800">?</div></div>
-                        </div>
-                        <div class="bg-[#E8F3FF] rounded-[32px] border-4 border-white p-4 shadow-sm">
-                            <p class="text-center text-xs font-bold text-blue-400 mb-2">CAR 2</p>
-                            <div class="flex gap-2 mb-2">
-                                <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm"><span class="absolute top-1 left-1 text-[8px] text-blue-600 font-bold bg-blue-50 px-1 rounded">DRV</span><div id="seat-driver-b" class="text-sm font-bold text-black">?</div></div>
-                                <div class="w-1/2 aspect-square bg-white rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm"><div id="seat-p-b" class="text-sm font-bold text-gray-800">?</div></div>
-                            </div>
-                            <div class="w-full h-12 bg-white rounded-2xl border border-white flex items-center justify-center shadow-sm"><div id="seat-b-b" class="text-sm font-bold text-gray-800">?</div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="btn-run-car" onclick="requestCarGame()" class="btn-scale w-full bg-blue-600 text-white py-4 rounded-[20px] font-bold shadow-lg shadow-blue-200 mt-2 text-lg">결과 확인하기</button>
-            </div>
-        </div>
-
-        <!-- ==================== 5. 청소 게임 화면 ==================== -->
-        <div id="screen-chore-game" class="hidden-screen h-full w-full flex-col items-center justify-start p-6 pt-24 bg-[#F2F4F6] overflow-y-auto no-scrollbar">
-            <!-- Header Title -->
-            <div class="w-full flex items-center justify-center mb-6">
-                <h2 class="text-lg font-bold text-[#333D4B]">당번 뽑기</h2>
-            </div>
-
-            <div class="w-full flex flex-col gap-6">
-                <div class="w-full bg-white rounded-[26px] p-6 flex items-center justify-between shadow-sm">
-                    <div class="flex flex-col gap-1">
-                        <div class="flex items-center gap-2 text-blue-500 mb-1"><span class="text-xs font-bold uppercase tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">CLEANING</span></div>
-                        <span class="text-xl font-bold text-[#333D4B]">청소 당번</span>
-                    </div>
-                    <div id="result-cleaning" class="h-14 px-6 bg-blue-50 rounded-2xl flex items-center justify-center font-bold text-2xl text-blue-600 min-w-[100px]">?</div>
-                </div>
-
-                <div class="w-full bg-white rounded-[26px] p-6 flex items-center justify-between shadow-sm">
-                    <div class="flex flex-col gap-1">
-                        <div class="flex items-center gap-2 text-green-500 mb-1"><span class="text-xs font-bold uppercase tracking-wider bg-green-50 px-2 py-0.5 rounded-full">DISHES</span></div>
-                        <span class="text-xl font-bold text-[#333D4B]">설거지 당번</span>
-                    </div>
-                    <div id="result-dishes" class="h-14 px-6 bg-green-50 rounded-2xl flex items-center justify-center font-bold text-2xl text-green-600 min-w-[100px]">?</div>
-                </div>
-
-                <button id="btn-run-chore" onclick="requestChoreGame()" class="btn-scale w-full bg-[#333D4B] text-white py-4 rounded-[20px] font-bold shadow-lg mt-auto text-lg">추첨 시작하기!</button>
-            </div>
-        </div>
-
-        <!-- ==================== 6. 여행지 뽑기 화면 ==================== -->
-        <div id="screen-trip-game" class="hidden-screen h-full w-full flex-col items-center justify-start p-6 pt-24 bg-[#F2F4F6] overflow-y-auto no-scrollbar">
-            <!-- Header Title -->
-            <div class="w-full flex items-center justify-center mb-4">
-                <h2 class="text-lg font-bold text-[#333D4B]">여행지 뽑기</h2>
-            </div>
-
-            <div class="w-full flex flex-col gap-4">
-                <div class="w-full bg-white rounded-[30px] p-8 flex flex-col items-center justify-center relative shadow-sm border border-purple-50">
-                    <span class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">REGION</span>
-                    <div id="result-trip-step1" class="text-3xl font-bold text-[#333D4B] break-keep text-center">?</div>
-                </div>
-
-                <div class="flex justify-center -my-3 z-10">
-                    <div class="bg-purple-50 p-2 rounded-full border-4 border-[#F2F4F6]"><svg class="text-purple-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg></div>
-                </div>
-
-                <div id="box-trip-step2" class="w-full bg-white rounded-[30px] p-8 flex flex-col items-center justify-center relative shadow-sm border border-gray-100 transition-colors duration-300">
-                    <span class="text-xs font-bold text-gray-300 uppercase tracking-widest mb-2 transition-colors" id="label-step2">DETAIL</span>
-                    <div id="result-trip-step2" class="text-3xl font-bold text-gray-200 break-keep text-center transition-colors">-</div>
-                </div>
-
-                <button id="btn-run-trip" onclick="requestTripGame()" class="btn-scale w-full bg-purple-600 text-white py-4 rounded-[20px] font-bold shadow-lg shadow-purple-200 mt-4 text-lg">여행지 확인하기</button>
-            </div>
-        </div>
-
-        <!-- 하단 네비게이션 -->
-        <div id="main-nav" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 glass-nav rounded-full px-8 py-3 flex items-center gap-10 z-50">
-            <button id="nav-home" onclick="switchScreen('screen-game-menu')" class="flex flex-col items-center gap-1 opacity-100 transition-opacity">
-                <svg class="text-[#333D4B]" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <span class="text-[10px] font-bold text-[#333D4B]">홈</span>
-            </button>
-            <button id="nav-members" onclick="switchScreen('screen-members')" class="flex flex-col items-center gap-1 opacity-40 transition-opacity">
-                <svg class="text-[#333D4B]" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span class="text-[10px] font-bold text-[#333D4B]">멤버</span>
-            </button>
-        </div>
+    <!-- 네비게이션 버튼 (뒤로가기 삭제됨) -->
+    
+    <!-- 관리자 버튼 -->
+    <div class="absolute top-6 right-5 z-50">
+        <button onclick="window.haptic(); openAdminLogin()" class="w-10 h-10 bg-white/60 backdrop-blur-md rounded-full shadow-sm border border-white/60 text-gray-600 flex items-center justify-center active:scale-90 transition-transform">
+            <i class="fa-solid fa-gear"></i>
+        </button>
     </div>
 
-    <!-- ==================== 관리자 모달 (업데이트) ==================== -->
-    <div id="modal-admin-login" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-[24px] p-6 w-full max-w-xs text-center shadow-2xl">
-            <h3 class="text-lg font-bold mb-4">관리자 로그인</h3>
-            <input type="password" id="admin-pw" class="w-full border border-gray-200 bg-gray-50 rounded-xl p-3 mb-4 text-center" placeholder="비밀번호 입력">
-            <div class="flex gap-2">
-                <button onclick="closeAdminLogin()" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold text-gray-600">취소</button>
-                <button onclick="checkAdminPw()" class="flex-1 py-3 bg-blue-600 rounded-xl font-bold text-white">확인</button>
-            </div>
+    <!-- 1. 메인 메뉴 (복불복 화면) -->
+    <div id="screen-game-menu" class="flex-1 w-full h-full flex flex-col p-5 pt-24 pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
+        <div class="mt-2 mb-6 px-1">
+            <h1 class="text-2xl font-bold text-main leading-snug">
+                엔조이 여러분,<br>
+                <span id="dynamic-greeting" class="text-blue-600">활기찬 하루 보내세요</span>
+            </h1>
         </div>
-    </div>
 
-    <div id="modal-admin-panel" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-[24px] p-6 w-full max-w-xs text-center shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold">관리자 설정</h3>
-                <button onclick="closeAdminPanel()" class="text-gray-400"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 text-left">
-                    <p class="text-sm font-bold text-gray-900 mb-2">게임별 초기화</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="adminResetGame('car')" class="py-3 bg-blue-100 text-blue-700 rounded-xl text-xs font-bold hover:bg-blue-200 transition-colors">
-                            차량<br>초기화
-                        </button>
-                        <button onclick="adminResetGame('chore')" class="py-3 bg-red-100 text-red-700 rounded-xl text-xs font-bold hover:bg-red-200 transition-colors">
-                            당번<br>초기화
-                        </button>
-                        <button onclick="adminResetGame('trip')" class="py-3 bg-purple-100 text-purple-700 rounded-xl text-xs font-bold hover:bg-purple-200 transition-colors">
-                            여행<br>초기화
-                        </button>
-                    </div>
+        <div class="flex flex-col gap-3">
+            <!-- 차량 배치 (BEST) -->
+            <div onclick="window.haptic(); switchScreen('screen-car-game');" class="toss-card p-6 !bg-gradient-to-br from-[#E8F3FF] to-[#D6E8FF] border-white/60 h-32 flex items-center justify-between group">
+                <div class="relative z-10">
+                    <span class="inline-block px-2 py-0.5 bg-white/60 text-[10px] font-bold text-blue-600 rounded-md mb-2 backdrop-blur-sm shadow-sm">BEST</span>
+                    <h3 class="text-xl font-bold text-[#1B64DA] leading-tight">차량 & 운전자<br>배치하기</h3>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 text-left flex items-center justify-between">
+                <div class="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center shadow-sm z-10 text-[#1B64DA] text-2xl group-active:scale-110 transition-transform backdrop-blur-sm">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <!-- 당번 뽑기 -->
+                <div onclick="window.haptic(); switchScreen('screen-chore-game');" class="toss-card p-5 !bg-gradient-to-br from-[#FFF0F0] to-[#FFE0E0] border-white/60 h-44 flex flex-col justify-between group">
+                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#F04452] text-lg group-hover:rotate-12 transition-transform backdrop-blur-sm">
+                        <i class="fa-solid fa-broom"></i>
+                    </div>
                     <div>
-                        <p class="text-sm font-bold text-gray-900 mb-1">무한 뽑기 모드</p>
-                        <p class="text-xs text-gray-500">1회 제한을 일시적으로 해제합니다.</p>
+                        <h3 class="text-lg font-bold text-main mb-1">당번 뽑기</h3>
+                        <p class="text-xs text-[#F04452]/90 font-medium">청소와 설거지<br>주인공은?</p>
                     </div>
-                    <button id="btn-unlimited-toggle" onclick="adminToggleUnlimited()" class="w-12 h-7 bg-gray-300 rounded-full relative transition-colors">
-                        <div class="w-5 h-5 bg-white rounded-full absolute top-1 left-1 transition-transform"></div>
-                    </button>
+                </div>
+
+                <!-- 여행지 뽑기 -->
+                <div onclick="window.haptic(); switchScreen('screen-trip-game');" class="toss-card p-5 !bg-gradient-to-br from-[#F3E8FF] to-[#E5D4FF] border-white/60 h-44 flex flex-col justify-between group">
+                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#9333EA] text-lg group-hover:scale-110 transition-transform backdrop-blur-sm">
+                        <i class="fa-solid fa-plane-departure"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-main mb-1">여행지 뽑기</h3>
+                        <p class="text-xs text-[#9333EA]/90 font-medium">어디로 떠날까요?<br>두근두근</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- [Firebase Script] -->
+    <!-- 2. 멤버 리스트 -->
+    <div id="screen-members" class="hidden-screen flex-1 w-full h-full flex-col p-5 pt-24 pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
+        <h2 class="text-2xl font-bold text-main mb-5 px-1">엔조이 멤버들</h2>
+        <div class="grid grid-cols-2 gap-3">
+            <!-- 전시기 (회장) -->
+            <div class="toss-card p-4 flex items-center gap-3 !bg-gradient-to-br from-white to-yellow-50 border-yellow-100 shadow-yellow-100/50">
+                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold shrink-0 relative shadow-inner">
+                    전
+                    <span class="absolute -top-1.5 -right-1 text-xs drop-shadow-sm">👑</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-main text-sm">전시기</span>
+                    <span class="text-[10px] text-yellow-700 font-bold bg-yellow-200/50 px-1.5 py-0.5 rounded-full w-fit mt-0.5">회장</span>
+                </div>
+            </div>
+            <!-- 멤버들 -->
+            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold shrink-0 shadow-inner">오</div><span class="font-bold text-main text-sm">오스틴</span></div>
+            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold shrink-0 shadow-inner">지</div><span class="font-bold text-main text-sm">지노</span></div>
+            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0 shadow-inner">홍</div><span class="font-bold text-main text-sm">홍박사</span></div>
+            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0 shadow-inner">성</div><span class="font-bold text-main text-sm">성원제</span></div>
+            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0 shadow-inner">류</div><span class="font-bold text-main text-sm">류짱</span></div>
+        </div>
+        <div class="mt-auto pt-8 text-center"><p class="text-xs text-gray-400 font-medium">Random Enjoy With Members</p></div>
+    </div>
+
+    <!-- 3. 차량 배치 -->
+    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-24 pb-8 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-xl font-bold text-main mb-4">차량 좌석 배치</h2>
+
+        <div class="w-full flex flex-col gap-4">
+            <!-- 설정 버튼 -->
+            <div class="bg-white/50 backdrop-blur-md rounded-[24px] p-1.5 flex gap-1 shadow-sm border border-white/60">
+                <button id="btn-car-1" onclick="setCarConfig(1)" class="flex-1 py-3 rounded-[20px] font-bold text-xs transition-all bg-blue-500 text-white shadow-sm">1대 (6인승)</button>
+                <button id="btn-car-2" onclick="setCarConfig(2)" class="flex-1 py-3 rounded-[20px] font-bold text-xs transition-all text-gray-400 hover:bg-white/50">2대 (3인승)</button>
+            </div>
+
+            <!-- 옵션 카드 -->
+            <div class="toss-card p-5 !bg-white/80 flex flex-col gap-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-main">운전자 선정</span>
+                    <div class="bg-gray-100 p-1 rounded-xl flex text-xs font-bold">
+                        <button id="mode-random" onclick="setDriverMode('random')" class="px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all">랜덤</button>
+                        <button id="mode-manual" onclick="setDriverMode('manual')" class="px-3 py-1.5 rounded-lg text-gray-400 transition-all">수동</button>
+                    </div>
+                </div>
+                <div id="manual-selector" class="hidden flex-wrap pt-2 border-t border-gray-100"></div>
+            </div>
+
+            <!-- 차량 뷰 -->
+            <div id="car-view-container" class="w-full">
+                <!-- 1대 뷰 -->
+                <div id="view-car-1" class="toss-card !bg-gradient-to-b from-[#E8F3FF] to-white p-5 flex flex-col justify-between shadow-lg border-2 border-blue-50 aspect-[3/4] mt-2 relative">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-2/3 h-6 bg-white/80 rounded-b-2xl shadow-sm border-b border-l border-r border-blue-100"></div>
+                    <!-- 앞좌석 -->
+                    <div class="flex gap-3 mb-2 mt-4">
+                        <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm">
+                            <span class="absolute top-2 left-2 text-[8px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">DRIVER</span>
+                            <div id="seat-driver-1" class="text-lg font-bold text-main">?</div>
+                        </div>
+                        <div class="w-1/2 aspect-square bg-white/60 rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm backdrop-blur-sm">
+                            <div id="seat-p-1" class="text-lg font-bold text-main">?</div>
+                        </div>
+                    </div>
+                    <!-- 뒷좌석들 -->
+                    <div class="flex gap-3 mb-2">
+                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-m-1" class="text-sm font-bold text-main">?</div></div>
+                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-m-2" class="text-sm font-bold text-main">?</div></div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-1" class="text-sm font-bold text-main">?</div></div>
+                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-2" class="text-sm font-bold text-main">?</div></div>
+                    </div>
+                </div>
+
+                <!-- 2대 뷰 -->
+                <div id="view-car-2" class="hidden w-full flex-col gap-4 mt-2">
+                    <!-- CAR 1 -->
+                    <div class="toss-card !bg-gradient-to-b from-[#E8F3FF] to-white p-4 border-2 border-blue-50 shadow-md">
+                        <p class="text-center text-xs font-bold text-blue-400 mb-2">CAR 1</p>
+                        <div class="flex gap-2 mb-2">
+                            <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm"><span class="absolute top-1 left-1 text-[8px] text-blue-600 font-bold bg-blue-50 px-1 rounded">DRV</span><div id="seat-driver-a" class="text-sm font-bold text-main">?</div></div>
+                            <div class="w-1/2 aspect-square bg-white/60 rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm backdrop-blur-sm"><div id="seat-p-a" class="text-sm font-bold text-main">?</div></div>
+                        </div>
+                        <div class="w-full h-12 bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-a" class="text-sm font-bold text-main">?</div></div>
+                    </div>
+                    <!-- CAR 2 -->
+                    <div class="toss-card !bg-gradient-to-b from-[#E8F3FF] to-white p-4 border-2 border-blue-50 shadow-md">
+                        <p class="text-center text-xs font-bold text-blue-400 mb-2">CAR 2</p>
+                        <div class="flex gap-2 mb-2">
+                            <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm"><span class="absolute top-1 left-1 text-[8px] text-blue-600 font-bold bg-blue-50 px-1 rounded">DRV</span><div id="seat-driver-b" class="text-sm font-bold text-main">?</div></div>
+                            <div class="w-1/2 aspect-square bg-white/60 rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm backdrop-blur-sm"><div id="seat-p-b" class="text-sm font-bold text-main">?</div></div>
+                        </div>
+                        <div class="w-full h-12 bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-b" class="text-sm font-bold text-main">?</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-run-car" onclick="window.haptic(); requestCarGame()" class="w-full bg-[#3182F6] hover:bg-blue-600 text-white font-bold py-4 rounded-[20px] shadow-lg shadow-blue-500/30 active:scale-95 transition-all mt-4 text-base">결과 확인하기</button>
+        </div>
+    </div>
+
+    <!-- 4. 당번 뽑기 화면 -->
+    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-24 pb-8 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-xl font-bold text-main mb-6">당번 뽑기</h2>
+
+        <div class="w-full flex flex-col gap-4 h-full">
+            <div class="toss-card p-6 !bg-white flex items-center justify-between shadow-sm">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-1.5 text-blue-500 mb-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span><span class="text-xs font-bold">CLEANING</span></div>
+                    <span class="text-lg font-bold text-main">청소 당번</span>
+                </div>
+                <div id="result-cleaning" class="h-12 px-5 bg-blue-50 rounded-2xl flex items-center justify-center font-bold text-xl text-blue-600 min-w-[80px] shadow-inner">?</div>
+            </div>
+
+            <div class="toss-card p-6 !bg-white flex items-center justify-between shadow-sm">
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-1.5 text-green-500 mb-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span><span class="text-xs font-bold">DISHES</span></div>
+                    <span class="text-lg font-bold text-main">설거지 당번</span>
+                </div>
+                <div id="result-dishes" class="h-12 px-5 bg-green-50 rounded-2xl flex items-center justify-center font-bold text-xl text-green-600 min-w-[80px] shadow-inner">?</div>
+            </div>
+
+            <div class="mt-auto">
+                <button id="btn-run-chore" onclick="window.haptic(); requestChoreGame()" class="w-full bg-[#191F28] text-white font-bold py-4 rounded-[20px] shadow-lg active:scale-95 transition-all text-base">추첨 시작하기!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 여행지 뽑기 화면 -->
+    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-24 pb-8 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-xl font-bold text-main mb-6">여행지 뽑기</h2>
+
+        <div class="w-full flex flex-col gap-4">
+            <div class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-purple-50 shadow-sm">
+                <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2 bg-purple-50 px-2 py-0.5 rounded">REGION</span>
+                <div id="result-trip-step1" class="text-3xl font-bold text-main break-keep text-center">?</div>
+            </div>
+
+            <div class="flex justify-center -my-3 z-10">
+                <div class="bg-purple-50 p-2 rounded-full border-4 border-[#F2F4F6] text-purple-300">
+                    <i class="fa-solid fa-arrow-down"></i>
+                </div>
+            </div>
+
+            <div id="box-trip-step2" class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-gray-100 transition-colors duration-300 shadow-sm">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-2 transition-colors" id="label-step2">DETAIL</span>
+                <div id="result-trip-step2" class="text-3xl font-bold text-gray-300 break-keep text-center transition-colors">-</div>
+            </div>
+
+            <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-[20px] shadow-lg shadow-purple-200 mt-6 active:scale-95 transition-all text-base">여행지 확인하기</button>
+        </div>
+    </div>
+
+    <!-- 하단 메뉴 -->
+    <nav id="main-nav" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none cursor-grab active:cursor-grabbing">
+        <div class="flex items-center bg-white/10 backdrop-blur-[4px] backdrop-saturate-[180%] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1.5 gap-1 ring-1 ring-white/30 relative">
+            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
+            
+            <button id="nav-btn-home" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='index.html'">
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
+                    <i class="fa-solid fa-house text-base text-[#191F28] drop-shadow-sm transition-colors"></i>
+                    <span class="text-[10px] font-bold text-[#191F28] drop-shadow-sm whitespace-nowrap transition-colors">홈</span>
+                </div>
+            </button>
+
+            <button id="nav-btn-random" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('screen-game-menu')">
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
+                    <i class="fa-solid fa-dice text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">복불복</span>
+                </div>
+            </button>
+
+            <button id="nav-btn-members" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('screen-members')">
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
+                    <i class="fa-solid fa-users text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">멤버</span>
+                </div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 관리자 로그인 -->
+    <div id="modal-admin-login" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-center">
+            <h3 class="text-lg font-bold text-main mb-4">관리자 로그인</h3>
+            <input type="password" id="admin-pw" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-center text-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="비밀번호 입력">
+            <div class="flex gap-2">
+                <button onclick="window.haptic(); closeAdminLogin()" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold text-gray-500 active:bg-gray-200 transition-colors">취소</button>
+                <button onclick="window.haptic(); checkAdminPw()" class="flex-1 py-3 bg-blue-500 rounded-xl font-bold text-white shadow-md active:bg-blue-600 transition-colors">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관리자 패널 -->
+    <div id="modal-admin-panel" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-main">관리자 설정</h3>
+                <button onclick="window.haptic(); closeAdminPanel()" class="text-gray-400 hover:text-gray-600 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-left">
+                    <p class="text-xs font-bold text-gray-500 mb-2">게임별 초기화</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="window.haptic(); adminResetGame('car')" class="py-3 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-200 transition-colors active:scale-95">차량<br>초기화</button>
+                        <button onclick="window.haptic(); adminResetGame('chore')" class="py-3 bg-red-100 text-red-600 rounded-xl text-xs font-bold hover:bg-red-200 transition-colors active:scale-95">당번<br>초기화</button>
+                        <button onclick="window.haptic(); adminResetGame('trip')" class="py-3 bg-purple-100 text-purple-600 rounded-xl text-xs font-bold hover:bg-purple-200 transition-colors active:scale-95">여행<br>초기화</button>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-left flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-500 mb-0.5">무한 뽑기 모드</p>
+                        <p class="text-[10px] text-gray-400">1회 제한 해제</p>
+                    </div>
+                    <button id="btn-unlimited-toggle" onclick="window.haptic(); adminToggleUnlimited()" class="w-12 h-7 bg-gray-300 rounded-full relative transition-colors"><div class="w-5 h-5 bg-white rounded-full absolute top-1 left-1 transition-transform shadow-sm"></div></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -673,44 +592,21 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let globalState = {
-            car: { timestamp: 0 },
-            chore: { timestamp: 0 },
-            trip: { timestamp: 0 },
-            admin: { resets: { car: 0, chore: 0, trip: 0 }, unlimited: false }
-        };
+        let globalState = { car: { timestamp: 0 }, chore: { timestamp: 0 }, trip: { timestamp: 0 }, admin: { resets: { car: 0, chore: 0, trip: 0 }, unlimited: false } };
         let localTimestamps = { car: 0, chore: 0, trip: 0 };
         let isFirstLoad = true;
 
         const setupFirestoreListener = () => {
             const docRef = doc(db, 'games', 'random_enjoy_state');
             onSnapshot(docRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    handleGameStateChange(snapshot.data());
-                } else {
-                    setDoc(docRef, {
-                        car: { timestamp: 0 },
-                        chore: { timestamp: 0 },
-                        trip: { timestamp: 0 },
-                        admin: { resets: { car: 0, chore: 0, trip: 0 }, unlimited: false }
-                    }, { merge: true });
-                }
+                if (snapshot.exists()) handleGameStateChange(snapshot.data());
+                else setDoc(docRef, globalState, { merge: true });
                 isFirstLoad = false;
-            }, (error) => {
-                console.error("Snapshot error:", error);
-            });
+            }, (error) => console.error("Snapshot error:", error));
         };
 
         const init = async () => {
-            try {
-                await signInAnonymously(auth);
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        setupFirestoreListener();
-                        updateButtonVisibility(); 
-                    }
-                });
-            } catch (e) { console.error(e); }
+            try { await signInAnonymously(auth); onAuthStateChanged(auth, (user) => { if (user) { setupFirestoreListener(); updateButtonVisibility(); } }); } catch (e) { console.error(e); }
         };
         init();
 
@@ -718,42 +614,25 @@
             globalState = newData;
             updateTopNotifications(newData);
             updateButtonVisibility();
-
-            // 개별 리셋 처리
             const adminResets = newData.admin?.resets || { car: 0, chore: 0, trip: 0 };
             
-            // Check Car Reset
-            if (newData.car && newData.car.timestamp === 0) {
-                 window.resetCarGameUI();
-            } else if (newData.car && newData.car.timestamp > localTimestamps.car) {
-                if (!isFirstLoad) playCarGameAnimation(newData.car);
-                else displayCarResult(newData.car);
+            if (newData.car && newData.car.timestamp === 0) window.resetCarGameUI();
+            else if (newData.car && newData.car.timestamp > localTimestamps.car) {
+                if (!isFirstLoad) playCarGameAnimation(newData.car); else displayCarResult(newData.car);
                 localTimestamps.car = newData.car.timestamp;
-            } else if (newData.car) {
-                displayCarResult(newData.car);
-            }
+            } else if (newData.car) displayCarResult(newData.car);
 
-            // Check Chore Reset
-            if (newData.chore && newData.chore.timestamp === 0) {
-                window.resetChoreGameUI();
-            } else if (newData.chore && newData.chore.timestamp > localTimestamps.chore) {
-                if (!isFirstLoad) playChoreGameAnimation(newData.chore);
-                else displayChoreResult(newData.chore);
+            if (newData.chore && newData.chore.timestamp === 0) window.resetChoreGameUI();
+            else if (newData.chore && newData.chore.timestamp > localTimestamps.chore) {
+                if (!isFirstLoad) playChoreGameAnimation(newData.chore); else displayChoreResult(newData.chore);
                 localTimestamps.chore = newData.chore.timestamp;
-            } else if (newData.chore) {
-                displayChoreResult(newData.chore);
-            }
+            } else if (newData.chore) displayChoreResult(newData.chore);
 
-            // Check Trip Reset
-            if (newData.trip && newData.trip.timestamp === 0) {
-                window.resetTripGameUI();
-            } else if (newData.trip && newData.trip.timestamp > localTimestamps.trip) {
-                if (!isFirstLoad) playTripGameAnimation(newData.trip);
-                else displayTripResult(newData.trip);
+            if (newData.trip && newData.trip.timestamp === 0) window.resetTripGameUI();
+            else if (newData.trip && newData.trip.timestamp > localTimestamps.trip) {
+                if (!isFirstLoad) playTripGameAnimation(newData.trip); else displayTripResult(newData.trip);
                 localTimestamps.trip = newData.trip.timestamp;
-            } else if (newData.trip) {
-                displayTripResult(newData.trip);
-            }
+            } else if (newData.trip) displayTripResult(newData.trip);
         }
 
         function updateTopNotifications(data) {
@@ -761,124 +640,66 @@
             const admin = data.admin || { unlimited: false, resets: {} };
             const resets = admin.resets || { car: 0, chore: 0, trip: 0 };
 
-            // 1. Unlimited Mode Banner
             let unlimitedBanner = document.getElementById('noti-unlimited');
             if (admin.unlimited) {
-                if (!unlimitedBanner) {
-                    unlimitedBanner = createNotification('noti-unlimited', '🔥 무한 뽑기 모드 활성화 중!', 'bg-red-500');
-                    container.appendChild(unlimitedBanner);
-                }
-            } else {
-                if (unlimitedBanner) unlimitedBanner.remove();
-            }
+                if (!unlimitedBanner) { unlimitedBanner = createNotification('noti-unlimited', '🔥 무한 뽑기 모드 활성화 중!', 'bg-red-500'); container.appendChild(unlimitedBanner); }
+            } else { if (unlimitedBanner) unlimitedBanner.remove(); }
             updateUnlimitedUI(admin.unlimited);
 
-            // 2. Persistent Reset Banners Logic (State-based)
-            // 배너가 보여야 하는 조건: (마지막 리셋 시간) > (마지막 게임 플레이 시간)
-            // 즉, 리셋 이후에 아직 게임을 하지 않았을 때만 배너를 표시합니다.
-            
-            const carResetTime = resets.car || 0;
-            const carPlayTime = data.car?.timestamp || 0;
-            updatePersistentBanner('car', carResetTime > carPlayTime, '🚗 차량 배치가 초기화되었습니다!', 'bg-blue-600');
-
-            const choreResetTime = resets.chore || 0;
-            const chorePlayTime = data.chore?.timestamp || 0;
-            updatePersistentBanner('chore', choreResetTime > chorePlayTime, '🧹 당번이 초기화되었습니다!', 'bg-green-600');
-
-            const tripResetTime = resets.trip || 0;
-            const tripPlayTime = data.trip?.timestamp || 0;
-            updatePersistentBanner('trip', tripResetTime > tripPlayTime, '✈️ 여행지가 초기화되었습니다!', 'bg-purple-600');
+            updatePersistentBanner('car', (resets.car || 0) > (data.car?.timestamp || 0), '🚗 차량 배치가 초기화되었습니다!', 'bg-blue-500');
+            updatePersistentBanner('chore', (resets.chore || 0) > (data.chore?.timestamp || 0), '🧹 당번이 초기화되었습니다!', 'bg-green-500');
+            updatePersistentBanner('trip', (resets.trip || 0) > (data.trip?.timestamp || 0), '✈️ 여행지가 초기화되었습니다!', 'bg-purple-500');
         }
 
         function updatePersistentBanner(key, shouldShow, msg, color) {
             const container = document.getElementById('notification-container');
             const id = `noti-reset-${key}`;
             let el = document.getElementById(id);
-
-            if (shouldShow) {
-                if (!el) {
-                    el = createNotification(id, msg, color);
-                    container.appendChild(el);
-                }
-            } else {
-                if (el) {
-                    el.classList.remove('slide-down');
-                    el.classList.add('slide-up');
-                    setTimeout(() => { if(el && el.parentNode) el.remove(); }, 300);
-                }
-            }
+            if (shouldShow) { if (!el) { el = createNotification(id, msg, color); container.appendChild(el); } }
+            else { if (el) { el.style.opacity = '0'; el.style.transform = 'translateY(-100%)'; setTimeout(() => { if(el && el.parentNode) el.remove(); }, 300); } }
         }
 
         function createNotification(id, text, colorClass) {
             const el = document.createElement('div');
             el.id = id;
-            el.className = `${colorClass} text-white px-6 py-3 rounded-b-xl shadow-lg flex items-center gap-3 pointer-events-auto mb-2 slide-down font-bold text-sm justify-center transition-all duration-300`;
-            const span = document.createElement('span');
-            span.textContent = text;
-            el.appendChild(span);
+            el.className = `${colorClass} text-white px-6 py-3 rounded-b-xl shadow-lg flex items-center gap-2 pointer-events-auto mb-2 font-bold text-xs justify-center transition-all duration-300 fade-in-up w-[90%] mx-auto mt-2`;
+            el.innerHTML = `<i class="fa-solid fa-bell"></i><span>${text}</span>`;
             return el;
         }
 
         window.updateButtonVisibility = () => {
             const isUnlimited = globalState.admin?.unlimited;
-            const carPlayed = globalState.car?.timestamp > 0;
-            const chorePlayed = globalState.chore?.timestamp > 0;
-            const tripPlayed = globalState.trip?.timestamp > 0;
-
-            document.getElementById('btn-run-car').style.display = (!isUnlimited && carPlayed) ? 'none' : 'block';
-            document.getElementById('btn-run-chore').style.display = (!isUnlimited && chorePlayed) ? 'none' : 'block';
-            document.getElementById('btn-run-trip').style.display = (!isUnlimited && tripPlayed) ? 'none' : 'block';
+            const btnCar = document.getElementById('btn-run-car');
+            const btnChore = document.getElementById('btn-run-chore');
+            const btnTrip = document.getElementById('btn-run-trip');
+            if(btnCar) btnCar.style.display = (!isUnlimited && globalState.car?.timestamp > 0) ? 'none' : 'block';
+            if(btnChore) btnChore.style.display = (!isUnlimited && globalState.chore?.timestamp > 0) ? 'none' : 'block';
+            if(btnTrip) btnTrip.style.display = (!isUnlimited && globalState.trip?.timestamp > 0) ? 'none' : 'block';
         }
 
         window.openAdminLogin = () => document.getElementById('modal-admin-login').classList.remove('hidden');
         window.closeAdminLogin = () => document.getElementById('modal-admin-login').classList.add('hidden');
         window.checkAdminPw = () => {
             const pw = document.getElementById('admin-pw').value;
-            if (pw === '0920') {
-                closeAdminLogin();
-                document.getElementById('modal-admin-panel').classList.remove('hidden');
-                document.getElementById('admin-pw').value = '';
-            } else { alert('비밀번호가 틀렸습니다.'); }
+            if (pw === '0920') { closeAdminLogin(); document.getElementById('modal-admin-panel').classList.remove('hidden'); document.getElementById('admin-pw').value = ''; }
+            else { alert('비밀번호가 틀렸습니다.'); }
         };
         window.closeAdminPanel = () => document.getElementById('modal-admin-panel').classList.add('hidden');
         
-        // Granular Reset Function
         window.adminResetGame = async (type) => {
             if (!confirm(`${type === 'car' ? '차량' : type === 'chore' ? '당번' : '여행'} 게임을 초기화하시겠습니까?`)) return;
-            try {
-                const docRef = doc(db, 'games', 'random_enjoy_state'); 
-                
-                // 해당 게임 데이터 리셋 및 리셋 타임스탬프 갱신
-                let updateData = {
-                    [`admin.resets.${type}`]: Date.now(),
-                    [type]: { timestamp: 0 } // 게임 데이터 실제 초기화
-                };
-
-                await updateDoc(docRef, updateData);
-                closeAdminPanel();
-            } catch (e) { alert("초기화 실패: " + e.message); }
+            try { await updateDoc(doc(db, 'games', 'random_enjoy_state'), { [`admin.resets.${type}`]: Date.now(), [type]: { timestamp: 0 } }); closeAdminPanel(); } catch (e) { alert("초기화 실패: " + e.message); }
         };
 
         window.adminToggleUnlimited = async () => {
-            try {
-                const current = globalState.admin?.unlimited || false;
-                const docRef = doc(db, 'games', 'random_enjoy_state');
-                await updateDoc(docRef, { 'admin.unlimited': !current });
-            } catch (e) { alert("설정 변경 실패: " + e.message); }
+            try { await updateDoc(doc(db, 'games', 'random_enjoy_state'), { 'admin.unlimited': !globalState.admin?.unlimited }); } catch (e) { alert("설정 변경 실패: " + e.message); }
         };
         
         function updateUnlimitedUI(isUnlimited) {
             const btn = document.getElementById('btn-unlimited-toggle');
             const dot = btn.querySelector('div');
-            if (isUnlimited) {
-                btn.classList.replace('bg-gray-300', 'bg-green-500');
-                dot.classList.replace('left-1', 'translate-x-5'); 
-                dot.style.transform = 'translateX(20px)'; 
-            } else {
-                btn.classList.replace('bg-green-500', 'bg-gray-300');
-                dot.classList.replace('translate-x-5', 'left-1');
-                dot.style.transform = 'translateX(0)';
-            }
+            if (isUnlimited) { btn.classList.replace('bg-gray-300', 'bg-green-500'); dot.classList.replace('left-1', 'translate-x-5'); }
+            else { btn.classList.replace('bg-green-500', 'bg-gray-300'); dot.classList.replace('translate-x-5', 'left-1'); }
         }
         function canPlay(gameType) {
             if (globalState.admin?.unlimited) return true; 
@@ -888,136 +709,72 @@
 
         window.requestCarGame = async () => {
             if (!canPlay('car')) return;
-            const driverMode = window.getDriverMode(); 
-            const selectedDrivers = window.getSelectedDrivers(); 
-            const carConfig = window.getCarConfig();
             if (driverMode === 'manual') {
                 if (carConfig === 1 && selectedDrivers.length !== 1) { alert('운전자 1명을 선택해주세요!'); return; }
                 if (carConfig === 2 && selectedDrivers.length !== 2) { alert('운전자 2명을 선택해주세요!'); return; }
             }
-            let finalDrivers = [];
-            let passengers = [];
-            if (driverMode === 'manual') finalDrivers = [...selectedDrivers];
-            else {
-                const shuffled = [...MEMBERS].sort(() => Math.random() - 0.5);
-                if (carConfig === 1) finalDrivers = [shuffled[0]];
-                else finalDrivers = [shuffled[0], shuffled[1]];
-            }
-            passengers = MEMBERS.filter(m => !finalDrivers.includes(m)).sort(() => Math.random() - 0.5);
-            await setDoc(doc(db, 'games', 'random_enjoy_state'), {
-                car: { config: carConfig, drivers: finalDrivers, passengers: passengers, timestamp: Date.now() }
-            }, { merge: true });
+            let finalDrivers = driverMode === 'manual' ? [...selectedDrivers] : (carConfig === 1 ? [[...MEMBERS].sort(() => Math.random()-0.5)[0]] : [...MEMBERS].sort(() => Math.random()-0.5).slice(0,2));
+            let passengers = MEMBERS.filter(m => !finalDrivers.includes(m)).sort(() => Math.random() - 0.5);
+            await setDoc(doc(db, 'games', 'random_enjoy_state'), { car: { config: carConfig, drivers: finalDrivers, passengers: passengers, timestamp: Date.now() } }, { merge: true });
         };
 
         window.requestChoreGame = async () => {
             if (!canPlay('chore')) return;
             const shuffled = [...MEMBERS].sort(() => Math.random() - 0.5);
-            await setDoc(doc(db, 'games', 'random_enjoy_state'), {
-                chore: { cleaner: shuffled[0], dishwasher: shuffled[1], timestamp: Date.now() }
-            }, { merge: true });
+            await setDoc(doc(db, 'games', 'random_enjoy_state'), { chore: { cleaner: shuffled[0], dishwasher: shuffled[1], timestamp: Date.now() } }, { merge: true });
         };
 
         window.requestTripGame = async () => {
             if (!canPlay('trip')) return;
             const step1 = REGION_POOL[Math.floor(Math.random() * REGION_POOL.length)];
-            let step2 = null;
-            if (TRIP_REGIONS_COMPLEX[step1]) {
-                const subs = TRIP_REGIONS_COMPLEX[step1];
-                step2 = subs[Math.floor(Math.random() * subs.length)];
-            }
-            await setDoc(doc(db, 'games', 'random_enjoy_state'), {
-                trip: { step1: step1, step2: step2, timestamp: Date.now() }
-            }, { merge: true });
+            const sub = TRIP_REGIONS_COMPLEX[step1];
+            await setDoc(doc(db, 'games', 'random_enjoy_state'), { trip: { step1: step1, step2: sub ? sub[Math.floor(Math.random()*sub.length)] : null, timestamp: Date.now() } }, { merge: true });
         };
 
         function playCarGameAnimation(data) {
-            window.initAudio();
-            window.updateCarView(data.config || 1); 
+            window.initAudio(); window.updateCarView(data.config || 1); 
             if (data.config === 1) {
-                const driverEl = document.getElementById('seat-driver-1');
-                window.animateShuffle(driverEl, MEMBERS, data.drivers[0], 2000);
-                const seatIds = ['seat-p-1', 'seat-m-1', 'seat-m-2', 'seat-b-1', 'seat-b-2'];
-                seatIds.forEach((id, i) => {
-                    const el = document.getElementById(id);
-                    if(data.passengers[i]) window.animateShuffle(el, MEMBERS, data.passengers[i], 2000 + (i * 300));
-                });
+                window.animateShuffle(document.getElementById('seat-driver-1'), MEMBERS, data.drivers[0], 2000);
+                ['seat-p-1', 'seat-m-1', 'seat-m-2', 'seat-b-1', 'seat-b-2'].forEach((id, i) => { if(data.passengers[i]) window.animateShuffle(document.getElementById(id), MEMBERS, data.passengers[i], 2000 + (i * 300)); });
             } else {
-                const driverElA = document.getElementById('seat-driver-a');
-                const driverElB = document.getElementById('seat-driver-b');
-                window.animateShuffle(driverElA, MEMBERS, data.drivers[0], 2000);
-                window.animateShuffle(driverElB, MEMBERS, data.drivers[1], 2000);
-                const seatIds = ['seat-p-a', 'seat-b-a', 'seat-p-b', 'seat-b-b'];
-                seatIds.forEach((id, i) => {
-                    const el = document.getElementById(id);
-                    if(data.passengers[i]) window.animateShuffle(el, MEMBERS, data.passengers[i], 2000 + (i * 300));
-                });
+                window.animateShuffle(document.getElementById('seat-driver-a'), MEMBERS, data.drivers[0], 2000);
+                window.animateShuffle(document.getElementById('seat-driver-b'), MEMBERS, data.drivers[1], 2000);
+                ['seat-p-a', 'seat-b-a', 'seat-p-b', 'seat-b-b'].forEach((id, i) => { if(data.passengers[i]) window.animateShuffle(document.getElementById(id), MEMBERS, data.passengers[i], 2000 + (i * 300)); });
             }
         }
         function displayCarResult(data) {
             window.updateCarView(data.config || 1);
             if(data.config === 1) {
-                if(data.drivers && data.drivers[0]) document.getElementById('seat-driver-1').textContent = data.drivers[0];
-                const seatIds = ['seat-p-1', 'seat-m-1', 'seat-m-2', 'seat-b-1', 'seat-b-2'];
-                seatIds.forEach((id, i) => { if(data.passengers && data.passengers[i]) document.getElementById(id).textContent = data.passengers[i]; });
+                if(data.drivers) document.getElementById('seat-driver-1').textContent = data.drivers[0];
+                ['seat-p-1', 'seat-m-1', 'seat-m-2', 'seat-b-1', 'seat-b-2'].forEach((id, i) => { if(data.passengers && data.passengers[i]) document.getElementById(id).textContent = data.passengers[i]; });
             } else {
-                if(data.drivers) {
-                    document.getElementById('seat-driver-a').textContent = data.drivers[0];
-                    document.getElementById('seat-driver-b').textContent = data.drivers[1];
-                }
-                const seatIds = ['seat-p-a', 'seat-b-a', 'seat-p-b', 'seat-b-b'];
-                seatIds.forEach((id, i) => { if(data.passengers && data.passengers[i]) document.getElementById(id).textContent = data.passengers[i]; });
+                if(data.drivers) { document.getElementById('seat-driver-a').textContent = data.drivers[0]; document.getElementById('seat-driver-b').textContent = data.drivers[1]; }
+                ['seat-p-a', 'seat-b-a', 'seat-p-b', 'seat-b-b'].forEach((id, i) => { if(data.passengers && data.passengers[i]) document.getElementById(id).textContent = data.passengers[i]; });
             }
             document.querySelectorAll('[id^="seat-"]').forEach(el => el.style.color = '#3182ce');
         }
 
-        function playChoreGameAnimation(data) {
-            window.initAudio();
-            const cEl = document.getElementById('result-cleaning');
-            const dEl = document.getElementById('result-dishes');
-            window.animateShuffle(cEl, MEMBERS, data.cleaner, 1500);
-            window.animateShuffle(dEl, MEMBERS, data.dishwasher, 2500);
-        }
+        function playChoreGameAnimation(data) { window.initAudio(); window.animateShuffle(document.getElementById('result-cleaning'), MEMBERS, data.cleaner, 1500); window.animateShuffle(document.getElementById('result-dishes'), MEMBERS, data.dishwasher, 2500); }
         function displayChoreResult(data) {
             if(!data.cleaner) return;
-            const cEl = document.getElementById('result-cleaning');
-            const dEl = document.getElementById('result-dishes');
-            cEl.textContent = data.cleaner;
-            dEl.textContent = data.dishwasher;
-            cEl.style.color = "#2563eb";
-            dEl.style.color = "#16a34a";
+            const c = document.getElementById('result-cleaning'); const d = document.getElementById('result-dishes');
+            c.textContent = data.cleaner; d.textContent = data.dishwasher; c.style.color = "#2563eb"; d.style.color = "#16a34a";
         }
 
         function playTripGameAnimation(data) {
-            window.initAudio();
-            window.resetTripGameUI();
-            const el1 = document.getElementById('result-trip-step1');
+            window.initAudio(); window.resetTripGameUI();
             const el2 = document.getElementById('result-trip-step2');
-            window.animateShuffleCallback(el1, REGION_POOL, data.step1, 2000, () => {
-                if (data.step2) {
-                    setTimeout(() => {
-                        window.activateStep2UI();
-                        const subRegions = TRIP_REGIONS_COMPLEX[data.step1];
-                        window.animateShuffleCallback(el2, subRegions, data.step2, 2000, () => window.playWinSound());
-                    }, 300);
-                } else {
-                    el2.textContent = "해당 없음";
-                    window.playWinSound();
-                }
+            window.animateShuffleCallback(document.getElementById('result-trip-step1'), REGION_POOL, data.step1, 2000, () => {
+                if (data.step2) { setTimeout(() => { window.activateStep2UI(); window.animateShuffleCallback(el2, TRIP_REGIONS_COMPLEX[data.step1], data.step2, 2000, () => window.playWinSound()); }, 300); }
+                else { el2.textContent = "해당 없음"; window.playWinSound(); }
             });
         }
         function displayTripResult(data) {
             if(!data.step1) return;
             window.resetTripGameUI();
-            document.getElementById('result-trip-step1').textContent = data.step1;
-            document.getElementById('result-trip-step1').style.color = "#9333ea";
-            if (data.step2) {
-                window.activateStep2UI();
-                const el2 = document.getElementById('result-trip-step2');
-                el2.textContent = data.step2;
-                el2.style.color = "#9333ea";
-            } else {
-                document.getElementById('result-trip-step2').textContent = "해당 없음";
-            }
+            const el1 = document.getElementById('result-trip-step1'); el1.textContent = data.step1; el1.style.color = "#9333ea";
+            if (data.step2) { window.activateStep2UI(); const el2 = document.getElementById('result-trip-step2'); el2.textContent = data.step2; el2.style.color = "#9333ea"; }
+            else document.getElementById('result-trip-step2').textContent = "해당 없음";
         }
     </script>
 </body>
