@@ -216,7 +216,35 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 2: 새해 인사 (기존 1번) -->
+                <!-- [NEW] 슬라이드 2: 블럭퍼즐 게임 출시 (두번째로 추가됨) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F5F3FF] via-[#EDE9FE] to-[#DDD6FE] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.location.href='block.html'">
+                    <!-- 배경 데코레이션 -->
+                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+                    
+                    <!-- 이모지 -->
+                    <div class="absolute right-4 bottom-4 transform rotate-[15deg]">
+                        <span class="text-[80px] drop-shadow-md filter brightness-105">🧩</span>
+                    </div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-violet-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
+                                NEW GAME
+                            </span>
+                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
+                                엔조이 블럭퍼즐<br>
+                                <span class="text-violet-600">게임 출시!</span>
+                            </h2>
+                            <p class="text-gray-600 font-bold mt-2 text-sm">심심할 땐 블럭깨기 🧩<br>지금 바로 도전하세요!</p>
+                            <!-- [NEW] 요청하신 문구 추가 -->
+                            <p class="text-violet-600 font-black mt-3 text-xs border-b border-violet-300 inline-block pb-0.5">배너 눌러서 게임하러가기 →</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 3: 새해 인사 (기존 1번에서 밀림) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F7FF] via-[#E6F4FF] to-[#DBEAFE] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -242,7 +270,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 3: 정기 모임 (기존 2번) -->
+                <!-- 슬라이드 4: 정기 모임 (기존 2번에서 밀림) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3F0FF] via-[#E9E6FF] to-[#DCD6FF] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -268,7 +296,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 출장엔조이 1화 (기존 3번) -->
+                <!-- 슬라이드 5: 출장엔조이 1화 (기존 3번에서 밀림) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FFDAB9] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -294,7 +322,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 5: 모임비 인상 (기존 4번) -->
+                <!-- 슬라이드 6: 모임비 인상 (기존 4번에서 밀림) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -320,7 +348,7 @@
                     </div>
                 </div>
 
-                <!-- [추가] 슬라이드 6: 출장엔조이 2화 연기 -->
+                <!-- 슬라이드 7: 출장엔조이 2화 연기 (기존 5번에서 밀림) -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3F4F6] via-[#E5E7EB] to-[#D1D5DB] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -348,7 +376,7 @@
 
             </div>
             
-            <!-- [수정] 슬라이드 인디케이터: 6개로 증가 -->
+            <!-- [수정] 슬라이드 인디케이터: 7개로 증가 -->
             <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 z-30">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-black/60 transition-colors"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
@@ -356,6 +384,7 @@
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
+                <button id="ind-6" onclick="window.moveBanner(6)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 
                 <!-- 배너 재생/일시정지 버튼 -->
                 <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="ml-1 w-4 h-4 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors active:scale-90">
@@ -655,11 +684,11 @@
                 </div>
             </button>
 
-            <!-- 수정된 메뉴: 엔비씨 (구 복불복) -->
-            <button id="nav-nbc" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.showNbcModal()">
+            <!-- [수정] 엔비씨 -> 블럭겜 교체 -->
+            <button id="nav-game" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='block.html'">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-video text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">엔비씨</span>
+                    <i class="fa-solid fa-gamepad text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">블럭겜</span>
                 </div>
             </button>
 
@@ -1099,7 +1128,7 @@
                 
                 // 현재 위치 기준으로 다음 인덱스 계산
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 6; // [수정] 6개 슬라이드 순환
+                const nextIndex = (currentIndex + 1) % 7; // [수정] 7개 슬라이드 순환 (배너 추가됨)
                 
                 window.moveBanner(nextIndex);
             }, 2000); // 2초(2000ms) 간격
@@ -1126,14 +1155,15 @@
 
         function initBannerScrollListener() {
             const slider = document.getElementById('banner-slider');
-            // [수정] 6개의 인디케이터를 모두 가져옵니다.
+            // [수정] 7개의 인디케이터를 모두 가져옵니다.
             const inds = [
                 document.getElementById('ind-0'),
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
                 document.getElementById('ind-4'),
-                document.getElementById('ind-5')
+                document.getElementById('ind-5'),
+                document.getElementById('ind-6') // [추가]
             ];
             
             if(!slider) return;
@@ -1624,4 +1654,5 @@
     </script>
 </body>
 </html>
-```
+
+
