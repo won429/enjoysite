@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Enjoy Puzzle</title>
+    <title>Enjoy Puzzle - Better Drag</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 폰트 및 아이콘 -->
@@ -73,7 +73,7 @@
             grid-template-rows: repeat(8, 1fr);
             gap: 3px;
             background-color: rgba(25, 31, 40, 0.05);
-            padding: 6px;
+            padding: 6px; /* 이 패딩값(6px)이 좌표 계산의 핵심입니다 */
             border-radius: 20px;
             width: 100%;
             height: 100%;
@@ -149,7 +149,6 @@
     <!-- VIEW 1: HOME (LOBBY) -->
     <main id="home-view" class="flex-1 w-full flex flex-col pt-12 px-5 overflow-y-auto scrollbar-hide pb-24">
         
-        <!-- Header -->
         <div class="flex justify-between items-center mb-6 shrink-0">
             <h1 class="text-2xl font-bold text-main">블럭겜</h1>
             <div id="home-user-badge" class="bg-white px-3 py-1.5 rounded-full text-xs font-bold text-gray-500 shadow-sm border border-gray-100 cursor-pointer" onclick="openLoginModal()">
@@ -157,7 +156,6 @@
             </div>
         </div>
 
-        <!-- GAME START BANNER -->
         <div onclick="startGameSession()" class="w-full bg-gradient-to-br from-[#E6F4FF] to-[#F0F7FF] p-6 rounded-[26px] shadow-sm border border-blue-100 relative overflow-hidden group active:scale-[0.98] transition-transform duration-200 cursor-pointer mb-8 shrink-0">
             <div class="absolute right-[-10px] bottom-[-20px] text-[100px] opacity-20 rotate-[-10deg]">🧩</div>
             <div class="relative z-10">
@@ -177,25 +175,23 @@
             </div>
         </div>
 
-        <!-- Ranking Section -->
         <div class="w-full shrink-0">
             <div class="flex justify-between items-end mb-3 px-1">
                 <h3 class="text-lg font-bold text-main">전체 순위 🏆</h3>
                 <span class="text-xs text-gray-400">참가자 6명</span>
             </div>
             <div id="home-ranking-list" class="space-y-3 pb-4">
-                <!-- Initial 6 placeholders will be rendered here -->
+                <div class="p-4 text-center text-gray-400 text-xs">
+                    서버 연결 중...
+                </div>
             </div>
         </div>
-        <div class="h-10 shrink-0"></div> <!-- Footer Spacer -->
-
+        <div class="h-10 shrink-0"></div>
     </main>
 
-
-    <!-- VIEW 2: GAMEPLAY SCREEN (Hidden by default) -->
+    <!-- VIEW 2: GAMEPLAY -->
     <main id="gameplay-view" class="hidden flex-1 w-full flex-col items-center px-4 pt-4 pb-20 overflow-hidden h-full fixed top-0 left-0 bg-[#F2F4F6] z-50">
         
-        <!-- Header -->
         <div class="w-full max-w-md flex justify-between items-center mb-2 px-1 shrink-0 mt-8">
             <button onclick="exitGameSession()" class="px-3 py-1.5 rounded-full bg-gray-200/50 hover:bg-gray-200 text-gray-600 text-xs font-bold transition-colors">
                 <i class="fa-solid fa-chevron-left mr-1"></i> 로비
@@ -207,9 +203,7 @@
             </div>
         </div>
 
-        <!-- Game Elements Cluster -->
         <div class="flex-1 w-full max-w-md flex flex-col justify-center items-center gap-3 min-h-0">
-            <!-- Score -->
             <div class="w-full account-card-gradient p-5 shadow-lg shrink-0 flex items-center justify-between relative overflow-hidden">
                  <div class="absolute right-[-10px] top-[-10px] w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
                  <div class="relative z-10">
@@ -222,33 +216,26 @@
                  </div>
             </div>
 
-            <!-- Board -->
             <div class="glass-card p-3 w-full aspect-square flex items-center justify-center shadow-lg ring-1 ring-white/40 shrink-0 bg-white/20">
                 <div id="board"></div>
             </div>
 
-            <!-- Inventory -->
             <div class="w-full glass-card h-[90px] flex items-center justify-center ring-1 ring-white/40 shrink-0 bg-white/20">
                 <div class="preview-container" id="inventory"></div>
             </div>
         </div>
     </main>
 
-
     <!-- Bottom Navigation -->
     <nav id="bottom-nav" class="fixed bottom-2 left-1/2 -translate-x-1/2 z-40 w-auto touch-pan-x select-none">
         <div class="flex items-center bg-white/10 backdrop-blur-[4px] backdrop-saturate-[180%] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1 gap-1 ring-1 ring-white/30 relative">
-            
-            <!-- Animated Indicator (Fixed on 'Game') -->
             <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0" style="right: 4px; width: 64px;"></div>
             
-            <!-- HOME LINK (External) -->
             <a href="index.html" class="relative px-6 py-1.5 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform flex flex-col items-center gap-0.5">
                 <i class="fa-solid fa-house text-lg text-gray-400 transition-colors"></i>
                 <span class="text-[10px] font-medium text-gray-400 transition-colors whitespace-nowrap">홈</span>
             </a>
 
-            <!-- GAME BUTTON (Internal Lobby) -->
             <button onclick="exitGameSession()" class="relative px-6 py-1.5 rounded-full group min-w-[64px] z-10 cursor-pointer">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
                     <i class="fa-solid fa-gamepad text-lg text-[#191F28]"></i>
@@ -258,8 +245,7 @@
         </div>
     </nav>
 
-
-    <!-- Login Modal -->
+    <!-- Modals -->
     <div id="login-modal" class="modal-overlay fixed inset-0 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-[28px] shadow-2xl text-center w-full max-w-[300px] scale-in mx-4">
             <div class="w-14 h-14 rounded-[20px] bg-blue-50 text-blue-500 flex items-center justify-center text-2xl mx-auto mb-4 shadow-sm">
@@ -267,7 +253,6 @@
             </div>
             <h2 class="text-xl font-bold text-main mb-2">누구세요?</h2>
             <p class="text-sub text-xs mb-5">순위 기록을 위해 이름을 알려주세요</p>
-            
             <div class="flex flex-col gap-3">
                 <input type="text" id="username-input" placeholder="이름 입력" class="custom-input py-3 text-base" onkeypress="handleEnter(event)">
                 <button onclick="submitLogin()" class="btn-primary w-full py-3.5 text-base shadow-md">시작하기</button>
@@ -275,23 +260,18 @@
         </div>
     </div>
 
-    <!-- Game Over Modal -->
     <div id="game-over-modal" class="modal-overlay fixed inset-0 hidden flex items-center justify-center z-[60]">
         <div class="bg-white p-6 rounded-[28px] shadow-2xl text-center w-full max-w-[300px] scale-in mx-4">
             <h2 class="text-2xl font-black text-main mb-1">GAME OVER</h2>
             <p class="text-sub text-xs mb-5">수고했어요, <span id="go-player-name" class="font-bold text-blue-500"></span>님!</p>
-            
             <div class="bg-gray-50 rounded-2xl p-4 mb-5 border border-gray-100">
                 <div class="text-xs text-gray-400 mb-1 font-bold">최종 점수</div>
                 <div id="final-score" class="text-3xl font-bold text-main tabular-nums">0</div>
             </div>
-
-            <!-- Mini Leaderboard -->
             <div class="text-left mb-5">
                 <div class="text-xs text-gray-400 font-bold mb-2 ml-1">🏆 실시간 Top 3</div>
                 <div id="leaderboard-list" class="space-y-1.5"></div>
             </div>
-
             <div class="flex gap-2">
                 <button onclick="exitGameSession(); document.getElementById('game-over-modal').classList.add('hidden');" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs hover:bg-gray-200">나가기</button>
                 <button onclick="restartGame()" class="flex-[1.5] btn-primary py-3 rounded-xl text-sm shadow-md">다시 하기</button>
@@ -305,7 +285,6 @@
         import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- YOUR FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBDn155v1pwBwPjPtm7kL3HEaZSx3HGdm8",
             authDomain: "enjoyblockpuzzle-cd704.firebaseapp.com",
@@ -321,8 +300,6 @@
         
         let currentPlayer = "";
         let currentBestScore = 0;
-        
-        // Initial fixed list (0 points default)
         const initialPlayers = ["전시기", "성원제", "홍박사", "이진누", "오스틴", "류짱"];
         let globalRanking = initialPlayers.map(name => ({ name, score: 0 }));
 
@@ -336,29 +313,17 @@
 
                 if (!auth.currentUser) return;
 
-                // Connect to 'block_scores' collection
                 const scoresRef = collection(db, 'block_scores');
-                
                 onSnapshot(scoresRef, (snapshot) => {
                     const cloudData = [];
                     snapshot.forEach(doc => cloudData.push(doc.data()));
-                    
                     const mergedMap = new Map();
-                    
-                    // 1. Set Defaults
                     initialPlayers.forEach(name => mergedMap.set(name, { name, score: 0 }));
-                    
-                    // 2. Overwrite with Cloud Data
                     cloudData.forEach(data => {
                         mergedMap.set(data.name, { name: data.name, score: data.score });
                     });
-                    
-                    // 3. Sort by Score
                     globalRanking = Array.from(mergedMap.values()).sort((a, b) => b.score - a.score);
-                    
                     updateLeaderboardUI();
-                    
-                    // Sync my best score
                     if (currentPlayer) {
                         const myRecord = globalRanking.find(d => d.name === currentPlayer);
                         if (myRecord) {
@@ -367,21 +332,17 @@
                         }
                     }
                 });
-
             } catch (e) {
                 console.error("Auth error:", e);
-                updateLeaderboardUI(); // Show defaults
+                updateLeaderboardUI(); 
             }
         }
 
         window.saveScoreToCloud = async function(newScore) {
             if (!currentPlayer || !auth.currentUser) return;
-            
-            // Only update cloud if it's a personal best
             if (newScore > currentBestScore) {
                 currentBestScore = newScore;
                 document.getElementById('best-score').innerText = currentBestScore.toLocaleString();
-                
                 try {
                     const docRef = doc(db, 'block_scores', currentPlayer);
                     await setDoc(docRef, {
@@ -403,9 +364,7 @@
                     if(idx === 0) rankBadge = '🥇';
                     if(idx === 1) rankBadge = '🥈';
                     if(idx === 2) rankBadge = '🥉';
-                    
                     const isMe = entry.name === currentPlayer ? 'bg-blue-50 border border-blue-100' : 'bg-white';
-                    
                     return `
                         <div class="glass-card p-3 flex justify-between items-center ${isMe} mb-2">
                             <div class="flex items-center gap-3">
@@ -417,7 +376,6 @@
                     `;
                 }).join('');
             };
-
             if(listEl) listEl.innerHTML = generateHTML(globalRanking);
             if(miniListEl) miniListEl.innerHTML = generateHTML(globalRanking, 3);
         }
@@ -433,8 +391,6 @@
                 setTimeout(() => input.classList.remove('shake-effect'), 500);
                 return;
             }
-            
-            // Save to LocalStorage
             localStorage.setItem('enjoy_puzzle_username', name);
             window.login(name);
         }
@@ -443,7 +399,6 @@
             currentPlayer = name;
             document.getElementById('home-user-badge').innerText = `👋 ${name}`;
             document.getElementById('login-modal').classList.add('hidden');
-            
             const myRecord = globalRanking.find(d => d.name === currentPlayer);
             if (myRecord) {
                 currentBestScore = myRecord.score;
@@ -456,14 +411,9 @@
         }
 
         initApp();
-        
-        // Auto Login
         const savedName = localStorage.getItem('enjoy_puzzle_username');
-        if (savedName) {
-            window.login(savedName);
-        } else {
-            setTimeout(() => document.getElementById('login-modal').classList.remove('hidden'), 300);
-        }
+        if (savedName) window.login(savedName);
+        else setTimeout(() => document.getElementById('login-modal').classList.remove('hidden'), 300);
     </script>
 
     <script>
@@ -492,6 +442,7 @@
         
         const BOARD_SIZE = 8;
         const GAP_SIZE = 3;
+        const PADDING_SIZE = 6; // Important for Drag Correction
         const COLORS = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6', 'color-7'];
         
         const SHAPES = [
@@ -646,26 +597,58 @@
             highlightHover(centerX, centerY);
         }
 
+        // --- Improved Drag Snapping Logic ---
         function highlightHover(x, y) {
             document.querySelectorAll('.ghost').forEach(el => el.remove());
-            const targetPos = getBoardGridPos(x, y);
-            if (targetPos && canPlace(targetPos.r, targetPos.c, currentShapeData.matrix)) {
+            const targetPos = getBestFitPosition(x, y);
+            if (targetPos) {
                 drawGhost(targetPos.r, targetPos.c, currentShapeData.matrix, currentShapeData.color);
             }
         }
 
-        function getBoardGridPos(x, y) {
+        function getBestFitPosition(x, y) {
             const boardRect = boardEl.getBoundingClientRect();
-            if (x < boardRect.left - 20 || x > boardRect.right + 20 || y < boardRect.top - 20 || y > boardRect.bottom + 20) return null;
+            
+            // Basic bound check
+            if (x < boardRect.left - 50 || x > boardRect.right + 50 || y < boardRect.top - 50 || y > boardRect.bottom + 50) return null;
+
             const firstCell = boardEl.querySelector('.cell');
             const cellFullSize = firstCell.getBoundingClientRect().width + GAP_SIZE;
-            const shapeLeft = x - (currentShapeData.matrix[0].length * cellFullSize - GAP_SIZE) / 2;
-            const shapeTop = y - (currentShapeData.matrix.length * cellFullSize - GAP_SIZE) / 2;
-            const relX = shapeLeft - boardRect.left - 2; 
-            const relY = shapeTop - boardRect.top - 2;
-            const c = Math.round(relX / cellFullSize);
-            const r = Math.round(relY / cellFullSize);
-            return { r, c };
+            
+            // Calculate hypothetical grid coordinate based on center
+            // Corrected padding offset: PADDING_SIZE (6)
+            const relX = x - boardRect.left - PADDING_SIZE;
+            const relY = y - boardRect.top - PADDING_SIZE;
+            
+            // Shape center relative to its top-left
+            const shapePixelW = currentShapeData.matrix[0].length * cellFullSize - GAP_SIZE;
+            const shapePixelH = currentShapeData.matrix.length * cellFullSize - GAP_SIZE;
+            
+            // We want top-left of the shape in grid coords
+            // (Center - HalfShape)
+            const targetPixelX = relX - shapePixelW / 2;
+            const targetPixelY = relY - shapePixelH / 2;
+            
+            const c = Math.round(targetPixelX / cellFullSize);
+            const r = Math.round(targetPixelY / cellFullSize);
+            
+            // Validate
+            if (canPlace(r, c, currentShapeData.matrix)) {
+                return { r, c };
+            }
+            
+            // Smart Snap: If exact round fails, check neighbors (Magnet)
+            // This fixes "slightly off" touches
+            const neighbors = [
+                {r: r+1, c: c}, {r: r-1, c: c}, 
+                {r: r, c: c+1}, {r: r, c: c-1}
+            ];
+            
+            for(let n of neighbors) {
+                if(canPlace(n.r, n.c, currentShapeData.matrix)) return n;
+            }
+
+            return null;
         }
 
         function drawGhost(r, c, matrix, color) {
@@ -700,9 +683,10 @@
                 const mirrorRect = mirrorElement.getBoundingClientRect();
                 const centerX = mirrorRect.left + mirrorRect.width / 2;
                 const centerY = mirrorRect.top + mirrorRect.height / 2;
-                const targetPos = getBoardGridPos(centerX, centerY);
+                
+                const targetPos = getBestFitPosition(centerX, centerY);
 
-                if (targetPos && canPlace(targetPos.r, targetPos.c, currentShapeData.matrix)) {
+                if (targetPos) {
                     if(window.haptic) window.haptic();
                     placeBlock(targetPos.r, targetPos.c, currentShapeData);
                     placed = true;
