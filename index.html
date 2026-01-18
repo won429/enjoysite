@@ -190,7 +190,35 @@
             <!-- [수정] ID 추가: banner-slider -->
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [추가] 슬라이드 1: 인터페이스 개편 (첫번째로 추가됨) -->
+                <!-- [이동됨] 슬라이드 1: 출장엔조이 2화 공개 (첫번째로 위치 변경) -->
+                <!-- [수정] onclick에 유튜브 링크 연결 (window.openBrowser 사용) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FFDAB9] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')">
+                    <!-- 배경 데코레이션 -->
+                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+                    
+                    <!-- 이모지 -->
+                    <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
+                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎬</span>
+                    </div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-red-500 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                                ON AIR
+                            </span>
+                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
+                                출장엔조이<br>
+                                <span class="text-red-500">2화 공개!</span>
+                            </h2>
+                            <p class="text-gray-500 font-bold mt-2 text-sm">지금 바로 시청하세요 🍿</p>
+                            <p class="text-red-500 font-black mt-3 text-xs border-b border-red-300 inline-block pb-0.5">보러가기 →</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [이동됨] 슬라이드 2: 인터페이스 개편 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF7ED] via-[#FFEDD5] to-[#FED7AA] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -216,7 +244,7 @@
                     </div>
                 </div>
 
-                <!-- [NEW] 슬라이드 2: 블럭퍼즐 게임 출시 (두번째로 추가됨) -->
+                <!-- [이동됨] 슬라이드 3: 블럭퍼즐 게임 출시 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F5F3FF] via-[#EDE9FE] to-[#DDD6FE] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.location.href='block.html'">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -244,7 +272,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 3: 새해 인사 (기존 1번에서 밀림) -->
+                <!-- [이동됨] 슬라이드 4: 새해 인사 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F7FF] via-[#E6F4FF] to-[#DBEAFE] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -270,7 +298,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 정기 모임 (기존 2번에서 밀림) -->
+                <!-- [이동됨] 슬라이드 5: 정기 모임 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3F0FF] via-[#E9E6FF] to-[#DCD6FF] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -296,33 +324,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 5: 출장엔조이 1화 (기존 3번에서 밀림) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FFDAB9] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
-                    <!-- 배경 데코레이션 -->
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    
-                    <!-- 이모지 -->
-                    <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎬</span>
-                    </div>
-
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-red-500 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                                ON AIR
-                            </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                출장엔조이<br>
-                                <span class="text-red-500">1화 공개!</span>
-                            </h2>
-                            <p class="text-gray-500 font-bold mt-2 text-sm">지금 바로 시청하세요 🍿</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 슬라이드 6: 모임비 인상 (기존 4번에서 밀림) -->
+                <!-- [이동됨] 슬라이드 6: 모임비 인상 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <!-- 배경 데코레이션 -->
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
@@ -348,35 +350,9 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 7: 출장엔조이 2화 연기 (기존 5번에서 밀림) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3F4F6] via-[#E5E7EB] to-[#D1D5DB] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
-                    <!-- 배경 데코레이션 -->
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-gray-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-                    
-                    <!-- 이모지 -->
-                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🌧️</span>
-                    </div>
-
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-gray-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-gray-500 animate-pulse"></span>
-                                DELAY
-                            </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                출장엔조이 2화<br>
-                                <span class="text-gray-500">공개 무기한 연기</span>
-                            </h2>
-                            <p class="text-gray-500 font-bold mt-2 text-sm">일정이 확정되면 공지할게요 🙏</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
             
-            <!-- [수정] 슬라이드 인디케이터: 7개로 증가 -->
+            <!-- [수정] 슬라이드 인디케이터: 6개로 감소 -->
             <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 z-30">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-black/60 transition-colors"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
@@ -384,7 +360,6 @@
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
-                <button id="ind-6" onclick="window.moveBanner(6)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 
                 <!-- 배너 재생/일시정지 버튼 -->
                 <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="ml-1 w-4 h-4 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors active:scale-90">
@@ -401,6 +376,32 @@
             <div class="overflow-hidden w-full relative h-5">
                 <div class="whitespace-nowrap animate-marquee text-xs font-medium text-gray-700 absolute top-0.5">
                     <span class="mr-8">📢 엔조이 모임 오래오래 이어지길 바래요~</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- [NEW] 새로운 에피소드 공개 공간 -->
+        <div class="mb-6 fade-in-up delay-150 px-1">
+            <h3 class="text-lg font-bold text-main mb-3">새로운 에피소드 🎬</h3>
+            <!-- [수정] 크기 축소: w-64 -> w-48 (약 192px), 내부 요소 비율 조정 -->
+            <!-- [수정] onclick에 유튜브 링크 연결 (window.openBrowser 사용) -->
+            <div onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')" class="w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group">
+                <!-- 썸네일 이미지 (16:9 비율) -->
+                <!-- [수정] 파일명 jeju_2.jpg로 설정. 파일이 없으면 onerror에 있는 이미지가 뜸 -->
+                <img src="jeju_2.jpg" onerror="this.src='https://placehold.co/640x360/333/FFF?text=Coming+Soon'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="New Episode">
+                
+                <!-- 재생 버튼 오버레이 (크기 축소) -->
+                <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                    <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-lg group-active:scale-95 transition-transform">
+                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                    </div>
+                </div>
+                
+                <!-- 텍스트 정보 (폰트/패딩 축소) -->
+                <div class="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                    <span class="bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 inline-block">NEW</span>
+                    <h4 class="text-white text-xs font-bold mb-0.5 leading-tight">출장엔조이 X 제주 2화</h4>
+                    <p class="text-gray-300 text-[9px] line-clamp-1 opacity-90">새로운 영상! 🍿</p>
                 </div>
             </div>
         </div>
@@ -1128,7 +1129,7 @@
                 
                 // 현재 위치 기준으로 다음 인덱스 계산
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 7; // [수정] 7개 슬라이드 순환 (배너 추가됨)
+                const nextIndex = (currentIndex + 1) % 6; // [수정] 6개 슬라이드 순환
                 
                 window.moveBanner(nextIndex);
             }, 2000); // 2초(2000ms) 간격
@@ -1155,15 +1156,14 @@
 
         function initBannerScrollListener() {
             const slider = document.getElementById('banner-slider');
-            // [수정] 7개의 인디케이터를 모두 가져옵니다.
+            // [수정] 6개의 인디케이터를 모두 가져옵니다.
             const inds = [
                 document.getElementById('ind-0'),
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
                 document.getElementById('ind-4'),
-                document.getElementById('ind-5'),
-                document.getElementById('ind-6') // [추가]
+                document.getElementById('ind-5')
             ];
             
             if(!slider) return;
@@ -1404,7 +1404,7 @@
     <!-- Firebase Module -->
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, getDoc, addDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global functions for firebase interaction - assigned to window for access from inline handlers
@@ -1446,11 +1446,16 @@
                     const stockApp = getOrInitializeApp(stockConfig, 'stockApp');
                     const stockDb = getFirestore(stockApp);
                     const stockAuth = getAuth(stockApp);
-                    await signInAnonymously(stockAuth); // 인증 대기
                     
-                    onSnapshot(doc(stockDb, ...STOCK_PATH), (s) => { 
-                        if(s.exists()) updateStockUI(s.data()); 
-                    }, (error) => { console.warn("Stock snapshot error:", error); });
+                    onAuthStateChanged(stockAuth, (user) => {
+                        if (user) {
+                            onSnapshot(doc(stockDb, ...STOCK_PATH), (s) => { 
+                                if(s.exists()) updateStockUI(s.data()); 
+                            }, (error) => { console.warn("Stock snapshot error:", error); });
+                        } else {
+                            signInAnonymously(stockAuth).catch(e => console.warn("Stock Auth Error", e));
+                        }
+                    });
                 } catch (e) {
                     console.warn("Stock app init skipped:", e);
                 }
@@ -1461,27 +1466,30 @@
                     const meetingAuth = getAuth(meetingApp);
                     window.meetingDb = getFirestore(meetingApp);
                     
-                    await signInAnonymously(meetingAuth); // 인증 완료될 때까지 대기
-                    
-                    // 인증 후 리스너 연결
-                    onSnapshot(doc(window.meetingDb, ...window.MEETING_PATH), (docSnap) => {
-                        if (docSnap.exists()) { 
-                            if (typeof window.updateMeetingUI === 'function') {
-                                window.updateMeetingUI(docSnap.data()); 
-                            }
-                        }
-                    }, (error) => { console.warn("Meeting snapshot error:", error); });
+                    onAuthStateChanged(meetingAuth, (user) => {
+                        if (user) {
+                            onSnapshot(doc(window.meetingDb, ...window.MEETING_PATH), (docSnap) => {
+                                if (docSnap.exists()) { 
+                                    if (typeof window.updateMeetingUI === 'function') {
+                                        window.updateMeetingUI(docSnap.data()); 
+                                    }
+                                }
+                            }, (error) => { console.warn("Meeting snapshot error:", error); });
 
-                    onSnapshot(doc(window.meetingDb, ...window.SCHEDULE_PATH), (docSnap) => {
-                        if (docSnap.exists()) { 
-                            window.dynamicEvents = docSnap.data(); 
-                            if (typeof window.renderCalendar === 'function') {
-                                window.renderCalendar(window.viewYear, window.viewMonth); 
-                            }
-                        } else { 
-                            window.dynamicEvents = {};
+                            onSnapshot(doc(window.meetingDb, ...window.SCHEDULE_PATH), (docSnap) => {
+                                if (docSnap.exists()) { 
+                                    window.dynamicEvents = docSnap.data(); 
+                                    if (typeof window.renderCalendar === 'function') {
+                                        window.renderCalendar(window.viewYear, window.viewMonth); 
+                                    }
+                                } else { 
+                                    window.dynamicEvents = {};
+                                }
+                            }, (error) => { console.warn("Schedule snapshot error:", error); });
+                        } else {
+                            signInAnonymously(meetingAuth).catch(e => console.error("Meeting Auth Error:", e));
                         }
-                    }, (error) => { console.warn("Schedule snapshot error:", error); });
+                    });
                 } catch (e) {
                     console.error("Meeting App Init Failed:", e);
                 }
@@ -1654,5 +1662,3 @@
     </script>
 </body>
 </html>
-
-
