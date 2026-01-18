@@ -417,7 +417,8 @@
             <div class="flex overflow-x-auto gap-3 pb-4 scrollbar-hide snap-x snap-mandatory">
                 
                 <!-- 1위: 그날 엔조이 이야기 -->
-                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                <!-- [수정] onclick에 유튜브 재생목록 링크 연결 (정정됨) -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
                     <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-gray-100">
                         <!-- 이미지 (nbc_2.jpg) -->
                         <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/300x400/E2E8F0/gray?text=Ready'">
@@ -429,7 +430,8 @@
                 </div>
 
                 <!-- 2위: 엔조이 인기가요 -->
-                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                <!-- [수정] onclick에 유튜브 재생목록 링크 연결 -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8qwffNq5TB_YGJH4btLJbbc&jct=DBXu6dKvJyJZaQu2FVU4Lw')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
                     <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-gray-100">
                         <!-- 이미지 (nbc_3.jpg) -->
                         <img src="nbc_3.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요" onerror="this.src='https://placehold.co/300x400/F3E8FF/purple?text=Ready'">
@@ -444,7 +446,8 @@
                 </div>
 
                 <!-- 3위: 엔쪽이 -->
-                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                <!-- [수정] onclick에 유튜브 재생목록 링크 연결 (정정됨) -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
                     <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-gray-100">
                         <!-- 이미지 (nbc_4.jpg) -->
                         <img src="nbc_4.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="엔쪽이" onerror="this.src='https://placehold.co/300x400/FEF3C7/orange?text=Ready'">
@@ -458,7 +461,8 @@
                 </div>
 
                 <!-- 4위: 출장엔조이 -->
-                <div onclick="window.haptic(); window.showNbcModal()" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                <!-- [수정] onclick에 유튜브 재생목록 링크 연결 -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
                     <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-gray-100">
                         <!-- 이미지 (nbc_1.jpg) -->
                         <img src="nbc_1.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="출장엔조이" onerror="this.src='https://placehold.co/300x400/FFD1D1/red?text=Ready'">
@@ -845,6 +849,12 @@
         
         // 내부 브라우저 제어 함수 (수정됨: 음악 메뉴만 남기고 접히는 모션)
         window.openBrowser = function(url) {
+            // [수정] 유튜브 링크는 iframe 보안 정책으로 인해 흰 화면이 뜨므로 새 창(앱)으로 연결
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                window.open(url, '_blank');
+                return;
+            }
+
             // 1. 하단 메뉴 최소화 (음악 버튼만 남김)
             const nav = document.getElementById('bottom-nav');
             if(nav) {
