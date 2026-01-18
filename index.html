@@ -382,7 +382,7 @@
 
         <!-- [NEW] 새로운 에피소드 공개 공간 -->
         <div class="mb-6 fade-in-up delay-150 px-1">
-            <h3 class="text-lg font-bold text-main mb-3">새로운 에피소드 🎬</h3>
+            <h3 class="text-lg font-bold text-main mb-3">새로운 에피소드</h3>
             <!-- [수정] 크기 축소: w-64 -> w-48 (약 192px), 내부 요소 비율 조정 -->
             <!-- [수정] onclick에 유튜브 링크 연결 (window.openBrowser 사용) -->
             <div onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')" class="w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group">
@@ -409,8 +409,7 @@
         <!-- [수정] 엔비씨 Top 4: 세로 포스터 스타일 (순위 숫자 디자인 개선) -->
         <div class="mb-6 fade-in-up delay-200">
             <div class="flex justify-between items-center mb-3 px-1">
-                <h3 class="text-lg font-bold text-main">엔비씨 Top 4 📺</h3>
-                <button onclick="window.haptic(); window.showNbcModal()" class="text-xs text-gray-400 font-medium">전체보기</button>
+                <h3 class="text-lg font-bold text-main">엔비씨 Top 4</h3>
             </div>
             
             <!-- 가로 스크롤 컨테이너 (세로형 포스터) -->
@@ -605,12 +604,10 @@
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
                             <span class="text-lg font-bold text-white tracking-wide">엔조이 회비</span>
-                            <span class="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">Main</span>
+                            <!-- [수정] Main 배지 제거됨 -->
                         </div>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-xl text-white shadow-inner">
-                        💰
-                    </div>
+                    <!-- [수정] 돈주머니 이모티콘 제거됨 -->
                 </div>
                 <div class="relative z-10">
                     <h3 id="total-balance" class="text-3xl font-bold text-white tabular-nums tracking-tight">448,999원</h3>
@@ -1042,7 +1039,9 @@
         };
 
         window.deleteSchedule = async function() { if(!confirm('정말 삭제하시겠습니까?')) return; const dateKey = document.getElementById('sch-edit-date-key').value; const index = document.getElementById('sch-edit-index').value; try { const docSnap = await window.getDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH)); if(docSnap.exists()) { const data = docSnap.data(); const list = data[dateKey]; if(list) { list.splice(index, 1); if(list.length === 0) delete data[dateKey]; else data[dateKey] = list; await window.setDoc(window.doc(window.meetingDb, ...window.SCHEDULE_PATH), data); alert('삭제되었습니다.'); window.closeModal('schedule-modal'); } } } catch(e) { console.error(e); alert('삭제 실패'); } }
-        window.changeDuesMonth = function(delta) { window.currentDuesMonth += delta; if (window.currentDuesMonth < 1) window.currentDuesMonth = 1; if (window.currentDuesMonth > 12) window.currentDuesMonth = 12; window.renderDues(window.currentDuesMonth); }
+        
+        // [수정] 월 이동 시 1월 <-> 12월 순환되도록 변경
+        window.changeDuesMonth = function(delta) { window.currentDuesMonth += delta; if (window.currentDuesMonth < 1) window.currentDuesMonth = 12; if (window.currentDuesMonth > 12) window.currentDuesMonth = 1; window.renderDues(window.currentDuesMonth); }
         
         window.updateMeetingUI = function(data) { 
             if (data.records) {
@@ -1263,7 +1262,13 @@
         }
 
         window.renderDues = function(month) {
-            const list = document.getElementById('dues-list'); const title = document.getElementById('dues-month-title'); if(!list) return; title.innerText = `${month}월 기준`; list.innerHTML = '';
+            const list = document.getElementById('dues-list'); const title = document.getElementById('dues-month-title'); if(!list) return; 
+            
+            // [수정] 연도 표시 추가 (10월 이상은 2025년, 나머지는 2026년)
+            const year = month >= 10 ? 2025 : 2026;
+            title.innerText = `${year}년 ${month}월 기준`; 
+            
+            list.innerHTML = '';
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             if(window.activeTabIndex === 4) window.renderMeetingStatus();
             let records = []; if (window.meetingData && window.meetingData.records) { records = window.meetingData.records[month] || []; }
@@ -1323,7 +1328,11 @@
         window.getMergedEvents = function(year, month) {
             const events = {}; const keyPrefix = `${year}-${String(month).padStart(2, '0')}`;
             const holidays = window.getHolidays(year, month); Object.keys(holidays).forEach(k => { events[k] = (events[k] || []).concat(holidays[k]); });
-            events[`${keyPrefix}-06`] = (events[`${keyPrefix}-06`]||[]).concat([{ type: 'dues', title: '회비 납부일 💰', time: '15,000원' }]);
+            
+            // [수정] 회비 금액 조건부 적용 (2026년부터 20,000원, 2025년까지는 15,000원)
+            const duesAmount = year >= 2026 ? '20,000원' : '15,000원';
+            events[`${keyPrefix}-06`] = (events[`${keyPrefix}-06`]||[]).concat([{ type: 'dues', title: '회비 납부일 💰', time: duesAmount }]);
+            
             const birthdays = { '01-02': '전시기 생일 🎂', '03-22': '이진누 생일 🎂', '04-01': '오스틴 생일 🎂', '06-05': '홍박사 생일 🎂', '06-12': '류짱 생일 🎂', '10-15': '성원제 생일 🎂' }; Object.entries(birthdays).forEach(([d, t]) => { const [m, day] = d.split('-'); if (parseInt(m) === month) { const k = `${keyPrefix}-${day}`; events[k] = (events[k] || []).concat([{ type: 'bday', title: t, time: '하루 종일' }]); } });
             if(month===6) { const l = new Date(year, month, 0).getDate(); const a = year - 2024; for(let i=1; i<=l; i++) { const k = `${keyPrefix}-${String(i).padStart(2,'0')}`; events[k] = (events[k]||[]).concat([{type:'anniv', title:`엔조이 ${a}주년 🎉`, time:'하루종일'}]); } }
             if (year === 2025 && month === 12) { events[`${keyPrefix}-12`] = (events[`${keyPrefix}-12`]||[]).concat([{type:'school', title:'우송대(전시기) 종강', time:'일정'}]); events[`${keyPrefix}-20`] = (events[`${keyPrefix}-20`]||[]).concat([{type:'school', title:'안동대(성원제) 종강', time:'일정'}]); }
