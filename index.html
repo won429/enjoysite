@@ -653,35 +653,35 @@
             <!-- 추가된 메뉴: 음악 -->
             <button id="nav-music" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goToMusic()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-headphones text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">음악</span>
+                    <i class="fa-solid fa-headphones text-base text-[#4E5968] transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] transition-colors drop-shadow-sm whitespace-nowrap">음악</span>
                 </div>
             </button>
 
             <!-- [수정] 블럭겜 -> 뉴스로 변경 -->
             <button id="nav-news" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goNews()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-regular fa-newspaper text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">뉴스</span>
+                    <i class="fa-regular fa-newspaper text-base text-[#4E5968] transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] transition-colors drop-shadow-sm whitespace-nowrap">뉴스</span>
                 </div>
             </button>
 
             <button id="nav-home" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goHome()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-house text-base text-[#191F28] drop-shadow-sm"></i>
-                    <span class="text-[10px] font-bold text-[#191F28] drop-shadow-sm whitespace-nowrap">홈</span>
+                    <i class="fa-solid fa-house text-base text-[#4E5968] drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] drop-shadow-sm whitespace-nowrap">홈</span>
                 </div>
             </button>
             <button id="nav-calendar" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goSchedule()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-regular fa-calendar-days text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">일정</span>
+                    <i class="fa-regular fa-calendar-days text-base text-[#4E5968] transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] transition-colors drop-shadow-sm whitespace-nowrap">일정</span>
                 </div>
             </button>
             <button id="nav-meeting" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMeeting()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-users text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">모임통장</span>
+                    <i class="fa-solid fa-users text-base text-[#4E5968] transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] transition-colors drop-shadow-sm whitespace-nowrap">모임통장</span>
                 </div>
             </button>
         </div>
@@ -1358,21 +1358,57 @@
             else if(index===3) { sched.classList.remove('hidden'); sched.classList.add('flex'); window.renderCalendar(window.viewYear, window.viewMonth); }
             else if(index===4) { meet.classList.remove('hidden'); meet.classList.add('flex'); window.renderDues(window.currentDuesMonth); }
 
-            const ind = document.getElementById('nav-indicator');
-            // 메뉴 순서: 음악, 뉴스, 홈, 일정, 모임통장 (총 5개)
+            // [수정] 하단 탭 스타일 업데이트 로직 (선택된 것만 검은색/Bold, 나머진 회색/Medium)
             const btns = [
-                document.getElementById('nav-music'),
-                document.getElementById('nav-news'), // [수정] 뉴스 버튼으로 변경
-                document.getElementById('nav-home'), 
-                document.getElementById('nav-calendar'), 
-                document.getElementById('nav-meeting')
+                { id: 'nav-music', icon: 'fa-headphones', type: 'solid' }, 
+                { id: 'nav-news', icon: 'fa-newspaper', type: 'toggle' }, // toggle: regular <-> solid
+                { id: 'nav-home', icon: 'fa-house', type: 'solid' }, 
+                { id: 'nav-calendar', icon: 'fa-calendar-days', type: 'toggle' }, 
+                { id: 'nav-meeting', icon: 'fa-users', type: 'solid' }
             ];
+
+            const ind = document.getElementById('nav-indicator');
+            const currentBtn = document.getElementById(btns[index].id);
             
-            if(btns[index] && ind) {
+            if(currentBtn && ind) {
                 ind.classList.add('nav-transition');
-                ind.style.width = `${btns[index].offsetWidth}px`;
-                ind.style.transform = `translateX(${btns[index].offsetLeft - 6}px)`;
+                ind.style.width = `${currentBtn.offsetWidth}px`;
+                ind.style.transform = `translateX(${currentBtn.offsetLeft - 6}px)`;
             }
+
+            btns.forEach((item, i) => {
+                const btn = document.getElementById(item.id);
+                if(!btn) return;
+                
+                const icon = btn.querySelector('i');
+                const text = btn.querySelector('span');
+
+                if (i === index) {
+                    // Active (선택됨): 검은색, Bold, 아이콘 Solid
+                    icon.classList.remove('text-[#4E5968]');
+                    icon.classList.add('text-[#191F28]');
+                    
+                    text.classList.remove('text-[#4E5968]', 'font-medium');
+                    text.classList.add('text-[#191F28]', 'font-bold');
+
+                    if (item.type === 'toggle') {
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid');
+                    }
+                } else {
+                    // Inactive (선택 안됨): 회색, Medium, 아이콘 Regular(가능하다면)
+                    icon.classList.remove('text-[#191F28]');
+                    icon.classList.add('text-[#4E5968]');
+                    
+                    text.classList.remove('text-[#191F28]', 'font-bold');
+                    text.classList.add('text-[#4E5968]', 'font-medium');
+
+                    if (item.type === 'toggle') {
+                        icon.classList.remove('fa-solid');
+                        icon.classList.add('fa-regular');
+                    }
+                }
+            });
         };
 
         window.onload = () => {
