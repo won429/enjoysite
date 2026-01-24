@@ -224,9 +224,20 @@
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     
-                    <!-- 이모지 -->
+                    <!-- [수정] 이모지 영역을 이미지로 변경 -->
                     <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎬</span>
+                        <!-- 
+                           [사용법] 
+                           1. 로고 이미지 파일 이름을 'enjoy_logo.png'로 변경해서 프로젝트에 추가(업로드)하세요.
+                           2. 파일이 업로드되면 이모지 대신 로고가 나타납니다.
+                        -->
+                        <img src="enjoy_logo.png" 
+                             alt="프로그램 로고" 
+                             class="w-32 h-32 object-contain drop-shadow-md filter brightness-105"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        
+                        <!-- 이미지가 없을 경우 보여질 대체 이모지 (평소엔 숨김) -->
+                        <span class="text-[80px] drop-shadow-md filter brightness-105" style="display:none;">🎬</span>
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
