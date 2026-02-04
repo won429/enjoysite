@@ -150,11 +150,36 @@
         <div class="fade-in-up delay-100 mb-5 mt-6 mx-1 h-64 rounded-[32px] shadow-lg shadow-blue-100/60 border border-white/60 relative overflow-hidden group active:scale-95 transition-all duration-300">
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [New] 슬라이드 0: 환승여행 티저 공개 (추가됨) -->
+                <!-- [New] 슬라이드 0: 인기가요2 사전투표 (이미지 적용됨) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')">
+                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+                    
+                    <!-- 이모지 대신 투표 이미지로 변경 -->
+                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
+                        <img src="vote.png" alt="투표 대표 이미지" class="w-28 h-28 object-contain drop-shadow-md filter brightness-105" onerror="this.src='https://placehold.co/150x150/e9d5ff/ffffff?text=VOTE'">
+                    </div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-purple-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                                VOTE
+                            </span>
+                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
+                                명절 특선 엔조이<br>
+                                <span class="text-purple-600">인기가요2 투표</span>
+                            </h2>
+                            <p class="text-gray-600 font-bold mt-2 text-sm">노래 제목만 보고 맘에 드는 걸 투표하세요! 🗳️</p>
+                            <p class="text-purple-600 font-black mt-3 text-xs border-b border-purple-300 inline-block pb-0.5">사전투표 하러가기 →</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [Old] 슬라이드 1: 환승여행 티저 공개 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FBCFE8] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <!-- 이모지 대신 로고 이미지로 변경 -->
                     <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
                         <img src="logo.png" alt="환승여행 로고" class="w-28 h-28 object-contain drop-shadow-md filter brightness-105" onerror="this.src='https://placehold.co/150x150/ffb6c1/ffffff?text=LOGO'">
                     </div>
@@ -175,7 +200,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 1: 출장엔조이 2화 공개 -->
+                <!-- 슬라이드 2: 출장엔조이 2화 공개 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FFDAB9] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
@@ -199,7 +224,7 @@
                     </div>
                 </div>
 
-                <!-- [New] 슬라이드 2: 출장엔조이 OST 공개 -->
+                <!-- 슬라이드 3: 출장엔조이 OST 공개 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#BAE6FD] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.goToMusic()">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
@@ -223,7 +248,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 모임비 인상 (순서 변경: 5 -> 4) -->
+                <!-- 슬라이드 4: 모임비 인상 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic();">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
@@ -246,7 +271,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 5: 블럭퍼즐 게임 출시 (마지막으로 이동) -->
+                <!-- 슬라이드 5: 블럭퍼즐 게임 출시 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F5F3FF] via-[#EDE9FE] to-[#DDD6FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.location.href='block.html'">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
@@ -272,13 +297,14 @@
 
             </div>
             
-            <!-- 슬라이드 인디케이터 (5개로 수정) -->
+            <!-- 슬라이드 인디케이터 (6개로 수정) -->
             <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 z-30">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-black/60 transition-colors"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
+                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 
                 <!-- 배너 재생/일시정지 버튼 -->
                 <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="ml-1 w-4 h-4 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors active:scale-90">
@@ -604,11 +630,11 @@
                 </div>
             </button>
 
-            <!-- 블럭겜 메뉴 -->
-            <button id="nav-game" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='block.html'">
+            <!-- [Modified] 투표 메뉴 링크 연결 -->
+            <button id="nav-vote" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-gamepad text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">블럭겜</span>
+                    <i class="fa-solid fa-check-to-slot text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">투표</span>
                 </div>
             </button>
 
@@ -1149,7 +1175,7 @@
                 if(!slider) return;
                 
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 5; // 슬라이드 개수 5개로 수정
+                const nextIndex = (currentIndex + 1) % 6; // 슬라이드 개수 6개로 수정
                 
                 window.moveBanner(nextIndex);
             }, 2000);
@@ -1180,7 +1206,8 @@
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4')
+                document.getElementById('ind-4'),
+                document.getElementById('ind-5')
             ];
             
             if(!slider) return;
@@ -1492,7 +1519,7 @@
             const ind = document.getElementById('nav-indicator');
             const btns = [
                 document.getElementById('nav-music'),
-                document.getElementById('nav-game'),
+                document.getElementById('nav-vote'), // [Modified] nav-game -> nav-vote 로 변경
                 document.getElementById('nav-home'), 
                 document.getElementById('nav-calendar'), 
                 document.getElementById('nav-meeting')
@@ -1708,3 +1735,17 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
