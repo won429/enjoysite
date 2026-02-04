@@ -782,7 +782,8 @@
     <script>
         // Global Variables
         window.meetingData = null;
-        window.currentDuesMonth = 1; // 2026년으로 해가 바뀌어서 1월로 변경
+        // [Modified] 1(1월)로 고정되어 있던 값을 현재 날짜 기준(new Date().getMonth() + 1)으로 변경
+        window.currentDuesMonth = new Date().getMonth() + 1; 
         window.dynamicEvents = {};
         window.viewYear = new Date().getFullYear();
         window.viewMonth = new Date().getMonth();
@@ -1310,6 +1311,12 @@
             
             list.innerHTML = '';
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
+            
+            // [New] 해당 월의 데이터가 없으면 자동으로 멤버 목록(미납 상태)을 생성하여 표시
+            if (window.meetingData.records && !window.meetingData.records[month]) {
+                window.meetingData.records[month] = createEmptyMonthData();
+            }
+
             if(window.activeTabIndex === 4) window.renderMeetingStatus();
             let records = []; 
             if (window.meetingData && window.meetingData.records) { records = window.meetingData.records[month] || []; }
@@ -1736,6 +1743,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
