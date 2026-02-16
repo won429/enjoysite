@@ -144,11 +144,12 @@
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
 
     <!-- 메인 컨텐츠 (홈 화면) -->
-    <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-safe pb-24 w-full max-w-md mx-auto relative min-h-full">
+    <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
+    <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <!-- [Modified] mx-1 -> -mx-5로 변경하여 좌우 여백 없이 화면 꽉 채움, active 효과 유지 -->
-        <div class="fade-in-up delay-100 mb-5 mt-6 -mx-5 h-64 relative group active:scale-95 transition-all duration-300">
+        <!-- [Modified] h-64 -> h-[500px]로 변경하여 세로 길이 대폭 확장 -->
+        <div class="fade-in-up delay-100 mb-5 -mx-5 h-[500px] relative group active:scale-95 transition-all duration-300">
             <!-- [Modified] rounded-[32px] 제거하여 사각형 틀로 변경 -->
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
@@ -161,7 +162,8 @@
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
+                        <!-- [Modified] 상단 여백(mt-safe) 추가하여 상태바와 겹치지 않게 텍스트 내림 -->
+                        <div class="pt-safe mt-4">
                             <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-purple-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
                                 NEW RELEASE
@@ -185,7 +187,7 @@
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
+                        <div class="pt-safe mt-4">
                             <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-amber-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                                 HAPPY NEW YEAR
@@ -209,7 +211,7 @@
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
+                        <div class="pt-safe mt-4">
                             <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-pink-500 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
                                 TEASER
@@ -233,7 +235,7 @@
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
+                        <div class="pt-safe mt-4">
                             <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-sky-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>
                                 NEW SONG
@@ -257,7 +259,7 @@
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
+                        <div class="pt-safe mt-4">
                             <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-emerald-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 UPDATE
@@ -288,18 +290,7 @@
             </div>
         </div>
 
-        <!-- 공지사항 롤링 배너 (내용 추가 및 무한 스크롤 수정) -->
-        <div class="fade-in-up delay-100 mb-4 mx-1 bg-white/80 backdrop-blur-md rounded-[20px] py-2 px-3 shadow-sm border border-white/50 flex items-center gap-2.5 overflow-hidden">
-            <div class="bg-blue-100/80 text-blue-600 w-6 h-6 rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                <i class="fa-solid fa-bullhorn text-[10px]"></i>
-            </div>
-            <div class="overflow-hidden w-full relative h-5">
-                <div class="animate-marquee text-xs font-medium text-gray-700 absolute top-0.5">
-                    <span class="mr-8">📢 2026년 새해 복 많이 받으세요! 🙇‍♂️ &nbsp;&nbsp;&nbsp; 📢 엔조이 모임 오래오래 이어지길 바래요~ &nbsp;&nbsp;&nbsp; 🛠️ 엔조이 사이트 인터페이스 개편 중! 매일 조금씩 변경되는 걸 구경해보세요~</span>
-                    <span class="mr-8">📢 2026년 새해 복 많이 받으세요! 🙇‍♂️ &nbsp;&nbsp;&nbsp; 📢 엔조이 모임 오래오래 이어지길 바래요~ &nbsp;&nbsp;&nbsp; 🛠️ 엔조이 사이트 인터페이스 개편 중! 매일 조금씩 변경되는 걸 구경해보세요~</span>
-                </div>
-            </div>
-        </div>
+        <!-- [Deleted] 공지사항 롤링 배너 삭제됨 -->
 
         <!-- 새로운 에피소드 공개 공간 -->
         <div class="mb-6 fade-in-up delay-150 px-1">
