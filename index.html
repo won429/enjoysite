@@ -148,127 +148,162 @@
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <!-- [Modified] h-64 -> h-[500px]로 변경하여 세로 길이 대폭 확장 -->
+        <!-- [Modified] h-[500px] 유지, 내부 디자인 전면 개편 -->
         <div class="fade-in-up delay-100 mb-5 -mx-5 h-[500px] relative group active:scale-95 transition-all duration-300">
             <!-- [Modified] rounded-[32px] 제거하여 사각형 틀로 변경 -->
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 (둥근 모서리 제거) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎤</span>
+                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-[#F3E8FF]" onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')">
+                    <!-- 배경 그래픽 (은은하게) -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE]"></div>
+                    <div class="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-purple-300/30 rounded-full blur-3xl animate-pulse"></div>
+                    
+                    <!-- 아이콘/이미지 (우측 중앙에 배치, 적당한 크기로 조절) -->
+                    <div class="absolute top-1/2 right-8 -translate-y-1/2 transform rotate-[10deg] opacity-90 transition-transform duration-700 hover:scale-110 hover:rotate-12">
+                        <span class="text-[140px] drop-shadow-2xl filter brightness-105">🎤</span>
                     </div>
 
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <!-- [Modified] 상단 여백(mt-safe) 추가하여 상태바와 겹치지 않게 텍스트 내림 -->
-                        <div class="pt-safe mt-4">
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-purple-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                    <!-- 텍스트 정보 (하단 배치, Apple TV 스타일) -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 pb-16 bg-gradient-to-t from-purple-900/20 via-purple-900/5 to-transparent flex flex-col justify-end h-full">
+                        <div class="flex items-start flex-col gap-3 transform translate-y-0 transition-transform duration-500">
+                            <span class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-purple-700 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse"></span>
                                 NEW RELEASE
                             </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                엔조이 인기가요 2<br>
-                                <span class="text-purple-600">공개되었습니다!</span>
-                            </h2>
-                            <p class="text-gray-600 font-bold mt-2 text-sm">지금 바로 시청하세요 🎵</p>
-                            <p class="text-purple-600 font-black mt-3 text-xs border-b border-purple-300 inline-block pb-0.5">보러가기 →</p>
+                            <div>
+                                <h2 class="text-4xl font-black leading-tight text-[#191F28] mb-1 drop-shadow-sm">
+                                    엔조이 인기가요 2
+                                </h2>
+                                <p class="text-xl font-bold text-purple-700/80">공개되었습니다!</p>
+                            </div>
+                            <p class="text-gray-600/90 text-sm font-medium mt-1 max-w-[70%] leading-relaxed">
+                                엔조이 멤버들의 감성 가득한 노래,<br>지금 바로 감상해보세요 🎵
+                            </p>
+                            <div class="mt-4 flex items-center gap-2 text-purple-700 font-bold text-sm group-active:translate-x-1 transition-transform">
+                                <span>보러가기</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- [Old] 슬라이드 0 -> 1: 설날 새해 인사 (둥근 모서리 제거) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FCD34D] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🙇‍♂️</span>
+                <!-- [Old] 슬라이드 0 -> 1: 설날 새해 인사 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-[#FFFBEB]" onclick="window.haptic();">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FCD34D]"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-orange-200/40 rounded-full blur-3xl"></div>
+                    
+                    <div class="absolute top-1/2 right-8 -translate-y-1/2 transform rotate-[5deg] opacity-90 transition-transform duration-700 hover:scale-110">
+                        <span class="text-[140px] drop-shadow-2xl filter brightness-105">🙇‍♂️</span>
                     </div>
 
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div class="pt-safe mt-4">
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-amber-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <div class="relative z-10 h-full flex flex-col justify-end p-8 pb-16 bg-gradient-to-t from-orange-900/10 via-transparent to-transparent">
+                        <div class="flex items-start flex-col gap-3">
+                            <span class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
                                 HAPPY NEW YEAR
                             </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                2026년 설날<br>
-                                <span class="text-amber-600">새해 복 많이 받으세요!</span>
-                            </h2>
-                            <p class="text-gray-600 font-bold mt-2 text-sm">즐겁고 풍요로운 명절 되세요 🌕</p>
+                            <div>
+                                <h2 class="text-4xl font-black leading-tight text-[#191F28] mb-1 drop-shadow-sm">
+                                    2026년 설날
+                                </h2>
+                                <p class="text-xl font-bold text-amber-800/80">새해 복 많이 받으세요!</p>
+                            </div>
+                            <p class="text-gray-700/80 text-sm font-medium mt-1 max-w-[70%] leading-relaxed">
+                                즐겁고 풍요로운 명절 되시길 바랍니다.<br>올해도 잘 부탁드려요 🌕
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- [Old] 슬라이드 2: 환승여행 티저 공개 (둥근 모서리 제거) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FBCFE8] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <!-- 이모지 대신 로고 이미지로 변경 -->
-                    <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
-                        <img src="logo.png" alt="환승여행 로고" class="w-28 h-28 object-contain drop-shadow-md filter brightness-105" onerror="this.src='https://placehold.co/150x150/ffb6c1/ffffff?text=LOGO'">
+                <!-- [Old] 슬라이드 2: 환승여행 티저 공개 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-[#FFF0F5]" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FBCFE8]"></div>
+                    <div class="absolute top-[-10%] right-[-10%] w-80 h-80 bg-white/40 rounded-full blur-3xl"></div>
+                    
+                    <div class="absolute top-1/2 right-8 -translate-y-1/2 transform rotate-[-5deg] transition-transform duration-700 hover:scale-105">
+                        <img src="logo.png" alt="환승여행 로고" class="w-48 h-48 object-contain drop-shadow-xl filter brightness-105" onerror="this.src='https://placehold.co/250x250/ffb6c1/ffffff?text=LOGO'">
                     </div>
 
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div class="pt-safe mt-4">
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-pink-500 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                    <div class="relative z-10 h-full flex flex-col justify-end p-8 pb-16 bg-gradient-to-t from-pink-900/10 via-transparent to-transparent">
+                        <div class="flex items-start flex-col gap-3">
+                            <span class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-pink-600 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
                                 TEASER
                             </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                환승여행<br>
-                                <span class="text-pink-500">티저 공개!</span>
-                            </h2>
-                            <p class="text-gray-500 font-bold mt-2 text-sm">새로운 설렘이 시작됩니다 💕</p>
-                            <p class="text-pink-500 font-black mt-3 text-xs border-b border-pink-300 inline-block pb-0.5">보러가기 →</p>
+                            <div>
+                                <h2 class="text-4xl font-black leading-tight text-[#191F28] mb-1 drop-shadow-sm">
+                                    환승여행
+                                </h2>
+                                <p class="text-xl font-bold text-pink-600/90">티저 공개!</p>
+                            </div>
+                            <p class="text-gray-700/80 text-sm font-medium mt-1 max-w-[70%] leading-relaxed">
+                                새로운 설렘이 시작됩니다.<br>지금 바로 확인하세요 💕
+                            </p>
+                            <div class="mt-4 flex items-center gap-2 text-pink-600 font-bold text-sm group-active:translate-x-1 transition-transform">
+                                <span>보러가기</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 출장엔조이 OST 공개 (둥근 모서리 제거) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#BAE6FD] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.goToMusic()">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎵</span>
+                <!-- 슬라이드 4: 출장엔조이 OST 공개 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-[#F0F9FF]" onclick="window.haptic(); window.goToMusic()">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#BAE6FD]"></div>
+                    <div class="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-sky-200/30 to-transparent"></div>
+                    
+                    <div class="absolute top-1/2 right-8 -translate-y-1/2 transform rotate-[10deg] opacity-90 transition-transform duration-700 hover:scale-110">
+                        <span class="text-[140px] drop-shadow-2xl filter brightness-105">🎵</span>
                     </div>
 
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div class="pt-safe mt-4">
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-sky-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                    <div class="relative z-10 h-full flex flex-col justify-end p-8 pb-16 bg-gradient-to-t from-blue-900/10 via-transparent to-transparent">
+                        <div class="flex items-start flex-col gap-3">
+                            <span class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-sky-600 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>
                                 NEW SONG
                             </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                출장엔조이 OST<br>
-                                <span class="text-sky-600">음원 공개!</span>
-                            </h2>
-                            <p class="text-gray-600 font-bold mt-2 text-sm">감성 가득한 멜로디 🎹</p>
-                            <p class="text-sky-600 font-black mt-3 text-xs border-b border-sky-300 inline-block pb-0.5">들어보러 가기 →</p>
+                            <div>
+                                <h2 class="text-4xl font-black leading-tight text-[#191F28] mb-1 drop-shadow-sm">
+                                    출장엔조이 OST
+                                </h2>
+                                <p class="text-xl font-bold text-sky-700/90">음원 공개!</p>
+                            </div>
+                            <p class="text-gray-600/90 text-sm font-medium mt-1 max-w-[70%] leading-relaxed">
+                                감성 가득한 멜로디와 함께<br>여행의 추억을 느껴보세요 🎹
+                            </p>
+                            <div class="mt-4 flex items-center gap-2 text-sky-700 font-bold text-sm group-active:translate-x-1 transition-transform">
+                                <span>들어보러 가기</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 슬라이드 5: 모임비 인상 (둥근 모서리 제거) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <div class="absolute right-4 bottom-4 transform rotate-[5deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">💸</span>
+                <!-- 슬라이드 5: 모임비 인상 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-[#F0FDF4]" onclick="window.haptic();">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0]"></div>
+                    <div class="absolute top-[-20%] left-[-20%] w-[600px] h-[600px] bg-emerald-100/40 rounded-full blur-3xl"></div>
+                    
+                    <div class="absolute top-1/2 right-8 -translate-y-1/2 transform rotate-[5deg] opacity-90 transition-transform duration-700 hover:scale-110">
+                        <span class="text-[140px] drop-shadow-2xl filter brightness-105">💸</span>
                     </div>
 
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div class="pt-safe mt-4">
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-emerald-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                    <div class="relative z-10 h-full flex flex-col justify-end p-8 pb-16 bg-gradient-to-t from-emerald-900/10 via-transparent to-transparent">
+                        <div class="flex items-start flex-col gap-3">
+                            <span class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 UPDATE
                             </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                엔조이 모임비<br>
-                                <span class="text-emerald-600">인상 안내</span>
-                            </h2>
-                            <p class="text-gray-600 font-bold mt-2 text-sm">15,000원 → 20,000원 📈</p>
+                            <div>
+                                <h2 class="text-4xl font-black leading-tight text-[#191F28] mb-1 drop-shadow-sm">
+                                    엔조이 모임비
+                                </h2>
+                                <p class="text-xl font-bold text-emerald-700/90">인상 안내</p>
+                            </div>
+                            <p class="text-gray-700/80 text-sm font-medium mt-1 max-w-[70%] leading-relaxed">
+                                더 나은 모임을 위해 부득이하게<br>15,000원에서 20,000원으로 인상됩니다 📈
+                            </p>
                         </div>
                     </div>
                 </div>
