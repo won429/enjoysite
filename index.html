@@ -150,8 +150,8 @@
         <div class="fade-in-up delay-100 mb-5 mt-6 mx-1 h-64 rounded-[32px] shadow-lg shadow-blue-100/60 border border-white/60 relative overflow-hidden group active:scale-95 transition-all duration-300">
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 (추가됨) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')">
+                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 (링크 수정됨) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
@@ -310,10 +310,10 @@
             <!-- 가로 스크롤 컨테이너 적용 -->
             <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory">
                 
-                <!-- [New] 엔조이 인기가요 2 카드 추가 (가장 앞쪽에 배치) -->
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
-                    <!-- 썸네일 -->
-                    <img src="coming_1.jpg" onerror="this.src='https://placehold.co/640x360/F3E8FF/purple?text=Inkigayo+2'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Enjoy Inkigayo 2">
+                <!-- [New] 엔조이 인기가요 2 카드 추가 (썸네일 자동 연동 수정됨) -->
+                <div onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
+                    <!-- 썸네일: 유튜브 ID(pKf5z5v96_w)를 이용해 자동 추출 -->
+                    <img src="https://img.youtube.com/vi/pKf5z5v96_w/mqdefault.jpg" onerror="this.src='https://placehold.co/640x360/F3E8FF/purple?text=Inkigayo+2'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Enjoy Inkigayo 2">
                     
                     <!-- 재생 버튼 오버레이 -->
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
