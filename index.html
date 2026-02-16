@@ -147,11 +147,13 @@
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-safe pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <div class="fade-in-up delay-100 mb-5 mt-6 mx-1 h-64 rounded-[32px] shadow-lg shadow-blue-100/60 border border-white/60 relative overflow-hidden group active:scale-95 transition-all duration-300">
+        <!-- [Modified] mx-1 -> -mx-5로 변경하여 좌우 여백 없이 화면 꽉 채움, active 효과 유지 -->
+        <div class="fade-in-up delay-100 mb-5 mt-6 -mx-5 h-64 relative group active:scale-95 transition-all duration-300">
+            <!-- [Modified] rounded-[32px] 제거하여 사각형 틀로 변경 -->
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 (링크 수정됨) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')">
+                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 (둥근 모서리 제거) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
@@ -174,8 +176,8 @@
                     </div>
                 </div>
 
-                <!-- [Old] 슬라이드 0 -> 1: 설날 새해 인사 -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FCD34D] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic();">
+                <!-- [Old] 슬라이드 0 -> 1: 설날 새해 인사 (둥근 모서리 제거) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FCD34D] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
@@ -197,10 +199,8 @@
                     </div>
                 </div>
 
-                <!-- [Deleted] 슬라이드 1: 인기가요2 사전투표 삭제됨 -->
-
-                <!-- [Old] 슬라이드 2: 환승여행 티저 공개 -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FBCFE8] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
+                <!-- [Old] 슬라이드 2: 환승여행 티저 공개 (둥근 모서리 제거) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FBCFE8] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     <!-- 이모지 대신 로고 이미지로 변경 -->
@@ -224,10 +224,8 @@
                     </div>
                 </div>
 
-                <!-- [Deleted] 슬라이드 3: 출장엔조이 2화 공개 삭제됨 -->
-
-                <!-- 슬라이드 4: 출장엔조이 OST 공개 -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#BAE6FD] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.goToMusic()">
+                <!-- 슬라이드 4: 출장엔조이 OST 공개 (둥근 모서리 제거) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#BAE6FD] relative overflow-hidden cursor-pointer" onclick="window.haptic(); window.goToMusic()">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
@@ -250,8 +248,8 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 5: 모임비 인상 -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic();">
+                <!-- 슬라이드 5: 모임비 인상 (둥근 모서리 제거) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer" onclick="window.haptic();">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
                     <div class="absolute right-4 bottom-4 transform rotate-[5deg]">
