@@ -150,37 +150,60 @@
         <div class="fade-in-up delay-100 mb-5 mt-6 mx-1 h-64 rounded-[32px] shadow-lg shadow-blue-100/60 border border-white/60 relative overflow-hidden group active:scale-95 transition-all duration-300">
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [New] 슬라이드 0: 인기가요2 사전투표 (멘트 수정됨) -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')">
+                <!-- [New] 슬라이드 0: 엔조이 인기가요 2 공개 (추가됨) -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    
-                    <!-- 이모지 대신 투표 이미지로 변경 -->
                     <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
-                        <img src="vote.png" alt="투표 대표 이미지" class="w-28 h-28 object-contain drop-shadow-md filter brightness-105" onerror="this.src='https://placehold.co/150x150/e9d5ff/ffffff?text=VOTE'">
+                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎤</span>
                     </div>
 
                     <div class="relative z-10 h-full flex flex-col justify-between">
                         <div>
                             <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-purple-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
-                                VOTE
+                                NEW RELEASE
                             </span>
                             <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                명절 특선 엔조이<br>
-                                <span class="text-purple-600">인기가요2 투표</span>
+                                엔조이 인기가요 2<br>
+                                <span class="text-purple-600">공개되었습니다!</span>
                             </h2>
-                            <!-- 문구 수정 -->
-                            <p class="text-gray-600 font-bold mt-2 text-sm">맘에 드는 것을 투표하세요! 🗳️</p>
-                            <p class="text-purple-600 font-black mt-3 text-xs border-b border-purple-300 inline-block pb-0.5">사전투표 하러가기 →</p>
+                            <p class="text-gray-600 font-bold mt-2 text-sm">지금 바로 시청하세요 🎵</p>
+                            <p class="text-purple-600 font-black mt-3 text-xs border-b border-purple-300 inline-block pb-0.5">보러가기 →</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- [Old] 슬라이드 1: 환승여행 티저 공개 -->
+                <!-- [Old] 슬라이드 0 -> 1: 설날 새해 인사 -->
+                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFFBEB] via-[#FEF3C7] to-[#FCD34D] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic();">
+                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
+                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+                    <div class="absolute right-4 bottom-4 transform rotate-[10deg]">
+                        <span class="text-[80px] drop-shadow-md filter brightness-105">🙇‍♂️</span>
+                    </div>
+
+                    <div class="relative z-10 h-full flex flex-col justify-between">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-amber-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                HAPPY NEW YEAR
+                            </span>
+                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
+                                2026년 설날<br>
+                                <span class="text-amber-600">새해 복 많이 받으세요!</span>
+                            </h2>
+                            <p class="text-gray-600 font-bold mt-2 text-sm">즐겁고 풍요로운 명절 되세요 🌕</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [Deleted] 슬라이드 1: 인기가요2 사전투표 삭제됨 -->
+
+                <!-- [Old] 슬라이드 2: 환승여행 티저 공개 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FBCFE8] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+                    <!-- 이모지 대신 로고 이미지로 변경 -->
                     <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
                         <img src="logo.png" alt="환승여행 로고" class="w-28 h-28 object-contain drop-shadow-md filter brightness-105" onerror="this.src='https://placehold.co/150x150/ffb6c1/ffffff?text=LOGO'">
                     </div>
@@ -201,31 +224,9 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 2: 출장엔조이 2화 공개 -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4E1] to-[#FFDAB9] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <div class="absolute right-4 bottom-4 transform rotate-[-5deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🎬</span>
-                    </div>
+                <!-- [Deleted] 슬라이드 3: 출장엔조이 2화 공개 삭제됨 -->
 
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-red-500 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                                ON AIR
-                            </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                출장엔조이<br>
-                                <span class="text-red-500">2화 공개!</span>
-                            </h2>
-                            <p class="text-gray-500 font-bold mt-2 text-sm">지금 바로 시청하세요 🍿</p>
-                            <p class="text-red-500 font-black mt-3 text-xs border-b border-red-300 inline-block pb-0.5">보러가기 →</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 슬라이드 3: 출장엔조이 OST 공개 -->
+                <!-- 슬라이드 4: 출장엔조이 OST 공개 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#BAE6FD] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.goToMusic()">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
@@ -249,7 +250,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 모임비 인상 -->
+                <!-- 슬라이드 5: 모임비 인상 -->
                 <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F0FDF4] via-[#DCFCE7] to-[#BBF7D0] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic();">
                     <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
                     <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
@@ -272,40 +273,15 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 5: 블럭퍼즐 게임 출시 -->
-                <div class="w-full flex-shrink-0 snap-center h-full p-8 bg-gradient-to-br from-[#F5F3FF] via-[#EDE9FE] to-[#DDD6FE] relative overflow-hidden cursor-pointer rounded-[32px]" onclick="window.haptic(); window.location.href='block.html'">
-                    <div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/60 rounded-full mix-blend-overlay filter blur-3xl opacity-70 animate-pulse"></div>
-                    <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-                    <div class="absolute right-4 bottom-4 transform rotate-[15deg]">
-                        <span class="text-[80px] drop-shadow-md filter brightness-105">🧩</span>
-                    </div>
-
-                    <div class="relative z-10 h-full flex flex-col justify-between">
-                        <div>
-                            <span class="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-md text-violet-600 text-[11px] font-bold px-3 py-1.5 rounded-full mb-3 border border-white/50 shadow-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
-                                NEW GAME
-                            </span>
-                            <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-[#191F28]">
-                                엔조이 블럭퍼즐<br>
-                                <span class="text-violet-600">게임 출시!</span>
-                            </h2>
-                            <p class="text-gray-600 font-bold mt-2 text-sm">심심할 땐 블럭깨기 🧩<br>지금 바로 도전하세요!</p>
-                            <p class="text-violet-600 font-black mt-3 text-xs border-b border-violet-300 inline-block pb-0.5">배너 눌러서 게임하러가기 →</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
             
-            <!-- 슬라이드 인디케이터 (6개로 수정) -->
+            <!-- 슬라이드 인디케이터 (5개로 수정) -->
             <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 z-30">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-black/60 transition-colors"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
-                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors"></button>
                 
                 <!-- 배너 재생/일시정지 버튼 -->
                 <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="ml-1 w-4 h-4 rounded-full bg-black/20 hover:bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors active:scale-90">
@@ -334,7 +310,27 @@
             <!-- 가로 스크롤 컨테이너 적용 -->
             <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory">
                 
-                <!-- [New] 환승여행 티저 카드 추가 -->
+                <!-- [New] 엔조이 인기가요 2 카드 추가 (가장 앞쪽에 배치) -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
+                    <!-- 썸네일 -->
+                    <img src="coming_1.jpg" onerror="this.src='https://placehold.co/640x360/F3E8FF/purple?text=Inkigayo+2'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Enjoy Inkigayo 2">
+                    
+                    <!-- 재생 버튼 오버레이 -->
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-lg group-active:scale-95 transition-transform">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 텍스트 정보 -->
+                    <div class="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                        <span class="bg-purple-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 inline-block">NEW</span>
+                        <h4 class="text-white text-xs font-bold mb-0.5 leading-tight">엔조이 인기가요 2</h4>
+                        <p class="text-gray-300 text-[9px] line-clamp-1 opacity-90">지금 바로 시청하세요 🎵</p>
+                    </div>
+                </div>
+
+                <!-- [Old] 환승여행 티저 카드 -->
                 <div onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
                     <!-- 썸네일 (유튜브 썸네일 사용) -->
                     <img src="https://img.youtube.com/vi/n9rhdR9jwaI/mqdefault.jpg" onerror="this.src='https://placehold.co/640x360/ffb6c1/ffffff?text=Teaser'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Transit Love Teaser">
@@ -354,7 +350,7 @@
                     </div>
                 </div>
 
-                <!-- 기존 에피소드 카드 (flex-none, snap-start 추가) -->
+                <!-- [Old] 기존 에피소드 카드 (출장엔조이 2화) -->
                 <div onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
                     <!-- 썸네일 이미지 -->
                     <img src="jeju_2.jpg" onerror="this.src='https://placehold.co/640x360/333/FFF?text=Coming+Soon'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="New Episode">
@@ -425,6 +421,16 @@
                     <p class="text-sm font-bold text-gray-800 leading-tight text-center truncate">그날 엔조이 이야기</p>
                 </div>
 
+                <!-- [New] 5위: 엔조이 인기가요 2 (공개예정에서 이동됨) -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-gray-100">
+                        <img src="coming_1.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요 2" onerror="this.src='https://placehold.co/300x400/F3E8FF/purple?text=Inkigayo+2'">
+                        <div class="absolute top-[-2px] left-1.5 text-4xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] z-10">5</div>
+                        <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm z-10 whitespace-nowrap">NEW</div>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800 leading-tight text-center truncate">엔조이 인기가요 2</p>
+                </div>
+
             </div>
         </div>
 
@@ -436,17 +442,7 @@
             
             <div class="flex overflow-x-auto gap-3 pb-4 scrollbar-hide snap-x snap-mandatory">
                 
-                <!-- 엔조이 인기가요2 -->
-                <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
-                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 shadow-md border border-black/5 bg-gray-50">
-                        <img src="coming_1.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="엔조이 인기가요2" onerror="this.src='https://placehold.co/300x400/F3E8FF/purple?text=Coming+Soon'">
-                        <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
-                            <i class="fa-solid fa-lock text-white/90 text-2xl drop-shadow-md"></i>
-                        </div>
-                        <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm">COMING SOON</div>
-                    </div>
-                    <p class="text-sm font-bold text-gray-500 leading-tight text-center truncate">엔조이 인기가요2</p>
-                </div>
+                <!-- [Moved] 엔조이 인기가요2는 차트로 이동되어 삭제됨 -->
 
                 <!-- F1 더 엔조이 무비 -->
                 <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[130px] w-[130px] snap-start group cursor-pointer">
@@ -1236,7 +1232,7 @@
                 if(!slider) return;
                 
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 6; // 슬라이드 개수 6개로 수정
+                const nextIndex = (currentIndex + 1) % 5; // [Modified] 슬라이드 개수 5개로 수정
                 
                 window.moveBanner(nextIndex);
             }, 2000);
@@ -1267,8 +1263,7 @@
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4'),
-                document.getElementById('ind-5')
+                document.getElementById('ind-4')
             ];
             
             if(!slider) return;
@@ -1802,24 +1797,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
