@@ -240,8 +240,8 @@
 
             </div>
             
-            <!-- 메인 화면과의 단절감을 없애고 자연스럽게 이어지는 끝부분 블러/그라데이션 -->
-            <div class="absolute -bottom-px left-0 right-0 h-20 bg-gradient-to-t from-[#F2F4F6] via-[#F2F4F6]/90 to-transparent pointer-events-none z-20"></div>
+            <!-- 메인 화면과의 단절감을 없애고 자연스럽게 이어지는 끝부분 그라데이션 -->
+            <div class="absolute -bottom-px left-0 right-0 h-32 bg-gradient-to-t from-[#F2F4F6] to-transparent pointer-events-none z-20"></div>
             
             <!-- 슬라이드 인디케이터 (Apple TV 스타일 정중앙 하단) -->
             <div class="absolute bottom-5 left-0 right-0 flex justify-center items-center z-30 pointer-events-none">
@@ -256,6 +256,76 @@
                 <button id="banner-ctrl" onclick="window.toggleBanner(event)" class="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center transition-transform active:scale-90 pointer-events-auto">
                     <i id="banner-ctrl-icon" class="fa-solid fa-pause text-[8px] text-white"></i>
                 </button>
+            </div>
+        </div>
+
+        <!-- 새로운 에피소드 공개 공간 (누락되었던 원본 그대로 복구) -->
+        <div class="mb-6 fade-in-up delay-150 px-1">
+            <h3 class="text-lg font-bold text-main mb-3">새로운 에피소드</h3>
+            
+            <!-- 가로 스크롤 컨테이너 적용 -->
+            <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory">
+                
+                <!-- [New] 엔조이 인기가요 2 카드 추가 (썸네일 자동 연동 수정됨) -->
+                <div onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
+                    <!-- 썸네일: 유튜브 ID(pKf5z5v96_w)를 이용해 자동 추출 -->
+                    <img src="https://img.youtube.com/vi/pKf5z5v96_w/mqdefault.jpg" onerror="this.src='https://placehold.co/640x360/F3E8FF/purple?text=Inkigayo+2'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Enjoy Inkigayo 2">
+                    
+                    <!-- 재생 버튼 오버레이 -->
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-lg group-active:scale-95 transition-transform">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 텍스트 정보 -->
+                    <div class="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                        <span class="bg-purple-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 inline-block">NEW</span>
+                        <h4 class="text-white text-xs font-bold mb-0.5 leading-tight">엔조이 인기가요 2</h4>
+                        <p class="text-gray-300 text-[9px] line-clamp-1 opacity-90">지금 바로 시청하세요 🎵</p>
+                    </div>
+                </div>
+
+                <!-- [Old] 환승여행 티저 카드 -->
+                <div onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
+                    <!-- 썸네일 (유튜브 썸네일 사용) -->
+                    <img src="https://img.youtube.com/vi/n9rhdR9jwaI/mqdefault.jpg" onerror="this.src='https://placehold.co/640x360/ffb6c1/ffffff?text=Teaser'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Transit Love Teaser">
+                    
+                    <!-- 재생 버튼 오버레이 -->
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-lg group-active:scale-95 transition-transform">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 텍스트 정보 -->
+                    <div class="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                        <span class="bg-pink-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 inline-block">TEASER</span>
+                        <h4 class="text-white text-xs font-bold mb-0.5 leading-tight">환승여행 티저</h4>
+                        <p class="text-gray-300 text-[9px] line-clamp-1 opacity-90">새로운 설렘이 시작됩니다 💕</p>
+                    </div>
+                </div>
+
+                <!-- [Old] 기존 에피소드 카드 (출장엔조이 2화) -->
+                <div onclick="window.haptic(); window.openBrowser('https://youtu.be/tjIYiWqG6Hk')" class="flex-none w-48 aspect-video rounded-[16px] overflow-hidden shadow-lg relative cursor-pointer group snap-start">
+                    <!-- 썸네일 이미지 -->
+                    <img src="jeju_2.jpg" onerror="this.src='https://placehold.co/640x360/333/FFF?text=Coming+Soon'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="New Episode">
+                    
+                    <!-- 재생 버튼 오버레이 -->
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center shadow-lg group-active:scale-95 transition-transform">
+                            <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 텍스트 정보 -->
+                    <div class="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                        <span class="bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 inline-block">NEW</span>
+                        <h4 class="text-white text-xs font-bold mb-0.5 leading-tight">출장엔조이 X 제주 2화</h4>
+                        <p class="text-gray-300 text-[9px] line-clamp-1 opacity-90">새로운 영상! 🍿</p>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -593,41 +663,41 @@
             
             <!-- 음악 메뉴 -->
             <button id="nav-music" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goToMusic()">
-                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-headphones text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">음악</span>
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none mix-blend-difference">
+                    <i class="fa-solid fa-headphones text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">음악</span>
                 </div>
             </button>
 
             <!-- [Modified] 투표 메뉴 링크 연결 -->
             <button id="nav-vote" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')">
-                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-check-to-slot text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">투표</span>
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none mix-blend-difference">
+                    <i class="fa-solid fa-check-to-slot text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">투표</span>
                 </div>
             </button>
 
             <!-- 홈 메뉴 -->
             <button id="nav-home" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goHome()">
-                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-house text-base text-[#191F28] drop-shadow-sm"></i>
-                    <span class="text-[10px] font-bold text-[#191F28] drop-shadow-sm whitespace-nowrap">홈</span>
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none mix-blend-difference">
+                    <i class="fa-solid fa-house text-base text-white transition-colors"></i>
+                    <span class="text-[10px] font-bold text-white whitespace-nowrap transition-colors">홈</span>
                 </div>
             </button>
             
             <!-- 일정 메뉴 -->
             <button id="nav-calendar" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goSchedule()">
-                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-regular fa-calendar-days text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">일정</span>
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none mix-blend-difference">
+                    <i class="fa-regular fa-calendar-days text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">일정</span>
                 </div>
             </button>
             
             <!-- 모임통장 메뉴 -->
             <button id="nav-meeting" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMeeting()">
-                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-users text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">모임통장</span>
+                <div class="flex flex-col items-center gap-0.5 pointer-events-none mix-blend-difference">
+                    <i class="fa-solid fa-users text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">모임통장</span>
                 </div>
             </button>
         </div>
@@ -1505,30 +1575,31 @@
                 ind.style.transform = `translateX(${btns[index].offsetLeft - 6}px)`;
             }
 
-            // [수정] 탭 활성화/비활성화 색상 처리 로직 추가
+            // [수정] 탭 활성화/비활성화 색상 처리 로직 추가 (자동 반전 믹스블렌드 적용)
             btns.forEach((btn, i) => {
                 if(!btn) return;
                 const icon = btn.querySelector('i');
                 const label = btn.querySelector('span');
                 
-                // 선택된 탭은 검은색(Active), 나머지는 회색(Inactive)
+                // mix-blend-difference 효과에 맞추어 흰색/회색을 부여합니다.
+                // (흰색 -> 밝은배경에선 검정, 어두운배경에선 흰색으로 반전)
                 if (i === index) {
                     if (icon) {
-                        icon.classList.remove('text-[#4E5968]');
-                        icon.classList.add('text-[#191F28]');
+                        icon.classList.remove('text-gray-300');
+                        icon.classList.add('text-white');
                     }
                     if (label) {
-                        label.classList.remove('text-[#4E5968]', 'font-medium');
-                        label.classList.add('text-[#191F28]', 'font-bold');
+                        label.classList.remove('text-gray-300', 'font-medium');
+                        label.classList.add('text-white', 'font-bold');
                     }
                 } else {
                     if (icon) {
-                        icon.classList.remove('text-[#191F28]');
-                        icon.classList.add('text-[#4E5968]');
+                        icon.classList.remove('text-white');
+                        icon.classList.add('text-gray-300');
                     }
                     if (label) {
-                        label.classList.remove('text-[#191F28]', 'font-bold');
-                        label.classList.add('text-[#4E5968]', 'font-medium');
+                        label.classList.remove('text-white', 'font-bold');
+                        label.classList.add('text-gray-300', 'font-medium');
                     }
                 }
             });
