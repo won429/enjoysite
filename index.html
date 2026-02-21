@@ -1867,7 +1867,7 @@
                 }
             } catch (error) {
                 console.error("푸시 알림 설정 에러:", error);
-                alert("푸시 알림 설정 중 오류가 발생했습니다. (VAPID 키 등록 필요)");
+                alert("푸시 설정 실패! 서버에 'firebase-messaging-sw.js' 파일이 없거나, 현재 미리보기 화면에서 알림이 차단되었습니다.\n\n상세 원인: " + error.message);
             }
         };
 
