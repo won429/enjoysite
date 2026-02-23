@@ -166,27 +166,7 @@
 
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- 슬라이드 0: 엔조이 인기가요 2 공개 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black" onclick="window.haptic(); window.openBrowser('https://youtu.be/pKf5z5v96_w')">
-                    <!-- 배경 이미지 & 다크 그라데이션 오버레이 (밝기 개선) -->
-                    <div class="absolute inset-0">
-                        <img src="coming_1.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                    </div>
-                    
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-center text-center px-6 z-10">
-                        <h2 class="text-[26px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">다시 돌아온 감성, 인기가요 2.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-6 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
-                            오직 엔조이에서만. 모두가 기다려온 레전드 무대가 지금 시작됩니다.
-                        </p>
-                        <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
-                            지금 시청하기
-                        </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">새로운 에피소드 절찬 스트리밍 중</p>
-                    </div>
-                </div>
-
-                <!-- [New] 슬라이드 1: 우리의 발자취 오픈 -->
+                <!-- [New] 슬라이드 0: 우리의 발자취 오픈 (첫번째로 이동) -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')">
                     <div class="absolute inset-0 flex items-center justify-center pb-24">
                         <!-- 은은한 민트색 후광 -->
@@ -211,7 +191,57 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 2: 환승여행 티저 공개 -->
+                <!-- [New] 슬라이드 1: 인기가요 선물 뽑기 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.location.href='vote.html'">
+                    <div class="absolute inset-0 flex items-center justify-center pb-24">
+                        <!-- 은은한 보라색 후광 -->
+                        <div class="absolute w-[280px] h-[280px] bg-purple-500/20 rounded-full blur-[80px] group-hover:bg-purple-500/30 transition-colors duration-700 pointer-events-none"></div>
+                        
+                        <!-- 글래스모피즘 아이콘 컨테이너 -->
+                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-600/10 border border-purple-400/30 shadow-[0_10px_40px_rgba(168,85,247,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
+                            <i class="fa-solid fa-gift text-5xl text-purple-400/90 drop-shadow-md transform group-hover:-rotate-12 transition-all duration-700"></i>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
+                    
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-center text-center px-6 z-10">
+                        <h2 class="text-[24px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">인기가요2 우승자 선물 뽑기!</h2>
+                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-6 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                            영예의 1위와 2위를 차지한 멤버를 위한<br>특별한 선물을 지금 바로 확인하세요.
+                        </p>
+                        <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
+                            선물 뽑으러 가기
+                        </div>
+                        <p class="text-[11px] text-purple-400 font-bold mt-4 drop-shadow-md">행운의 주인공은 누구?</p>
+                    </div>
+                </div>
+
+                <!-- [New] 슬라이드 2: 새로워진 엔조이 사이트 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.scrollTo({top:0, behavior:'smooth'})">
+                    <div class="absolute inset-0 flex items-center justify-center pb-24">
+                        <!-- 은은한 파란색 후광 -->
+                        <div class="absolute w-[280px] h-[280px] bg-blue-500/20 rounded-full blur-[80px] group-hover:bg-blue-500/30 transition-colors duration-700 pointer-events-none"></div>
+                        
+                        <!-- 글래스모피즘 아이콘 컨테이너 -->
+                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-blue-400/20 to-indigo-600/10 border border-blue-400/30 shadow-[0_10px_40px_rgba(59,130,246,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
+                            <i class="fa-solid fa-wand-magic-sparkles text-5xl text-blue-400/90 drop-shadow-md transform group-hover:rotate-12 transition-all duration-700"></i>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
+                    
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-center text-center px-6 z-10">
+                        <h2 class="text-[26px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">새로워진 엔조이 사이트.</h2>
+                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-6 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                            더 빠르고, 더 깔끔하고, 더 편리하게.<br>완전히 새로워진 엔조이 사이트를 경험해보세요.
+                        </p>
+                        <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
+                            둘러보기
+                        </div>
+                        <p class="text-[11px] text-blue-400 font-bold mt-4 drop-shadow-md">새로운 UI/UX 전면 적용</p>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 3: 환승여행 티저 공개 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
                     <div class="absolute inset-0">
                         <img src="coming_3.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
@@ -306,6 +336,7 @@
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 
                 <div class="w-px h-3 bg-white/20 mx-1 ml-2 pointer-events-none"></div>
                 
@@ -581,12 +612,12 @@
             <h4 class="text-xs font-bold text-gray-500 mb-2 px-2 fade-in-up delay-200">소통 & 플레이</h4>
             <div class="bg-[#1C1C1E] rounded-[24px] border border-white/5 overflow-hidden mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] fade-in-up delay-200">
                 <!-- 엔조이 투표 -->
-                <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
+                <button onclick="window.haptic(); window.location.href='vote.html'" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
                     <div class="w-11 h-11 rounded-[14px] bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all duration-300">
                         <i class="fa-solid fa-check-to-slot"></i>
                     </div>
                     <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">엔조이 투표</div>
+                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">엔조이 투표 & 인기가요2 선물 뽑기</div>
                         <div class="text-[11px] text-gray-500 font-medium">우리의 소중한 의견을 모아봐요</div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
@@ -603,6 +634,18 @@
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
                 </button>
+
+                <!-- [New] 엔조이 음악 추가 -->
+                <button onclick="window.haptic(); window.goToMusic()" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-t border-white/5 group relative overflow-hidden">
+                    <div class="w-11 h-11 rounded-[14px] bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
+                        <i class="fa-solid fa-headphones"></i>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">엔조이 음악</div>
+                        <div class="text-[11px] text-gray-500 font-medium">언제 어디서든 무제한 감상 지원</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
+                </button>
             </div>
 
             <!-- 메뉴 그룹 3: 기타 -->
@@ -616,6 +659,18 @@
                     <div class="flex-1 text-left">
                         <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">푸시 알림 켜기</div>
                         <div class="text-[11px] text-gray-500 font-medium">새로운 소식을 바로 받아보세요</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
+                </button>
+
+                <!-- [New] 개발자 후원하기 추가 -->
+                <button onclick="window.haptic(); window.location.href='kakaotalk://'" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
+                    <div class="w-11 h-11 rounded-[14px] bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-yellow-500/20 transition-all duration-300">
+                        <i class="fa-solid fa-mug-hot"></i>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">개발자 후원하기</div>
+                        <div class="text-[11px] text-gray-500 font-medium">따뜻한 커피 한 잔 사주기 ☕️</div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
                 </button>
@@ -1340,7 +1395,7 @@
                 if(!slider) return;
                 
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 5; // [Modified] 슬라이드 개수 5개로 수정
+                const nextIndex = (currentIndex + 1) % 6; // [Modified] 슬라이드 개수 6개로 수정
                 
                 window.moveBanner(nextIndex);
             }, 2000);
@@ -1371,7 +1426,8 @@
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4')
+                document.getElementById('ind-4'),
+                document.getElementById('ind-5')
             ];
             
             if(!slider) return;
