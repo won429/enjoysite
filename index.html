@@ -210,28 +210,22 @@
                     </div>
                 </div>
 
-                <!-- [New] 슬라이드 2: 새로워진 엔조이 사이트 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.scrollTo({top:0, behavior:'smooth'})">
-                    <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <!-- 은은한 파란색 후광 -->
-                        <div class="absolute w-[280px] h-[280px] bg-blue-500/20 rounded-full blur-[80px] group-hover:bg-blue-500/30 transition-colors duration-700 pointer-events-none"></div>
-                        
-                        <!-- 글래스모피즘 아이콘 컨테이너 -->
-                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-blue-400/20 to-indigo-600/10 border border-blue-400/30 shadow-[0_10px_40px_rgba(59,130,246,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
-                            <i class="fa-solid fa-wand-magic-sparkles text-5xl text-blue-400/90 drop-shadow-md transform group-hover:rotate-12 transition-all duration-700"></i>
-                        </div>
+                <!-- [New] 슬라이드 2: 그날 엔조이 이야기 (첫 여행) -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')">
+                    <div class="absolute inset-0">
+                        <img src="nbc_2.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                     </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-center text-center px-6 z-10">
-                        <h2 class="text-[26px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">새로워진 엔조이 사이트.</h2>
+                        <h2 class="text-[26px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">우리의 첫 여행.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-6 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
-                            더 빠르고, 더 깔끔하고, 더 편리하게.<br>완전히 새로워진 엔조이 사이트를 경험해보세요.
+                            풋풋했던 첫 번째 여행의 추억부터<br>대환장 막장 이야기까지! 모든 시작을 확인하세요.
                         </p>
                         <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
-                            둘러보기
+                            그날 엔조이 이야기 보기
                         </div>
-                        <p class="text-[11px] text-blue-400 font-bold mt-4 drop-shadow-md">새로운 UI/UX 전면 적용</p>
+                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">마라맛 에피소드 절찬 스트리밍 중</p>
                     </div>
                 </div>
 
@@ -274,34 +268,14 @@
                 </div>
 
                 <!-- 슬라이드 3: 모임비 인상 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black" onclick="window.haptic(); window.showDuesModal();">
-                    <!-- 프리미엄 카드/멤버십 그래픽으로 개편 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.showDuesModal();">
                     <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <!-- 은은한 에메랄드 후광 -->
-                        <div class="absolute w-[280px] h-[280px] bg-emerald-500/20 rounded-full blur-[80px] group-hover:bg-emerald-500/30 transition-colors duration-700 pointer-events-none"></div>
+                        <!-- 은은한 골드/앰버 후광 -->
+                        <div class="absolute w-[280px] h-[280px] bg-amber-500/20 rounded-full blur-[80px] group-hover:bg-amber-500/30 transition-colors duration-700 pointer-events-none"></div>
                         
-                        <!-- 뒷면 다크 카드 -->
-                        <div class="absolute w-32 h-48 rounded-[18px] bg-gradient-to-br from-gray-700/30 to-gray-900/50 border border-gray-600/20 shadow-2xl backdrop-blur-md transform -rotate-[10deg] -translate-x-5 translate-y-3 group-hover:-translate-x-8 group-hover:translate-y-5 group-hover:-rotate-[15deg] transition-all duration-700 pointer-events-none"></div>
-                        
-                        <!-- 앞면 프리미엄 글래스 카드 -->
-                        <div class="relative w-36 h-52 rounded-[20px] bg-gradient-to-br from-emerald-400/20 via-emerald-600/10 to-black/80 border border-emerald-400/30 shadow-[0_10px_40px_rgba(16,185,129,0.3)] backdrop-blur-md transform rotate-[12deg] group-hover:rotate-[8deg] group-hover:scale-105 transition-all duration-700 flex flex-col justify-between p-4 box-border pointer-events-none">
-                            <div class="flex justify-between items-center w-full">
-                                <span></span>
-                                <i class="fa-solid fa-wifi text-emerald-300/50 text-[10px] rotate-90"></i>
-                            </div>
-                            <div class="w-full">
-                                <div class="w-7 h-5 rounded-[4px] bg-gradient-to-br from-yellow-100/40 to-yellow-500/20 mb-4 shadow-inner"></div>
-                                <div class="flex gap-1 mb-2">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/50"></div>
-                                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/50"></div>
-                                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/50"></div>
-                                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/50"></div>
-                                </div>
-                                <div class="w-full flex justify-between items-end">
-                                    <div class="text-[8px] text-emerald-300/60 font-medium tracking-widest">MEMBERSHIP</div>
-                                    <i class="fa-brands fa-cc-visa text-emerald-300/40 text-lg"></i>
-                                </div>
-                            </div>
+                        <!-- 글래스모피즘 아이콘 컨테이너 (다른 배너와 통일) -->
+                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-600/10 border border-amber-400/30 shadow-[0_10px_40px_rgba(245,158,11,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
+                            <i class="fa-solid fa-coins text-5xl text-amber-400/90 drop-shadow-md transform group-hover:-translate-y-1 transition-all duration-700"></i>
                         </div>
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
@@ -314,7 +288,7 @@
                         <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
                             개편안 확인하기
                         </div>
-                        <p class="text-[12px] text-gray-200 font-medium mt-4 drop-shadow-lg">월 15,000원 → 20,000원으로 인상 (2026년부터 적용)</p>
+                        <p class="text-[11px] text-amber-400 font-bold mt-4 drop-shadow-lg">월 15,000원 → 20,000원으로 인상 (2026년부터 적용)</p>
                     </div>
                 </div>
 
@@ -1407,7 +1381,7 @@
                 const nextIndex = (currentIndex + 1) % 6; // [Modified] 슬라이드 개수 6개로 수정
                 
                 window.moveBanner(nextIndex);
-            }, 2000);
+            }, 3500); // 3.5초로 변경
         };
 
         window.stopAutoBanner = function() {
