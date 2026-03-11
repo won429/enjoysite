@@ -166,7 +166,26 @@
 
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- [New] 슬라이드 0: 우리의 발자취 오픈 (첫번째로 이동) -->
+                <!-- [New] 슬라이드 0: 엔쪽이 브이로그 (과거 여행) (첫번째로 이동) -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')">
+                    <div class="absolute inset-0">
+                        <img src="nbc_4.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                    </div>
+                    
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-center text-center px-6 z-10">
+                        <h2 class="text-[26px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">그때 그 시절, 우리.</h2>
+                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-6 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                            우리의 과거 여행을 다시 보고 싶을 때는?<br>엔쪽이 브이로그 정주행하러 가기.
+                        </p>
+                        <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
+                            영상 보러가기
+                        </div>
+                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">시즌1 전편 절찬 스트리밍 중</p>
+                    </div>
+                </div>
+
+                <!-- [New] 슬라이드 1: 우리의 발자취 오픈 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')">
                     <div class="absolute inset-0 flex items-center justify-center pb-24">
                         <!-- 은은한 민트색 후광 -->
@@ -188,31 +207,6 @@
                             발자취 확인하기
                         </div>
                         <p class="text-[11px] text-teal-400 font-bold mt-4 drop-shadow-md">NEW 서비스 정식 오픈</p>
-                    </div>
-                </div>
-
-                <!-- [New] 슬라이드 1: 인기가요 선물 뽑기 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.location.href='vote.html'">
-                    <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <!-- 은은한 보라색 후광 -->
-                        <div class="absolute w-[280px] h-[280px] bg-purple-500/20 rounded-full blur-[80px] group-hover:bg-purple-500/30 transition-colors duration-700 pointer-events-none"></div>
-                        
-                        <!-- 글래스모피즘 아이콘 컨테이너 -->
-                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-600/10 border border-purple-400/30 shadow-[0_10px_40px_rgba(168,85,247,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
-                            <i class="fa-solid fa-gift text-5xl text-purple-400/90 drop-shadow-md transform group-hover:-rotate-12 transition-all duration-700"></i>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
-                    
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-center text-center px-6 z-10">
-                        <h2 class="text-[24px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">인기가요2 우승자 선물 뽑기!</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-6 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
-                            영예의 1위와 2위를 차지한 멤버를 위한<br>특별한 선물을 지금 바로 확인하세요.
-                        </p>
-                        <div class="bg-white text-black font-bold text-[15px] px-8 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[260px] flex items-center justify-center active:scale-95 transition-transform">
-                            선물 뽑으러 가기
-                        </div>
-                        <p class="text-[11px] text-purple-400 font-bold mt-4 drop-shadow-md">행운의 주인공은 누구?</p>
                     </div>
                 </div>
 
@@ -829,7 +823,7 @@
 
     <!-- 하단 플로팅 메뉴 -->
     <nav id="bottom-nav" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none cursor-grab active:cursor-grabbing">
-        <div class="flex items-center bg-white/10 backdrop-blur-[4px] backdrop-saturate-[180%] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1.5 gap-1 ring-1 ring-white/30 relative" style="-webkit-backdrop-filter: blur(4px) saturate(180%);">
+        <div class="flex items-center bg-[#2C2C2E] shadow-[0_8px_24px_rgba(0,0,0,0.6)] border border-white/10 rounded-full p-1.5 gap-1 relative">
             <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
             
             <!-- 일정 메뉴 -->
