@@ -718,69 +718,61 @@
 
     <!-- 💰 모임통장 화면 -->
     <div id="meeting-screen" class="hidden fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-30 flex-col overflow-hidden bg-black">
-        <header class="flex-none pt-safe px-5 pb-2 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-white/10 z-10 sticky top-0">
-            <h2 class="text-xl font-bold text-main drop-shadow-sm">모임통장</h2>
-            <button onclick="window.haptic(); window.openPasswordModal()" class="text-sm font-medium text-gray-400 hover:text-white transition-colors cursor-pointer z-20 p-2">관리</button>
+        <header class="flex-none pt-safe px-5 pb-2 flex justify-between items-center bg-black z-10 sticky top-0">
+            <h2 class="text-[22px] font-bold text-white tracking-tight">모임통장</h2>
+            <button onclick="window.haptic(); window.openPasswordModal()" class="text-gray-400 hover:text-white transition-colors active:scale-90 p-1"><i class="fa-solid fa-gear text-lg"></i></button>
         </header>
 
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-4">
+        <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-3 w-full max-w-md mx-auto">
             
-            <!-- 계좌 카드 -->
-            <div class="account-card-gradient p-6 mb-5 relative overflow-hidden rounded-[24px] shadow-lg group">
-                <div class="absolute right-[-20px] top-[-20px] w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="flex justify-between items-start mb-8 relative z-10">
-                    <div class="flex flex-col">
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg font-bold text-white tracking-wide">엔조이 회비</span>
-                        </div>
-                    </div>
+            <!-- 계좌 영역 (Toss 스타일 초깔끔 UI) -->
+            <div class="px-2 pb-6">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                    <span class="text-[14px] font-semibold text-gray-400">엔조이 공용 계좌</span>
                 </div>
-                <div class="relative z-10">
-                    <h3 id="total-balance" class="text-3xl font-bold text-white tabular-nums tracking-tight">448,999원</h3>
+                <div class="flex items-baseline">
+                    <h3 id="total-balance" class="text-[34px] font-bold text-white tracking-tight leading-none">448,999<span class="text-[22px] font-bold text-white ml-1">원</span></h3>
                 </div>
             </div>
             
-            <!-- 현황 그리드 -->
+            <!-- 현황 요약 -->
+            <style>
+                .mini-scroll::-webkit-scrollbar { width: 4px; }
+                .mini-scroll::-webkit-scrollbar-track { background: transparent; }
+                .mini-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+            </style>
             <div class="grid grid-cols-2 gap-3 mb-6">
-                <!-- 부과금 대상자 박스 -->
-                <div class="status-card p-4 flex flex-col h-40">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-xs font-bold text-gray-400">부과금 현황</h3>
-                        <div class="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 text-xs">
-                            <i class="fa-solid fa-bell"></i>
-                        </div>
+                <!-- 부과금 -->
+                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[120px]">
+                    <div class="mb-3">
+                        <h3 class="text-[13px] font-semibold text-gray-400">부과금 현황</h3>
                     </div>
-                    <div id="penalty-list-mini" class="flex-1 overflow-y-auto scrollbar-hide space-y-2">
-                        <!-- JS로 렌더링 -->
-                        <div class="h-full flex items-center justify-center text-xs text-gray-500">없음</div>
-                    </div>
+                    <!-- [Modified] scrollbar-hide 제거 및 커스텀 스크롤바(mini-scroll) 적용 -->
+                    <div id="penalty-list-mini" class="flex-1 space-y-2 overflow-y-auto mini-scroll pr-1" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent;"></div>
                 </div>
 
-                <!-- 부과금 면제권 박스 -->
-                <div class="status-card p-4 flex flex-col h-40">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-xs font-bold text-gray-400">면제권 현황</h3>
-                        <div class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs">
-                            <i class="fa-solid fa-ticket"></i>
-                        </div>
+                <!-- 면제권 -->
+                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[120px]">
+                    <div class="mb-3">
+                        <h3 class="text-[13px] font-semibold text-gray-400">면제권 보유</h3>
                     </div>
-                    <div id="ticket-list-mini" class="flex-1 overflow-y-auto scrollbar-hide space-y-2">
-                         <!-- JS로 렌더링 -->
-                    </div>
+                    <!-- [Modified] scrollbar-hide 제거 및 커스텀 스크롤바(mini-scroll) 적용 -->
+                    <div id="ticket-list-mini" class="flex-1 space-y-2 overflow-y-auto mini-scroll pr-1" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent;"></div>
                 </div>
             </div>
 
-            <!-- 회비 납부 현황 -->
-            <div class="pb-24">
-                <div class="flex justify-between items-center mb-3 px-1">
-                    <h3 class="text-lg font-bold text-main drop-shadow-sm">회비 납부 현황</h3>
-                    <div class="flex items-center gap-2 bg-[#1C1C1E] rounded-full px-2.5 py-1 backdrop-blur-sm shadow-sm border border-white/10">
-                        <button onclick="window.haptic(); window.changeDuesMonth(-1)" class="w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 transition-colors active:scale-90"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                        <span id="dues-month-title" class="text-xs font-bold text-gray-300 tabular-nums">1월 기준</span>
-                        <button onclick="window.haptic(); window.changeDuesMonth(1)" class="w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 transition-colors active:scale-90"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+            <!-- 회비 납부 내역 (초깔끔 무테두리 미니멀 리스트) -->
+            <div class="pb-28">
+                <div class="flex justify-between items-end mb-2 px-2">
+                    <h3 class="text-[18px] font-bold text-white tracking-tight">납부 내역</h3>
+                    <div class="flex items-center gap-3">
+                        <button onclick="window.haptic(); window.changeDuesMonth(-1)" class="text-gray-500 hover:text-white active:scale-90 transition-all px-1"><i class="fa-solid fa-chevron-left text-[14px]"></i></button>
+                        <span id="dues-month-title" class="text-[15px] font-bold text-white min-w-[32px] text-center">1월</span>
+                        <button onclick="window.haptic(); window.changeDuesMonth(1)" class="text-gray-500 hover:text-white active:scale-90 transition-all px-1"><i class="fa-solid fa-chevron-right text-[14px]"></i></button>
                     </div>
                 </div>
-                <div id="dues-list" class="space-y-3"></div>
+                <!-- 박스, 선 전부 제거 -->
+                <div id="dues-list" class="flex flex-col"></div>
             </div>
         </div>
     </div>
@@ -1305,7 +1297,7 @@
                 window.meetingData.exemptions = { '류짱': 1, '성원제': 1, '전시기': 1 };
             }
             const balanceEl = document.getElementById('total-balance'); 
-            if (balanceEl) balanceEl.innerText = (data.totalBalance || 0).toLocaleString() + "원"; 
+            if (balanceEl) balanceEl.innerHTML = (data.totalBalance || 0).toLocaleString() + '<span class="text-[22px] font-bold text-white ml-1">원</span>'; 
             window.renderDues(window.currentDuesMonth); 
         };
         
@@ -1471,25 +1463,12 @@
                     records.forEach(mem => {
                         if(mem.status === 'unpaid') {
                              hasPenalty = true; 
-                             htmlPenalty += `
-                             <div class="flex flex-col mb-2 border-b border-gray-800 pb-2 last:border-0 last:mb-0 last:pb-0">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center gap-1.5">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                                        <span class="text-xs font-bold text-gray-200">${mem.name}</span>
-                                    </div>
-                                    <span class="text-[10px] text-red-500 font-medium">${m}월 미납</span>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[9px] text-gray-400 tracking-tight">15,000(원금) + 10,000(부과금) =</p>
-                                    <p class="text-[10px] font-bold text-red-500">25,000원</p>
-                                </div>
-                             </div>`;
+                             htmlPenalty += `<div class="flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452]">${m}월 미납</span></div>`;
                         }
                     });
                 }
             }
-            if (!hasPenalty) htmlPenalty = `<div class="h-full flex items-center justify-center text-xs text-gray-500">없음</div>`;
+            if (!hasPenalty) htmlPenalty = `<div class="h-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">미납 없음</span></div>`;
             penaltyListMini.innerHTML = htmlPenalty;
 
             let htmlTicket = '';
@@ -1498,10 +1477,10 @@
             for (const [name, count] of Object.entries(exemptions)) {
                 if (count > 0) {
                     hasTicket = true;
-                    htmlTicket += `<div class="flex items-center justify-between"><div class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div><span class="text-xs font-bold text-gray-200">${name}</span></div><span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 rounded font-bold">${count}개</span></div>`;
+                    htmlTicket += `<div class="flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90">${name}</span><span class="text-[12px] font-semibold text-[#3182F6]">${count}개</span></div>`;
                 }
             }
-            if (!hasTicket) htmlTicket = `<div class="h-full flex items-center justify-center text-xs text-gray-500">없음</div>`;
+            if (!hasTicket) htmlTicket = `<div class="h-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-ticket-simple mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">보유자 없음</span></div>`;
             ticketListMini.innerHTML = htmlTicket;
         }
 
@@ -1510,13 +1489,11 @@
             const title = document.getElementById('dues-month-title'); 
             if(!list) return; 
             
-            const year = month >= 10 ? 2025 : 2026;
-            title.innerText = `${year}년 ${month}월 기준`; 
+            title.innerText = `${month}월`; 
             
             list.innerHTML = '';
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             
-            // [New] 해당 월의 데이터가 없으면 자동으로 멤버 목록(미납 상태)을 생성하여 표시
             if (window.meetingData.records && !window.meetingData.records[month]) {
                 window.meetingData.records[month] = createEmptyMonthData();
             }
@@ -1532,27 +1509,36 @@
                 return 0;
             });
 
-            if (displayRecords.length === 0) { list.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">내역이 없습니다.</div>`; return; }
+            if (displayRecords.length === 0) { list.innerHTML = `<div class="py-16 text-center"><p class="text-[14px] font-medium text-gray-500">납부 내역이 없습니다</p></div>`; return; }
             
             displayRecords.forEach((m, i) => {
-                const c = memberColors[m.name] || { bg: 'bg-[#2C2C2E]', text: 'text-gray-400', char: '?' }; 
+                const c = memberColors[m.name] || { bg: 'bg-[#2C2C2E]', text: 'text-gray-300', char: '?' }; 
                 const isPaid = m.status === 'paid'; 
-                const cardClass = isPaid ? 'bg-[#1C1C1E] rounded-[24px] shadow-[0_2px_12px_rgba(0,0,0,0.2)] border border-white/5' : 'glass-card-unpaid';
-                const amtClass = isPaid ? 'text-blue-500' : 'text-red-500'; 
-                const penalty = m.penalty ? `<p class="text-[10px] text-red-500 font-bold mt-1">⚠️ ${m.penalty}</p>` : ''; 
-                const badge = m.isLeader ? `<span class="ml-1 bg-yellow-500/20 text-yellow-400 text-[10px] px-1 rounded border border-yellow-500/30">회장 👑</span>` : '';
                 
+                const amtClass = isPaid ? 'text-white' : 'text-[#F04452]'; 
+                const amtText = isPaid ? `${m.amount.toLocaleString()}원` : '미납';
+                const badge = m.isLeader ? `<span class="bg-[#2C2C2E] text-gray-400 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1.5">회장</span>` : '';
+
                 list.innerHTML += `
-                <div class="${cardClass} p-4 flex justify-between items-center animate-[fadeInUp_0.3s_ease-out]" style="animation-delay: ${i*0.05}s">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full ${c.bg} flex items-center justify-center text-sm font-bold ${c.text}">${c.char}</div>
-                        <div>
-                            <div class="flex items-center"><p class="text-sm font-bold text-gray-200">${m.name}</p>${badge}</div>
-                            <p class="text-xs text-gray-400">${isPaid ? '납부 완료' : '미납'}</p>
-                            ${penalty}
+                <div class="flex flex-col py-3.5 px-2 -mx-2 rounded-2xl active:bg-[#1C1C1E] transition-colors cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-[42px] h-[42px] rounded-full ${c.bg} flex items-center justify-center text-[15px] font-bold ${c.text} shrink-0">
+                                ${c.char}
+                            </div>
+                            <div class="flex flex-col gap-0.5">
+                                <div class="flex items-center">
+                                    <span class="text-[16px] font-semibold text-white/95 tracking-tight">${m.name}</span>
+                                    ${badge}
+                                </div>
+                                <span class="text-[13px] font-medium ${isPaid ? 'text-[#8B95A1]' : 'text-[#F04452]'}">${isPaid ? '납부완료' : '미납 상태'}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[17px] font-bold ${amtClass} tracking-tight">${amtText}</span>
                         </div>
                     </div>
-                    <span class="text-sm font-bold ${amtClass}">${isPaid ? m.amount.toLocaleString()+'원' : '미납'}</span>
+                    ${m.penalty ? `<div class="ml-[56px] mt-1 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${m.penalty}</div>` : ''}
                 </div>`;
             });
         };
