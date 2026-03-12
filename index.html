@@ -525,150 +525,135 @@
         <div class="pb-8"></div>
     </main>
 
-    <!-- ➕ 더보기 화면 (엔조이 서비스) -->
+    <!-- ➕ 더보기 화면 (초깔끔 무테두리 미니멀리즘 + 컬러 아이콘) -->
     <div id="more-screen" class="hidden fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-30 flex-col overflow-hidden bg-black">
-        <header class="flex-none pt-safe px-5 pb-2 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-white/10 z-10 sticky top-0">
-            <h2 class="text-xl font-bold text-main drop-shadow-sm">더보기</h2>
+        <header class="flex-none pt-safe px-5 pb-2 flex justify-between items-center bg-black z-10 sticky top-0">
+            <h2 class="text-[22px] font-bold text-white tracking-tight">더보기</h2>
         </header>
 
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-4 pb-32">
+        <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-3 pb-32">
             
             <!-- 메뉴 그룹 1: 액티비티 & 기록 -->
-            <h4 class="text-xs font-bold text-gray-500 mb-2 px-2 fade-in-up delay-100">액티비티 & 기록</h4>
-            <div class="bg-[#1C1C1E] rounded-[24px] border border-white/5 overflow-hidden mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] fade-in-up delay-100">
-                <!-- 위치 공유 -->
-                <button onclick="window.haptic(); window.location.href='map.html'" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-amber-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-map-location-dot"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">위치 공유</div>
-                        <div class="text-[11px] text-gray-500 font-medium">얘들아 어디야? 실시간 위치 확인</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
-
-                <!-- 여행 기록 -->
-                <button onclick="window.haptic(); if(confirm('새로운 버전인 우리의 발자취가 있음에도 불구하고 들어가시겠습니까?')) window.goToTravel();" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-plane-departure"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">여행 기록</div>
-                        <div class="text-[11px] text-gray-500 font-medium">우리들의 지난 추억을 떠올려봐요</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
-
-                <!-- [New] 우리의 발자취 추가 -->
-                <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-t border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-teal-500/10 text-teal-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-teal-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-shoe-prints"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight flex items-center gap-2">
-                            우리의 발자취
-                            <span class="bg-teal-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded flex items-center h-4">NEW</span>
+            <div class="mb-8 fade-in-up delay-100">
+                <h4 class="text-[13px] font-bold text-gray-500 mb-2 px-2">액티비티 & 기록</h4>
+                <div class="flex flex-col">
+                    <!-- 위치 공유 -->
+                    <button onclick="window.haptic(); window.location.href='map.html'" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-amber-500/15 flex items-center justify-center text-amber-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-map-location-dot"></i>
                         </div>
-                        <div class="text-[11px] text-gray-500 font-medium">지금까지의 여행기록을 한눈에!</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
-
-                <!-- [New] 지하철 도착 정보 추가 -->
-                <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-t border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-train-subway"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight flex items-center gap-2">
-                            지하철 도착 정보
-                            <span class="bg-cyan-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded flex items-center h-4">NEW</span>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">위치 공유</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">얘들아 어디야? 실시간 위치 확인</div>
                         </div>
-                        <div class="text-[11px] text-gray-500 font-medium">실시간 지하철 도착 시간을 확인하세요!</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
+                    </button>
+
+                    <!-- 여행 기록 -->
+                    <button onclick="window.haptic(); if(confirm('새로운 버전인 우리의 발자취가 있음에도 불구하고 들어가시겠습니까?')) window.goToTravel();" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-emerald-500/15 flex items-center justify-center text-emerald-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-plane-departure"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">여행 기록</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">우리들의 지난 추억을 떠올려봐요</div>
+                        </div>
+                    </button>
+
+                    <!-- 우리의 발자취 -->
+                    <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-teal-500/15 flex items-center justify-center text-teal-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-shoe-prints"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="flex items-center">
+                                <span class="text-[16px] font-semibold text-white tracking-tight">우리의 발자취</span>
+                                <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5">NEW</span>
+                            </div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">지금까지의 여행기록을 한눈에!</div>
+                        </div>
+                    </button>
+
+                    <!-- 지하철 도착 정보 -->
+                    <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-cyan-500/15 flex items-center justify-center text-cyan-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-train-subway"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="flex items-center">
+                                <span class="text-[16px] font-semibold text-white tracking-tight">지하철 도착 정보</span>
+                                <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5">NEW</span>
+                            </div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">실시간 지하철 도착 시간을 확인하세요!</div>
+                        </div>
+                    </button>
+                </div>
             </div>
 
             <!-- 메뉴 그룹 2: 소통 & 게임 -->
-            <h4 class="text-xs font-bold text-gray-500 mb-2 px-2 fade-in-up delay-200">소통 & 플레이</h4>
-            <div class="bg-[#1C1C1E] rounded-[24px] border border-white/5 overflow-hidden mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] fade-in-up delay-200">
-                <!-- 엔조이 투표 -->
-                <button onclick="window.haptic(); window.location.href='vote.html'" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-check-to-slot"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">엔조이 투표 & 인기가요2 선물 뽑기</div>
-                        <div class="text-[11px] text-gray-500 font-medium">우리의 소중한 의견을 모아봐요</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
+            <div class="mb-8 fade-in-up delay-200">
+                <h4 class="text-[13px] font-bold text-gray-500 mb-2 px-2">소통 & 플레이</h4>
+                <div class="flex flex-col">
+                    <!-- 복불복 -->
+                    <button onclick="window.haptic(); window.playGame()" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-red-500/15 flex items-center justify-center text-red-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-dice"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">복불복 게임</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">오늘 엔조이의 운명은?</div>
+                        </div>
+                    </button>
 
-                <!-- 복불복 -->
-                <button onclick="window.haptic(); window.playGame()" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center text-xl mr-4 group-hover:rotate-12 group-hover:bg-[#FF6B6B]/20 transition-all duration-300">
-                        <i class="fa-solid fa-dice"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">복불복 게임</div>
-                        <div class="text-[11px] text-gray-500 font-medium">오늘 엔조이의 운명은?</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
-
-                <!-- [New] 엔조이 음악 추가 -->
-                <button onclick="window.haptic(); window.goToMusic()" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-t border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-headphones"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">엔조이 음악</div>
-                        <div class="text-[11px] text-gray-500 font-medium">언제 어디서든 무제한 감상 지원</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
+                    <!-- 엔조이 음악 -->
+                    <button onclick="window.haptic(); window.goToMusic()" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-indigo-500/15 flex items-center justify-center text-indigo-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-headphones"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">엔조이 음악</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">언제 어디서든 무제한 감상 지원</div>
+                        </div>
+                    </button>
+                </div>
             </div>
 
             <!-- 메뉴 그룹 3: 기타 -->
-            <h4 class="text-xs font-bold text-gray-500 mb-2 px-2 fade-in-up delay-300">기타</h4>
-            <div class="bg-[#1C1C1E] rounded-[24px] border border-white/5 overflow-hidden mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] fade-in-up delay-300">
-                <!-- [New] 푸시 알림 설정 버튼 추가 -->
-                <button onclick="window.haptic(); window.requestPushPermission()" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-bell"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">푸시 알림 켜기</div>
-                        <div class="text-[11px] text-gray-500 font-medium">새로운 소식을 바로 받아보세요</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
+            <div class="mb-6 fade-in-up delay-300">
+                <h4 class="text-[13px] font-bold text-gray-500 mb-2 px-2">기타</h4>
+                <div class="flex flex-col">
+                    <!-- 푸시 알림 설정 -->
+                    <button onclick="window.haptic(); window.requestPushPermission()" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-blue-500/15 flex items-center justify-center text-blue-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">푸시 알림 켜기</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">새로운 소식을 바로 받아보세요</div>
+                        </div>
+                    </button>
 
-                <!-- [New] 개발자 후원하기 추가 -->
-                <button onclick="window.haptic(); window.location.href='kakaotalk://'" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 border-b border-white/5 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-yellow-500/20 transition-all duration-300">
-                        <i class="fa-solid fa-mug-hot"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">개발자 후원하기</div>
-                        <div class="text-[11px] text-gray-500 font-medium">따뜻한 커피 한 잔 사주기 ☕️</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
+                    <!-- 개발자 후원하기 -->
+                    <button onclick="window.haptic(); window.location.href='kakaopay://'" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-yellow-400/15 flex items-center justify-center text-yellow-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">개발자 후원하기</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">따뜻한 커피 한 잔 사주기 ☕️</div>
+                        </div>
+                    </button>
 
-                <!-- 준비 중 -->
-                <button onclick="window.haptic(); window.showSecretModal()" class="w-full flex items-center p-4 hover:bg-white/5 transition-colors active:bg-white/10 group relative overflow-hidden">
-                    <div class="w-11 h-11 rounded-[14px] bg-gray-500/10 text-gray-400 flex items-center justify-center text-xl mr-4 group-hover:scale-110 group-hover:bg-blue-500/20 group-hover:text-blue-400 transition-all duration-300">
-                        <i class="fa-solid fa-gift"></i>
-                    </div>
-                    <div class="flex-1 text-left">
-                        <div class="text-base font-bold text-gray-100 mb-0.5 tracking-tight">새로운 기능 준비 중</div>
-                        <div class="text-[11px] text-gray-500 font-medium">어떤 서비스가 추가될까요?</div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-600 text-xs ml-2"></i>
-                </button>
+                    <!-- 준비 중 -->
+                    <button onclick="window.haptic(); window.showSecretModal()" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                        <div class="w-10 h-10 rounded-[12px] bg-gray-600/20 flex items-center justify-center text-gray-400 text-[16px] mr-3.5 shrink-0">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+                        <div class="flex-1 text-left flex flex-col justify-center">
+                            <div class="text-[16px] font-semibold text-white tracking-tight">새로운 기능 준비 중</div>
+                            <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">어떤 서비스가 추가될까요?</div>
+                        </div>
+                    </button>
+                </div>
             </div>
             
         </div>
