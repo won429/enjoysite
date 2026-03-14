@@ -496,28 +496,33 @@
         <h2 class="text-[28px] font-extrabold text-white mb-5 mt-2 tracking-tight px-1">당번 뽑기</h2>
 
         <div class="w-full flex flex-col gap-4 px-1">
-            <div class="glass-card p-5 flex flex-col gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#10B981]/10 flex items-center justify-center border border-[#10B981]/30">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5620/5620473.png" alt="청소 당번 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
+            <!-- 캔버스 높이를 늘려 레이스 시간을 확보 -->
+            <canvas id="chore-canvas" class="w-full h-[360px] bg-[#13171F] rounded-[24px] border border-white/5 hidden shadow-inner"></canvas>
+
+            <div id="chore-cards-container" class="w-full flex flex-col gap-4">
+                <div class="glass-card p-5 flex flex-col gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#10B981]/10 flex items-center justify-center border border-[#10B981]/30">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5620/5620473.png" alt="청소 당번 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
+                        </div>
+                        <span class="text-[17px] font-extrabold text-white">청소 당번</span>
                     </div>
-                    <span class="text-[17px] font-extrabold text-white">청소 당번</span>
+                    <div id="result-cleaning" class="w-full py-6 bg-[#111111] rounded-[20px] border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
                 </div>
-                <div id="result-cleaning" class="w-full py-6 bg-[#111111] rounded-[20px] border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
+
+                <div class="glass-card p-5 flex flex-col gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#0EA5E9]/10 flex items-center justify-center border border-[#0EA5E9]/30">
+                            <img src="https://cdn-icons-png.flaticon.com/512/8973/8973276.png" alt="설거지 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
+                        </div>
+                        <span class="text-[17px] font-extrabold text-white">설거지 당번</span>
+                    </div>
+                    <div id="result-dishes" class="w-full py-6 bg-[#111111] rounded-[20px] border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
+                </div>
             </div>
 
-            <div class="glass-card p-5 flex flex-col gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#0EA5E9]/10 flex items-center justify-center border border-[#0EA5E9]/30">
-                        <img src="https://cdn-icons-png.flaticon.com/512/8973/8973276.png" alt="설거지 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
-                    </div>
-                    <span class="text-[17px] font-extrabold text-white">설거지 당번</span>
-                </div>
-                <div id="result-dishes" class="w-full py-6 bg-[#111111] rounded-[20px] border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
-            </div>
-
-            <!-- 버튼을 밑바닥이 아닌 위로 바짝 끌어올림 (mt-6) -->
-            <div class="mt-6">
+            <!-- 버튼 래퍼 추가 -->
+            <div id="chore-btn-container" class="mt-6">
                 <button id="btn-run-chore" onclick="window.haptic(); requestChoreGame()" class="w-full btn-solid bg-[#10B981] text-white font-extrabold py-4 rounded-full text-[15px] tracking-wide">추첨 시작하기</button>
             </div>
         </div>
@@ -849,7 +854,197 @@
             document.querySelectorAll('[id^="seat-"]').forEach(el => el.style.color = '#FFFFFF'); // 다크모드 가시성
         }
 
-        function playChoreGameAnimation(data) { window.initAudio(); window.animateShuffle(document.getElementById('result-cleaning'), MEMBERS, data.cleaner, 1500); window.animateShuffle(document.getElementById('result-dishes'), MEMBERS, data.dishwasher, 2500); }
+        function playChoreGameAnimation(data) { 
+            window.initAudio();
+            
+            const container = document.getElementById('chore-cards-container');
+            const canvas = document.getElementById('chore-canvas');
+            const btn = document.getElementById('chore-btn-container');
+            
+            container.classList.add('hidden'); container.classList.remove('flex');
+            btn.classList.add('hidden');
+            canvas.classList.remove('hidden');
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 360;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const pegs = [];
+            const rows = 10;
+            const cols = 8;
+            for(let r=1; r<=rows; r++) {
+                for(let c=1; c<=cols; c++) {
+                    let offset = (r%2 === 0) ? (w/cols)/2 : 0;
+                    pegs.push({x: c*(w/cols) - offset, y: r*(h/(rows+4)) + 10});
+                }
+            }
+
+            // 시작할 때 모든 공을 '흰색'으로 설정해 스포일러 방지!
+            // + 당첨자가 무조건 먼저 떨어지도록 출발 위치 조작
+            const balls = MEMBERS.map((m, i) => {
+                let target = 'none';
+                if(m === data.cleaner) target = 'clean';
+                if(m === data.dishwasher) target = 'dish';
+                return {
+                    name: m,
+                    x: (w/(MEMBERS.length+1)) * (i+1), // 가로로 나란히 출발선 대기
+                    y: target !== 'none' ? -10 : -60 - (Math.random()*40), // 당첨자는 아래에서, 꽝은 훨씬 위에서 출발
+                    vx: (Math.random()-0.5)*3,
+                    vy: 0,
+                    target: target,
+                    color: '#FFFFFF', // 쫄깃함을 위해 모두 흰색으로 시작
+                    finished: false,
+                    history: [] // 꼬리(Trail) 이펙트용
+                };
+            });
+
+            let frameId;
+            let tickCounter = 0;
+            
+            function update() {
+                ctx.clearRect(0,0,w,h);
+                
+                // 바닥 도착 구역
+                ctx.fillStyle = '#10B98133'; ctx.fillRect(0, h-60, w/2, 60);
+                ctx.fillStyle = '#0EA5E933'; ctx.fillRect(w/2, h-60, w/2, 60);
+                
+                // 중앙 분리대
+                ctx.fillStyle = '#ffffff33'; ctx.fillRect(w/2 - 2, h-80, 4, 80);
+
+                ctx.fillStyle = '#10B981'; ctx.font = '900 18px Pretendard'; ctx.textAlign='center'; ctx.fillText('청소', w/4, h-25);
+                ctx.fillStyle = '#0EA5E9'; ctx.fillText('설거지', w*3/4, h-25);
+
+                // 장애물(Peg) 그리기
+                ctx.fillStyle = '#ffffff55';
+                pegs.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill(); });
+
+                let allFinished = true;
+
+                balls.forEach(b => {
+                    if(!b.finished) {
+                        allFinished = false;
+                        
+                        // 물리엔진 조작: 당첨자는 중력을 강하게 받아 먼저 떨어지고, 꽝은 천천히 떨어짐
+                        b.vy += b.target !== 'none' ? 0.35 : 0.15; 
+                        
+                        // 물리엔진 조작: 당첨자를 각자의 목표 구역으로 강력하게 끌어당김
+                        if(b.y > h/4) { 
+                            if(b.target === 'clean') b.vx -= 0.12;
+                            if(b.target === 'dish') b.vx += 0.12;
+                        }
+                        
+                        // 물리엔진 조작: 꽝인 공이 당첨자보다 먼저 바닥에 닿으려 하면 보이지 않는 바람으로 위로 띄워버림 (절대 먼저 도착 못함)
+                        if(b.target === 'none' && b.y > h - 110) {
+                            const winnersFinished = balls.filter(x => x.target !== 'none').every(x => x.finished);
+                            if(!winnersFinished) {
+                                b.vy -= 0.8; // 강하게 위로 튕겨냄
+                            }
+                        }
+                        
+                        // 속도 제한
+                        if(b.vx > 6) b.vx = 6;
+                        if(b.vx < -6) b.vx = -6;
+                        if(b.vy > 9) b.vy = 9;
+
+                        b.x += b.vx;
+                        b.y += b.vy;
+
+                        // 벽 튕기기
+                        if(b.x < 14) { b.x = 14; b.vx *= -0.8; }
+                        if(b.x > w-14) { b.x = w-14; b.vx *= -0.8; }
+
+                        // 중앙 분리대 튕기기
+                        if(b.y > h-80) {
+                            if(b.x > w/2 - 16 && b.x < w/2) { b.x = w/2 - 16; b.vx *= -0.8; }
+                            if(b.x < w/2 + 16 && b.x > w/2) { b.x = w/2 + 16; b.vx *= -0.8; }
+                        }
+
+                        // 장애물 튕기기 (충돌 처리)
+                        pegs.forEach(p => {
+                            let dx = b.x - p.x; let dy = b.y - p.y;
+                            let dist = Math.sqrt(dx*dx + dy*dy);
+                            if(dist < 18) { // 공 반경 14 + 장애물 4
+                                let angle = Math.atan2(dy, dx);
+                                
+                                // 당첨자는 덜 튕기고(0.4) 무겁게 떨어지며, 꽝은 통통 많이 튕김(0.85)
+                                let bounce = b.target !== 'none' ? 0.4 : 0.85;
+                                let speed = Math.sqrt(b.vx*b.vx + b.vy*b.vy) * bounce; 
+                                if(speed < 3) speed = 3; 
+                                
+                                b.vx = Math.cos(angle) * speed;
+                                b.vy = Math.abs(Math.sin(angle) * speed); 
+                                
+                                b.x = p.x + Math.cos(angle)*19;
+                                b.y = p.y + Math.sin(angle)*19;
+
+                                tickCounter++;
+                                if(tickCounter % 3 === 0) window.playTickSound();
+                            }
+                        });
+
+                        // 바닥 도착! (이때 색깔이 짜릿하게 변함)
+                        if(b.y > h-20) {
+                            b.y = h-20;
+                            b.vy *= -0.4;
+                            b.vx *= 0.8;
+
+                            if(Math.abs(b.vy) < 1.5 && Math.abs(b.vx) < 1) {
+                                b.finished = true;
+                                if(b.target === 'clean') { b.color = '#10B981'; window.playWinSound(); }
+                                else if(b.target === 'dish') { b.color = '#0EA5E9'; window.playWinSound(); }
+                                else { b.color = '#374151'; } // 꽝은 회색으로 변경
+                            }
+                        }
+                    }
+
+                    // 꼬리(Trail) 그리기 (속도감 연출)
+                    b.history.push({x: b.x, y: b.y});
+                    if(b.history.length > 5) b.history.shift();
+                    
+                    if(b.history.length > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(b.history[0].x, b.history[0].y);
+                        for(let i=1; i<b.history.length; i++) {
+                            ctx.lineTo(b.history[i].x, b.history[i].y);
+                        }
+                        ctx.strokeStyle = b.color + '44'; 
+                        ctx.lineWidth = 14;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+
+                    // 공 그리기
+                    ctx.shadowColor = b.color;
+                    ctx.shadowBlur = b.finished && b.target !== 'none' ? 15 : 0; // 도착하면 빛남
+                    ctx.fillStyle = b.color;
+                    ctx.beginPath(); ctx.arc(b.x, b.y, 14, 0, Math.PI*2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    
+                    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+                    
+                    // 이름 그리기
+                    ctx.fillStyle = b.finished && b.target === 'none' ? '#9CA3AF' : '#000000'; 
+                    ctx.font = '900 11px Pretendard'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                    ctx.fillText(b.name.substring(0,2), b.x, b.y + 1);
+                });
+
+                if(!allFinished) {
+                    frameId = requestAnimationFrame(update);
+                } else {
+                    // 모두 도착한 후 1.5초 동안 결과를 확인하게 해줌
+                    setTimeout(() => {
+                        canvas.classList.add('hidden');
+                        container.classList.remove('hidden'); container.classList.add('flex');
+                        btn.classList.remove('hidden');
+                        displayChoreResult(data);
+                    }, 1500); 
+                }
+            }
+            update();
+        }
+
         function displayChoreResult(data) {
             if(!data.cleaner) return;
             const c = document.getElementById('result-cleaning'); const d = document.getElementById('result-dishes');
