@@ -721,28 +721,21 @@
             </div>
             
             <!-- 현황 요약 -->
-            <style>
-                .mini-scroll::-webkit-scrollbar { width: 4px; }
-                .mini-scroll::-webkit-scrollbar-track { background: transparent; }
-                .mini-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-            </style>
             <div class="grid grid-cols-2 gap-3 mb-6">
                 <!-- 부과금 -->
-                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[120px]">
-                    <div class="mb-3">
+                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[140px]">
+                    <div class="mb-2">
                         <h3 class="text-[13px] font-semibold text-gray-400">부과금 현황</h3>
                     </div>
-                    <!-- [Modified] scrollbar-hide 제거 및 커스텀 스크롤바(mini-scroll) 적용 -->
-                    <div id="penalty-list-mini" class="flex-1 space-y-2 overflow-y-auto mini-scroll pr-1" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent;"></div>
+                    <div id="penalty-list-mini" class="flex flex-col flex-wrap content-start gap-y-1.5 gap-x-4 h-[88px] overflow-x-auto overflow-y-hidden scrollbar-hide pb-1"></div>
                 </div>
 
                 <!-- 면제권 -->
-                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[120px]">
-                    <div class="mb-3">
+                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[140px]">
+                    <div class="mb-2">
                         <h3 class="text-[13px] font-semibold text-gray-400">면제권 보유</h3>
                     </div>
-                    <!-- [Modified] scrollbar-hide 제거 및 커스텀 스크롤바(mini-scroll) 적용 -->
-                    <div id="ticket-list-mini" class="flex-1 space-y-2 overflow-y-auto mini-scroll pr-1" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent;"></div>
+                    <div id="ticket-list-mini" class="flex flex-col flex-wrap content-start gap-y-1.5 gap-x-4 h-[88px] overflow-x-auto overflow-y-hidden scrollbar-hide pb-1"></div>
                 </div>
             </div>
 
@@ -1448,12 +1441,12 @@
                     records.forEach(mem => {
                         if(mem.status === 'unpaid') {
                              hasPenalty = true; 
-                             htmlPenalty += `<div class="flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452]">${m}월 미납</span></div>`;
+                             htmlPenalty += `<div class="w-[130px] flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452] shrink-0">${m}월 미납</span></div>`;
                         }
                     });
                 }
             }
-            if (!hasPenalty) htmlPenalty = `<div class="h-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">미납 없음</span></div>`;
+            if (!hasPenalty) htmlPenalty = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">미납 없음</span></div>`;
             penaltyListMini.innerHTML = htmlPenalty;
 
             let htmlTicket = '';
@@ -1462,10 +1455,10 @@
             for (const [name, count] of Object.entries(exemptions)) {
                 if (count > 0) {
                     hasTicket = true;
-                    htmlTicket += `<div class="flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90">${name}</span><span class="text-[12px] font-semibold text-[#3182F6]">${count}개</span></div>`;
+                    htmlTicket += `<div class="w-[130px] flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${name}</span><span class="text-[12px] font-semibold text-[#3182F6] shrink-0">${count}개</span></div>`;
                 }
             }
-            if (!hasTicket) htmlTicket = `<div class="h-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-ticket-simple mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">보유자 없음</span></div>`;
+            if (!hasTicket) htmlTicket = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-ticket-simple mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">보유자 없음</span></div>`;
             ticketListMini.innerHTML = htmlTicket;
         }
 
@@ -1508,8 +1501,8 @@
                 <div class="flex flex-col py-3.5 px-2 -mx-2 rounded-2xl active:bg-[#1C1C1E] transition-colors cursor-pointer">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3.5">
-                            <div class="w-[42px] h-[42px] rounded-full ${c.bg} flex items-center justify-center text-[15px] font-bold ${c.text} shrink-0">
-                                ${c.char}
+                            <div class="w-[42px] h-[42px] rounded-full ${c.bg} flex items-center justify-center text-[16px] ${c.text} shrink-0">
+                                <i class="fa-solid fa-user"></i>
                             </div>
                             <div class="flex flex-col gap-0.5">
                                 <div class="flex items-center">
