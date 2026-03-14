@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Random Enjoy - Toss Style</title>
+    <title>Random Enjoy - Dark Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 폰트 및 아이콘 -->
@@ -17,69 +17,80 @@
         }
 
         body { 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-            background-color: #F2F4F6;
-            color: #191F28;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #000000; /* 완벽한 리얼 블랙 배경 */
+            color: #FFFFFF;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
             touch-action: pan-y;
         }
 
-        /* [업그레이드] 유리 질감 카드 (그림자/블러 강화) */
-        .toss-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 26px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); 
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
-            cursor: pointer;
-            overflow: hidden;
+        /* 🌟 군더더기 없는 솔리드 다크 카드 */
+        .glass-card {
+            background: #191F28; /* 깔끔한 다크 그레이 */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
             position: relative;
+            overflow: hidden;
+            cursor: pointer;
         }
-        .toss-card:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            filter: brightness(0.98);
-        }
-
-        /* 배경 이모지 애니메이션 (index.html과 통일) */
-        @keyframes floatEmoji {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
-        }
-        .bg-emoji {
-            animation: floatEmoji 6s ease-in-out infinite;
-            position: fixed;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.6;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        .glass-card:active {
+            transform: scale(0.96);
+            background: #141920;
         }
 
-        .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        /* 심플한 SVG 아이콘 호버 효과 */
+        .vector-art {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-card:hover .vector-art, .glass-card:active .vector-art {
+            transform: scale(1.08) translateY(-3px);
+        }
+
+        /* 등장 애니메이션 */
+        .fade-in-up { animation: popIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* 토스트 알림 애니메이션 */
+        @keyframes toastSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toast-enter { animation: toastSlideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .toast-leave { opacity: 0; transform: translateY(-20px) !important; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         .hidden-screen { display: none !important; }
-        .shuffling { opacity: 0.7; transform: scale(0.95); transition: all 0.1s; }
+        
+        .shuffling { 
+            opacity: 0.5; 
+            transform: scale(0.9); 
+            filter: blur(1px);
+            transition: all 0.05s; 
+            color: #818CF8 !important; 
+        }
 
-        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
-        .pb-safe { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+        /* 안전 영역 패딩 조정 */
+        .pt-safe { padding-top: max(24px, env(safe-area-inset-top)); }
+        .pb-safe { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         #nav-indicator { will-change: transform, width; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         
-        .text-main { color: #191F28; }
-        .text-sub { color: #6B7684; }
-        .text-blue { color: #3182F6; }
+        /* 그라데이션 없는 깔끔한 솔리드 버튼 */
+        .btn-solid {
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-solid:active { transform: scale(0.96); opacity: 0.9; }
     </style>
 
     <!-- UI Logic -->
     <script>
-        // [수정] 멤버 이름 변경: 지노 -> 이진누
+        // 로직은 완벽히 원본 유지
         const MEMBERS = ['전시기', '오스틴', '이진누', '홍박사', '성원제', '류짱'];
         const TRIP_REGIONS_SIMPLE = ['서울특별시', '대전광역시', '대구광역시', '부산광역시', '인천광역시', '광주광역시', '세종특별자치시'];
         const TRIP_REGIONS_COMPLEX = {
@@ -114,11 +125,6 @@
 
         function switchScreen(screenId) {
             window.haptic();
-            if (screenId === 'admin-login') {
-                updateNavState('admin-login');
-                openAdminLogin();
-                return;
-            }
 
             document.querySelectorAll('[id^="screen-"]').forEach(el => {
                 el.classList.add('hidden-screen');
@@ -141,8 +147,8 @@
                 if(btn) {
                     const icon = btn.querySelector('i');
                     const text = btn.querySelector('span');
-                    icon.className = icon.className.replace('text-[#191F28]', 'text-[#4E5968]');
-                    text.className = text.className.replace('font-bold', 'font-medium').replace('text-[#191F28]', 'text-[#4E5968]');
+                    icon.className = icon.className.replace('text-white', 'text-gray-500');
+                    text.className = text.className.replace('font-bold', 'font-medium').replace('text-white', 'text-gray-500');
                 }
             });
 
@@ -152,15 +158,15 @@
                 activeBtn = randomBtn;
             } else if (screenId === 'screen-members') {
                 activeBtn = membersBtn;
-            } else if (screenId === 'admin-login') {
+            } else if (screenId === 'screen-admin-login' || screenId === 'screen-admin-panel') {
                 activeBtn = settingsBtn;
             }
 
             if (activeBtn) {
                 const icon = activeBtn.querySelector('i');
                 const text = activeBtn.querySelector('span');
-                icon.className = icon.className.replace('text-[#4E5968]', 'text-[#191F28]');
-                text.className = text.className.replace('font-medium', 'font-bold').replace('text-[#4E5968]', 'text-[#191F28]');
+                icon.className = icon.className.replace('text-gray-500', 'text-white');
+                text.className = text.className.replace('font-medium', 'font-bold').replace('text-gray-500', 'text-white');
                 
                 ind.style.width = `${activeBtn.offsetWidth}px`;
                 ind.style.transform = `translateX(${activeBtn.offsetLeft - 6}px)`;
@@ -183,11 +189,11 @@
             const btn1 = document.getElementById('btn-car-1');
             const btn2 = document.getElementById('btn-car-2');
             if (carConfig === 1) {
-                btn1.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all bg-blue-500 text-white shadow-md';
-                btn2.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all text-gray-400 bg-white hover:bg-gray-50';
+                btn1.className = 'flex-1 py-3.5 rounded-xl font-bold text-sm transition-all bg-[#3182F6] text-white shadow-lg shadow-blue-500/20';
+                btn2.className = 'flex-1 py-3.5 rounded-xl font-bold text-sm transition-all text-gray-400 hover:bg-white/10 hover:text-white';
             } else {
-                btn2.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all bg-blue-500 text-white shadow-md';
-                btn1.className = 'flex-1 py-3 rounded-[20px] font-bold text-xs transition-all text-gray-400 bg-white hover:bg-gray-50';
+                btn2.className = 'flex-1 py-3.5 rounded-xl font-bold text-sm transition-all bg-[#3182F6] text-white shadow-lg shadow-blue-500/20';
+                btn1.className = 'flex-1 py-3.5 rounded-xl font-bold text-sm transition-all text-gray-400 hover:bg-white/10 hover:text-white';
             }
         }
 
@@ -211,13 +217,13 @@
             const driverSeats = getDriverSeatElements();
 
             if (mode === 'random') {
-                btnRandom.className = 'px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all';
-                btnManual.className = 'px-3 py-1.5 rounded-lg text-gray-400 transition-all';
+                btnRandom.className = 'px-4 py-1.5 rounded-lg bg-white/10 text-white shadow-sm transition-all';
+                btnManual.className = 'px-4 py-1.5 rounded-lg text-gray-400 transition-all hover:bg-white/5';
                 selector.classList.add('hidden'); selector.classList.remove('flex');
                 driverSeats.forEach(seat => { if(seat && seat.textContent === '선택필요') { seat.textContent = '?'; seat.style.color = ''; } });
             } else {
-                btnManual.className = 'px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all';
-                btnRandom.className = 'px-3 py-1.5 rounded-lg text-gray-400 transition-all';
+                btnManual.className = 'px-4 py-1.5 rounded-lg bg-white/10 text-white shadow-sm transition-all';
+                btnRandom.className = 'px-4 py-1.5 rounded-lg text-gray-400 transition-all hover:bg-white/5';
                 selector.classList.remove('hidden'); selector.classList.add('flex');
                 renderManualSelector();
                 driverSeats.forEach(seat => { if(seat && (seat.textContent === '?' || seat.textContent === '...')) { seat.textContent = '선택필요'; seat.style.color = '#9CA3AF'; } });
@@ -227,11 +233,11 @@
         function renderManualSelector() {
             const container = document.getElementById('manual-selector');
             const max = carConfig === 1 ? 1 : 2;
-            container.innerHTML = `<p class="w-full text-xs text-gray-400 mb-2">운전자 ${max}명을 선택하세요:</p>`;
+            container.innerHTML = `<p class="w-full text-xs text-gray-500 mb-2">운전자 ${max}명을 선택하세요:</p>`;
             MEMBERS.forEach(member => {
                 const btn = document.createElement('button');
                 const isSelected = selectedDrivers.includes(member);
-                btn.className = `px-3 py-1.5 text-xs font-bold rounded-full border transition-all mr-1 mb-1 ${isSelected ? 'bg-blue-500 text-white border-blue-500 shadow-sm' : 'bg-white text-gray-600 border-gray-200'}`;
+                btn.className = `px-4 py-2 text-sm font-bold rounded-xl border transition-all mr-2 mb-2 ${isSelected ? 'bg-[#3182F6] text-white border-[#3182F6]' : 'bg-[#222831] text-gray-400 border-[#333D4B] hover:bg-[#2A323D]'}`;
                 btn.textContent = member;
                 btn.onclick = () => {
                     window.haptic();
@@ -240,7 +246,7 @@
                     
                     const driverSeats = getDriverSeatElements();
                     driverSeats.forEach(seat => { if(seat) { seat.textContent = '선택필요'; seat.style.color = '#9CA3AF'; }});
-                    selectedDrivers.forEach((driver, index) => { if (driverSeats[index]) { driverSeats[index].textContent = driver; driverSeats[index].style.color = '#3182F6'; } });
+                    selectedDrivers.forEach((driver, index) => { if (driverSeats[index]) { driverSeats[index].textContent = driver; driverSeats[index].style.color = '#FFFFFF'; } });
                     renderManualSelector();
                 };
                 container.appendChild(btn);
@@ -254,14 +260,13 @@
             const el2 = document.getElementById('result-trip-step2');
             el1.textContent = '?'; el1.style.color = '';
             el2.textContent = '-'; el2.style.color = '';
-            document.getElementById('box-trip-step2').className = "toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-gray-100";
-            document.getElementById('label-step2').className = "text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-2";
+            document.getElementById('box-trip-step2').className = "bg-[#191F28] rounded-3xl p-5 flex flex-col items-center justify-center border border-white/5 shadow-lg shadow-black/50 transition-colors duration-300 min-h-[110px] relative z-10 mt-[-16px]";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 transition-colors px-3 py-1 bg-black/50 rounded-full";
         }
 
         window.activateStep2UI = () => {
-            // [색상 변경] 여행 2단계 활성화 시 오렌지 테마 적용
-            document.getElementById('box-trip-step2').className = "toss-card p-8 !bg-orange-50 flex flex-col items-center justify-center relative border border-orange-200";
-            document.getElementById('label-step2').className = "text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-2";
+            document.getElementById('box-trip-step2').className = "bg-[#2A1D15] rounded-3xl p-5 flex flex-col items-center justify-center border border-[#F97316]/30 shadow-lg shadow-orange-900/20 transition-colors duration-300 min-h-[110px] relative z-10 mt-[-16px]";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-[#F97316] uppercase tracking-widest mb-2 transition-colors px-3 py-1 bg-[#F97316]/20 rounded-full text-white";
         }
 
         // Sound & Animation
@@ -292,59 +297,52 @@
                 else { cb(); }
             }, dur);
         }
-        // [FIX] Alias for animateShuffleCallback used in playTripGameAnimation
         window.animateShuffleCallback = window.animateShuffle;
     </script>
 </head>
-<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
+<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-[#000000] selection:bg-[#3182F6] selection:text-white relative" ontouchstart="">
 
-    <!-- 배경 이모지 제거됨 -->
-    <div id="notification-container" class="absolute top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none"></div>
+    <!-- 알약 형태의 토스트 알림 컨테이너 -->
+    <div id="notification-container" class="absolute top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none pt-[calc(env(safe-area-inset-top)+24px)] px-4 gap-2"></div>
 
-    <!-- 관리자 버튼 (삭제됨 - 하단 메뉴로 이동) -->
-
-    <!-- 1. 메인 메뉴 (복불복 화면) -->
-    <div id="screen-game-menu" class="flex-1 w-full h-full flex flex-col p-5 pt-safe pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
-        <!-- 인사말 -->
-        <div class="mt-4 mb-4 px-1">
-            <h1 class="text-2xl font-bold text-main leading-snug">
-                엔조이 여러분,<br>
-                <span id="dynamic-greeting" class="text-blue-600">활기찬 하루 보내세요</span>
+    <!-- 1. 메인 메뉴 (Solid Dark Mode) -->
+    <div id="screen-game-menu" class="flex-1 w-full h-full flex flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar fade-in-up relative z-10">
+        <!-- Header -->
+        <div class="mt-4 mb-8 px-2">
+            <h1 class="text-[34px] font-extrabold text-white leading-[1.25] tracking-tight">
+                오늘의 주인공은<br>
+                <span id="dynamic-greeting" class="text-[#3182F6]">누구일까요?</span>
             </h1>
         </div>
 
-        <div class="flex flex-col gap-3">
-            <!-- [1] 차량 배치 (Blue - 기존 유지) -->
-            <div onclick="window.haptic(); switchScreen('screen-car-game');" class="toss-card p-6 !bg-gradient-to-br from-[#E8F3FF] to-[#D6E8FF] border-white/60 h-32 flex items-center justify-between group">
-                <div class="relative z-10">
-                    <span class="inline-block px-2 py-0.5 bg-white/60 text-[10px] font-bold text-blue-600 rounded-md mb-2 backdrop-blur-sm shadow-sm">BEST</span>
-                    <h3 class="text-xl font-bold text-[#1B64DA] leading-tight">차량 & 운전자<br>배치하기</h3>
+        <div class="flex flex-col gap-5 px-1">
+            <!-- [1] Car Game - 그라데이션 제거, 깔끔한 단색 아이콘 적용 -->
+            <div onclick="window.haptic(); switchScreen('screen-car-game');" class="glass-card p-6 h-[150px] flex items-center justify-between group">
+                <div class="flex flex-col items-start z-10">
+                    <span class="text-[10px] font-extrabold text-[#3182F6] tracking-widest uppercase mb-1">VEHICLE</span>
+                    <h3 class="text-2xl font-extrabold text-white tracking-tight mb-1">차량 탑승</h3>
+                    <p class="text-sm font-semibold text-gray-400">편안하게 모실게요!</p>
                 </div>
-                <div class="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center shadow-sm z-10 text-[#1B64DA] text-2xl group-active:scale-110 transition-transform backdrop-blur-sm">
-                    <i class="fa-solid fa-car-side"></i>
-                </div>
+                <!-- 🚘 요청하신 자동차 이미지 아이콘 -->
+                <img src="https://cdn-icons-png.flaticon.com/512/5670/5670281.png" alt="차량 탑승 아이콘" class="vector-art w-24 h-24 -mr-2 object-contain drop-shadow-lg">
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <!-- [2] 당번 뽑기 (Red -> Emerald 변경) -->
-                <div onclick="window.haptic(); switchScreen('screen-chore-game');" class="toss-card p-5 !bg-gradient-to-br from-[#E3FAEB] to-[#D1F7DE] border-white/60 h-44 flex flex-col justify-between group">
-                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#00C77D] text-lg group-hover:rotate-12 transition-transform backdrop-blur-sm">
-                        <i class="fa-solid fa-broom"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-main mb-1">당번 뽑기</h3>
-                        <p class="text-xs text-[#00C77D]/90 font-medium">청소와 설거지<br>주인공은?</p>
+            <div class="grid grid-cols-2 gap-4">
+                <!-- [2] Chore Game -->
+                <div onclick="window.haptic(); switchScreen('screen-chore-game');" class="glass-card p-4 h-[120px] flex flex-col justify-between group">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5620/5620473.png" alt="당번 뽑기 아이콘" class="vector-art w-10 h-10 mt-1 ml-1 object-contain drop-shadow-lg">
+                    <div class="z-10 mt-auto">
+                        <h3 class="text-[15px] font-extrabold text-white leading-none mb-1">당번 뽑기</h3>
+                        <p class="text-[11px] text-gray-500 font-semibold leading-tight">청소와 설거지</p>
                     </div>
                 </div>
 
-                <!-- [3] 여행지 뽑기 (Purple -> Orange 변경) -->
-                <div onclick="window.haptic(); switchScreen('screen-trip-game');" class="toss-card p-5 !bg-gradient-to-br from-[#FFF7ED] to-[#FFEDD5] border-white/60 h-44 flex flex-col justify-between group">
-                    <div class="w-10 h-10 bg-white/80 rounded-xl flex items-center justify-center shadow-sm text-[#F97316] text-lg group-hover:scale-110 transition-transform backdrop-blur-sm">
-                        <i class="fa-solid fa-plane-departure"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-main mb-1">여행지 뽑기</h3>
-                        <p class="text-xs text-[#F97316]/90 font-medium">어디로 떠날까요?<br>두근두근</p>
+                <!-- [3] Trip Game -->
+                <div onclick="window.haptic(); switchScreen('screen-trip-game');" class="glass-card p-4 h-[120px] flex flex-col justify-between group">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6350/6350271.png" alt="여행지 뽑기 아이콘" class="vector-art w-10 h-10 mt-1 ml-1 object-contain drop-shadow-lg">
+                    <div class="z-10 mt-auto">
+                        <h3 class="text-[15px] font-extrabold text-white leading-none mb-1">여행지 뽑기</h3>
+                        <p class="text-[11px] text-gray-500 font-semibold leading-tight">어디로 갈지</p>
                     </div>
                 </div>
             </div>
@@ -352,233 +350,279 @@
     </div>
 
     <!-- 2. 멤버 리스트 -->
-    <div id="screen-members" class="hidden-screen flex-1 w-full h-full flex-col p-5 pt-safe pb-24 overflow-y-auto no-scrollbar fade-in-up relative z-10">
-        <h2 class="text-2xl font-bold text-main mb-5 px-1 mt-4">엔조이 멤버들</h2>
-        <div class="grid grid-cols-2 gap-3">
+    <div id="screen-members" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar fade-in-up relative z-10">
+        <div class="mt-4 mb-8 px-1">
+            <h2 class="text-[32px] font-extrabold text-white tracking-tight leading-tight">엔조이<br><span class="text-gray-400">파티 멤버들</span></h2>
+        </div>
+        
+        <div class="flex flex-col gap-4 px-1">
             <!-- 전시기 (회장) -->
-            <div class="toss-card p-4 flex items-center gap-3 !bg-gradient-to-br from-white to-yellow-50 border-yellow-100 shadow-yellow-100/50">
-                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold shrink-0 relative shadow-inner">
-                    전
-                    <span class="absolute -top-1.5 -right-1 text-xs drop-shadow-sm">👑</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="font-bold text-main text-sm">전시기</span>
-                    <span class="text-[10px] text-yellow-700 font-bold bg-yellow-200/50 px-1.5 py-0.5 rounded-full w-fit mt-0.5">회장</span>
+            <div class="glass-card p-4 !bg-[#1E190A] border-[#F59E0B]/30 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-[56px] h-[56px] rounded-[20px] bg-[#F59E0B] text-black flex items-center justify-center font-extrabold text-xl relative">
+                        <i class="fa-solid fa-user"></i><span class="absolute -top-2 -right-2 w-7 h-7 bg-[#111111] rounded-full flex items-center justify-center border border-white/10"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/></svg></span>
+                    </div>
+                    <div>
+                        <span class="block font-extrabold text-white text-lg mb-0.5">전시기</span>
+                        <span class="text-[10px] text-[#F59E0B] font-extrabold bg-[#F59E0B]/20 px-2.5 py-1 rounded-md inline-block tracking-wide">회장 / LEADER</span>
+                    </div>
                 </div>
             </div>
             <!-- 멤버들 -->
-            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold shrink-0 shadow-inner">오</div><span class="font-bold text-main text-sm">오스틴</span></div>
-            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold shrink-0 shadow-inner">이</div><span class="font-bold text-main text-sm">이진누</span></div>
-            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0 shadow-inner">홍</div><span class="font-bold text-main text-sm">홍박사</span></div>
-            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold shrink-0 shadow-inner">성</div><span class="font-bold text-main text-sm">성원제</span></div>
-            <div class="toss-card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold shrink-0 shadow-inner">류</div><span class="font-bold text-main text-sm">류짱</span></div>
+            <div class="glass-card p-4 flex items-center gap-4">
+                <div class="w-[52px] h-[52px] rounded-[18px] bg-[#222831] text-white flex items-center justify-center font-extrabold text-xl border border-white/5"><i class="fa-solid fa-user"></i></div><span class="font-extrabold text-gray-200 text-lg">오스틴</span>
+            </div>
+            <div class="glass-card p-4 flex items-center gap-4">
+                <div class="w-[52px] h-[52px] rounded-[18px] bg-[#222831] text-white flex items-center justify-center font-extrabold text-xl border border-white/5"><i class="fa-solid fa-user"></i></div><span class="font-extrabold text-gray-200 text-lg">이진누</span>
+            </div>
+            <div class="glass-card p-4 flex items-center gap-4">
+                <div class="w-[52px] h-[52px] rounded-[18px] bg-[#222831] text-white flex items-center justify-center font-extrabold text-xl border border-white/5"><i class="fa-solid fa-user"></i></div><span class="font-extrabold text-gray-200 text-lg">홍박사</span>
+            </div>
+            <div class="glass-card p-4 flex items-center gap-4">
+                <div class="w-[52px] h-[52px] rounded-[18px] bg-[#222831] text-white flex items-center justify-center font-extrabold text-xl border border-white/5"><i class="fa-solid fa-user"></i></div><span class="font-extrabold text-gray-200 text-lg">성원제</span>
+            </div>
+            <div class="glass-card p-4 flex items-center gap-4">
+                <div class="w-[52px] h-[52px] rounded-[18px] bg-[#222831] text-white flex items-center justify-center font-extrabold text-xl border border-white/5"><i class="fa-solid fa-user"></i></div><span class="font-extrabold text-gray-200 text-lg">류짱</span>
+            </div>
         </div>
-        <div class="mt-auto pt-8 text-center"><p class="text-xs text-gray-400 font-medium">Random Enjoy With Members</p></div>
     </div>
 
     <!-- 3. 차량 배치 -->
-    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-xl font-bold text-main mb-4 mt-4">차량 좌석 배치</h2>
+    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[32px] font-extrabold text-white mb-6 mt-4 tracking-tight px-1">차량 탑승 준비</h2>
 
-        <div class="w-full flex flex-col gap-4">
+        <div class="w-full flex flex-col gap-5 px-1">
             <!-- 설정 버튼 -->
-            <div class="bg-white/50 backdrop-blur-md rounded-[24px] p-1.5 flex gap-1 shadow-sm border border-white/60">
-                <button id="btn-car-1" onclick="setCarConfig(1)" class="flex-1 py-3 rounded-[20px] font-bold text-xs transition-all bg-blue-500 text-white shadow-sm">1대 (6인승)</button>
-                <button id="btn-car-2" onclick="setCarConfig(2)" class="flex-1 py-3 rounded-[20px] font-bold text-xs transition-all text-gray-400 hover:bg-white/50">2대 (3인승)</button>
+            <div class="bg-[#191F28] rounded-2xl p-1.5 flex border border-white/5">
+                <button id="btn-car-1" onclick="setCarConfig(1)" class="flex-1 py-3.5 rounded-xl font-bold text-sm transition-all bg-[#3182F6] text-white shadow-lg">1대 (6인승)</button>
+                <button id="btn-car-2" onclick="setCarConfig(2)" class="flex-1 py-3.5 rounded-xl font-bold text-sm transition-all text-gray-400 hover:bg-white/5">2대 (3인승)</button>
             </div>
 
             <!-- 옵션 카드 -->
-            <div class="toss-card p-5 !bg-white/80 flex flex-col gap-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm font-bold text-main">운전자 선정</span>
-                    <div class="bg-gray-100 p-1 rounded-xl flex text-xs font-bold">
-                        <button id="mode-random" onclick="setDriverMode('random')" class="px-3 py-1.5 rounded-lg bg-white text-black shadow-sm transition-all">랜덤</button>
-                        <button id="mode-manual" onclick="setDriverMode('manual')" class="px-3 py-1.5 rounded-lg text-gray-400 transition-all">수동</button>
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[15px] font-extrabold text-white">운전자는 누구?</span>
+                    <div class="bg-black/60 p-1 rounded-[14px] flex text-[13px] font-bold border border-white/5">
+                        <button id="mode-random" onclick="setDriverMode('random')" class="px-4 py-1.5 rounded-lg bg-white/10 text-white transition-all">랜덤</button>
+                        <button id="mode-manual" onclick="setDriverMode('manual')" class="px-4 py-1.5 rounded-lg text-gray-500 transition-all">수동지정</button>
                     </div>
                 </div>
-                <div id="manual-selector" class="hidden flex-wrap pt-2 border-t border-gray-100"></div>
+                <div id="manual-selector" class="hidden flex-wrap pt-4 mt-2 border-t border-white/10 gap-2"></div>
             </div>
 
             <!-- 차량 뷰 -->
             <div id="car-view-container" class="w-full">
                 <!-- 1대 뷰 -->
-                <div id="view-car-1" class="toss-card !bg-gradient-to-b from-[#E8F3FF] to-white p-5 flex flex-col justify-between shadow-lg border-2 border-blue-50 aspect-[3/4] mt-2 relative">
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-2/3 h-6 bg-white/80 rounded-b-2xl shadow-sm border-b border-l border-r border-blue-100"></div>
+                <div id="view-car-1" class="glass-card p-6 flex-col gap-4 !bg-[#13171F]">
                     <!-- 앞좌석 -->
-                    <div class="flex gap-3 mb-2 mt-4">
-                        <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm">
-                            <span class="absolute top-2 left-2 text-[8px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded">DRIVER</span>
-                            <div id="seat-driver-1" class="text-lg font-bold text-main">?</div>
+                    <div class="flex gap-4">
+                        <div class="w-1/2 aspect-square bg-[#3182F6] rounded-[28px] border border-blue-400/50 flex flex-col items-center justify-center relative">
+                            <span class="absolute top-3 left-3 text-[10px] text-blue-100 font-extrabold tracking-widest bg-black/30 px-2.5 py-0.5 rounded-full">DRIVER</span>
+                            <div id="seat-driver-1" class="text-[28px] font-extrabold text-white drop-shadow-md">?</div>
                         </div>
-                        <div class="w-1/2 aspect-square bg-white/60 rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm backdrop-blur-sm">
-                            <div id="seat-p-1" class="text-lg font-bold text-main">?</div>
+                        <div class="w-1/2 aspect-square bg-[#222831] rounded-[28px] border border-white/10 flex flex-col items-center justify-center relative">
+                            <div id="seat-p-1" class="text-[22px] font-bold text-gray-300">?</div>
                         </div>
                     </div>
                     <!-- 뒷좌석들 -->
-                    <div class="flex gap-3 mb-2">
-                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-m-1" class="text-sm font-bold text-main">?</div></div>
-                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-m-2" class="text-sm font-bold text-main">?</div></div>
+                    <div class="flex gap-4">
+                        <div class="flex-1 aspect-[4/3] bg-[#222831] rounded-[24px] border border-white/10 flex items-center justify-center"><div id="seat-m-1" class="text-[19px] font-bold text-gray-300">?</div></div>
+                        <div class="flex-1 aspect-[4/3] bg-[#222831] rounded-[24px] border border-white/10 flex items-center justify-center"><div id="seat-m-2" class="text-[19px] font-bold text-gray-300">?</div></div>
                     </div>
-                    <div class="flex gap-3">
-                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-1" class="text-sm font-bold text-main">?</div></div>
-                        <div class="flex-1 aspect-video bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-2" class="text-sm font-bold text-main">?</div></div>
+                    <div class="flex gap-4">
+                        <div class="flex-1 aspect-[4/3] bg-[#222831] rounded-[24px] border border-white/10 flex items-center justify-center"><div id="seat-b-1" class="text-[19px] font-bold text-gray-300">?</div></div>
+                        <div class="flex-1 aspect-[4/3] bg-[#222831] rounded-[24px] border border-white/10 flex items-center justify-center"><div id="seat-b-2" class="text-[19px] font-bold text-gray-300">?</div></div>
                     </div>
                 </div>
 
                 <!-- 2대 뷰 -->
-                <div id="view-car-2" class="hidden w-full flex-col gap-4 mt-2">
+                <div id="view-car-2" class="hidden w-full flex-col gap-6">
                     <!-- CAR 1 -->
-                    <div class="toss-card !bg-gradient-to-b from-[#E8F3FF] to-white p-4 border-2 border-blue-50 shadow-md">
-                        <p class="text-center text-xs font-bold text-blue-400 mb-2">CAR 1</p>
-                        <div class="flex gap-2 mb-2">
-                            <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm"><span class="absolute top-1 left-1 text-[8px] text-blue-600 font-bold bg-blue-50 px-1 rounded">DRV</span><div id="seat-driver-a" class="text-sm font-bold text-main">?</div></div>
-                            <div class="w-1/2 aspect-square bg-white/60 rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm backdrop-blur-sm"><div id="seat-p-a" class="text-sm font-bold text-main">?</div></div>
+                    <div class="glass-card p-5 !bg-[#13171F]">
+                        <div class="inline-block bg-[#3182F6]/20 text-[#3182F6] px-3 py-1.5 rounded-md text-[11px] font-extrabold tracking-widest mb-4">CAR A</div>
+                        <div class="flex gap-3 mb-3">
+                            <div class="w-1/2 aspect-square bg-[#3182F6] rounded-[24px] flex flex-col items-center justify-center relative"><span class="absolute top-2 left-2 text-[9px] text-white font-extrabold tracking-widest bg-black/30 px-2 py-0.5 rounded-full">DRV</span><div id="seat-driver-a" class="text-[24px] font-extrabold text-white">?</div></div>
+                            <div class="w-1/2 aspect-square bg-[#222831] rounded-[24px] border border-white/10 flex flex-col items-center justify-center relative"><div id="seat-p-a" class="text-[20px] font-bold text-gray-300">?</div></div>
                         </div>
-                        <div class="w-full h-12 bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-a" class="text-sm font-bold text-main">?</div></div>
+                        <div class="w-full h-[60px] bg-[#222831] rounded-[24px] border border-white/10 flex items-center justify-center"><div id="seat-b-a" class="text-[20px] font-bold text-gray-300">?</div></div>
                     </div>
                     <!-- CAR 2 -->
-                    <div class="toss-card !bg-gradient-to-b from-[#E8F3FF] to-white p-4 border-2 border-blue-50 shadow-md">
-                        <p class="text-center text-xs font-bold text-blue-400 mb-2">CAR 2</p>
-                        <div class="flex gap-2 mb-2">
-                            <div class="w-1/2 aspect-square bg-white rounded-2xl border-2 border-blue-200 flex flex-col items-center justify-center relative shadow-sm"><span class="absolute top-1 left-1 text-[8px] text-blue-600 font-bold bg-blue-50 px-1 rounded">DRV</span><div id="seat-driver-b" class="text-sm font-bold text-main">?</div></div>
-                            <div class="w-1/2 aspect-square bg-white/60 rounded-2xl border border-white flex flex-col items-center justify-center relative shadow-sm backdrop-blur-sm"><div id="seat-p-b" class="text-sm font-bold text-main">?</div></div>
+                    <div class="glass-card p-5 !bg-[#13171F]">
+                        <div class="inline-block bg-[#3182F6]/20 text-[#3182F6] px-3 py-1.5 rounded-md text-[11px] font-extrabold tracking-widest mb-4">CAR B</div>
+                        <div class="flex gap-3 mb-3">
+                            <div class="w-1/2 aspect-square bg-[#3182F6] rounded-[24px] flex flex-col items-center justify-center relative"><span class="absolute top-2 left-2 text-[9px] text-white font-extrabold tracking-widest bg-black/30 px-2 py-0.5 rounded-full">DRV</span><div id="seat-driver-b" class="text-[24px] font-extrabold text-white">?</div></div>
+                            <div class="w-1/2 aspect-square bg-[#222831] rounded-[24px] border border-white/10 flex flex-col items-center justify-center relative"><div id="seat-p-b" class="text-[20px] font-bold text-gray-300">?</div></div>
                         </div>
-                        <div class="w-full h-12 bg-white/60 rounded-2xl border border-white flex items-center justify-center shadow-sm backdrop-blur-sm"><div id="seat-b-b" class="text-sm font-bold text-main">?</div></div>
+                        <div class="w-full h-[60px] bg-[#222831] rounded-[24px] border border-white/10 flex items-center justify-center"><div id="seat-b-b" class="text-[20px] font-bold text-gray-300">?</div></div>
                     </div>
                 </div>
             </div>
 
-            <button id="btn-run-car" onclick="window.haptic(); requestCarGame()" class="w-full bg-[#3182F6] hover:bg-blue-600 text-white font-bold py-4 rounded-[20px] shadow-lg shadow-blue-500/30 active:scale-95 transition-all mt-4 text-base">결과 확인하기</button>
+            <button id="btn-run-car" onclick="window.haptic(); requestCarGame()" class="w-full btn-solid bg-[#3182F6] text-white font-extrabold py-[18px] rounded-[24px] mt-4 text-[17px] tracking-wide">결과 확인하기</button>
         </div>
     </div>
 
     <!-- 4. 당번 뽑기 화면 -->
-    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-xl font-bold text-main mb-6 mt-4">당번 뽑기</h2>
+    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[32px] font-extrabold text-white mb-6 mt-4 tracking-tight px-1">당번 뽑기</h2>
 
-        <div class="w-full flex flex-col gap-4 h-full">
-            <div class="toss-card p-6 !bg-white flex items-center justify-between shadow-sm">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-1.5 text-blue-500 mb-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span><span class="text-xs font-bold">CLEANING</span></div>
-                    <span class="text-lg font-bold text-main">청소 당번</span>
+        <div class="w-full flex flex-col gap-4 h-full px-1">
+            <div class="glass-card p-4 flex flex-col gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-[14px] bg-[#10B981]/10 flex items-center justify-center border border-[#10B981]/30">
+                        <img src="https://cdn-icons-png.flaticon.com/512/5620/5620473.png" alt="청소 당번 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
+                    </div>
+                    <span class="text-lg font-extrabold text-white">청소 당번</span>
                 </div>
-                <div id="result-cleaning" class="h-12 px-5 bg-blue-50 rounded-2xl flex items-center justify-center font-bold text-xl text-blue-600 min-w-[80px] shadow-inner">?</div>
+                <div id="result-cleaning" class="w-full py-5 bg-[#111111] rounded-2xl border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
             </div>
 
-            <div class="toss-card p-6 !bg-white flex items-center justify-between shadow-sm">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-1.5 text-green-500 mb-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span><span class="text-xs font-bold">DISHES</span></div>
-                    <span class="text-lg font-bold text-main">설거지 당번</span>
+            <div class="glass-card p-4 flex flex-col gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-[14px] bg-[#0EA5E9]/10 flex items-center justify-center border border-[#0EA5E9]/30">
+                        <img src="https://cdn-icons-png.flaticon.com/512/8973/8973276.png" alt="설거지 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
+                    </div>
+                    <span class="text-lg font-extrabold text-white">설거지 당번</span>
                 </div>
-                <div id="result-dishes" class="h-12 px-5 bg-green-50 rounded-2xl flex items-center justify-center font-bold text-xl text-green-600 min-w-[80px] shadow-inner">?</div>
+                <div id="result-dishes" class="w-full py-5 bg-[#111111] rounded-2xl border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
             </div>
 
-            <div class="mt-auto">
-                <button id="btn-run-chore" onclick="window.haptic(); requestChoreGame()" class="w-full bg-[#191F28] text-white font-bold py-4 rounded-[20px] shadow-lg active:scale-95 transition-all text-base">추첨 시작하기!</button>
+            <div class="mt-auto pt-6">
+                <button id="btn-run-chore" onclick="window.haptic(); requestChoreGame()" class="w-full btn-solid bg-[#10B981] text-white font-extrabold py-4 rounded-[20px] text-base tracking-wide">추첨 시작하기</button>
             </div>
         </div>
     </div>
 
-    <!-- 5. 여행지 뽑기 화면 (색상 변경: Purple -> Orange) -->
-    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col items-center p-5 pt-safe pb-8 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-xl font-bold text-main mb-6 mt-4">여행지 뽑기</h2>
+    <!-- 5. 여행지 뽑기 화면 -->
+    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[32px] font-extrabold text-white mb-6 mt-4 tracking-tight px-1">여행지 뽑기</h2>
 
-        <div class="w-full flex flex-col gap-4">
-            <div class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-orange-50 shadow-sm">
-                <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2 bg-orange-50 px-2 py-0.5 rounded">REGION</span>
-                <div id="result-trip-step1" class="text-3xl font-bold text-main break-keep text-center">?</div>
+        <div class="w-full flex flex-col h-full gap-0 px-1">
+            <!-- Ticket Top -->
+            <div class="bg-[#191F28] rounded-t-3xl p-6 flex flex-col items-center justify-center relative z-20 border border-white/5 min-h-[140px]">
+                <span class="px-3 py-1 bg-[#F97316]/20 text-[#F97316] rounded-full text-[10px] font-extrabold tracking-widest mb-3">REGION</span>
+                <div id="result-trip-step1" class="text-[32px] font-black text-white break-keep text-center tracking-tight leading-tight">?</div>
             </div>
 
-            <div class="flex justify-center -my-3 z-10">
-                <div class="bg-orange-50 p-2 rounded-full border-4 border-[#F2F4F6] text-orange-300">
-                    <i class="fa-solid fa-arrow-down"></i>
-                </div>
+            <!-- Perforated edge effect -->
+            <div class="relative h-6 w-full -my-3 z-30 flex items-center justify-between px-2">
+                <div class="w-6 h-6 bg-[#000000] rounded-full absolute left-[-12px] border-r border-white/10"></div>
+                <div class="w-full border-t-[3px] border-dashed border-gray-700 mx-4"></div>
+                <div class="w-6 h-6 bg-[#000000] rounded-full absolute right-[-12px] border-l border-white/10"></div>
             </div>
 
-            <div id="box-trip-step2" class="toss-card p-8 !bg-white flex flex-col items-center justify-center relative border border-gray-100 transition-colors duration-300 shadow-sm">
-                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-2 transition-colors" id="label-step2">DETAIL</span>
-                <div id="result-trip-step2" class="text-3xl font-bold text-gray-300 break-keep text-center transition-colors">-</div>
+            <!-- Ticket Bottom -->
+            <div id="box-trip-step2" class="bg-[#191F28] rounded-3xl p-5 flex flex-col items-center justify-center border border-white/5 transition-colors duration-300 min-h-[110px] relative z-10 mt-[-16px]">
+                <span id="label-step2" class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 transition-colors px-3 py-1 bg-black/50 rounded-full">DETAIL</span>
+                <div id="result-trip-step2" class="text-2xl font-bold text-gray-400 break-keep text-center transition-colors tracking-tight">-</div>
             </div>
 
-            <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-[20px] shadow-lg shadow-orange-200 mt-6 active:scale-95 transition-all text-base">여행지 확인하기</button>
+            <div class="mt-auto pt-8">
+                <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full btn-solid bg-[#F97316] text-white font-extrabold py-4 rounded-2xl text-base tracking-wide">여행지 확인하기</button>
+            </div>
         </div>
     </div>
 
-    <!-- 하단 메뉴 -->
+    <!-- 하단 메뉴 (원본 절대 보존 - 텍스트 가시성만 확보) -->
     <nav id="main-nav" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none cursor-grab active:cursor-grabbing">
-        <div class="flex items-center bg-white/10 backdrop-blur-[4px] backdrop-saturate-[180%] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1.5 gap-1 ring-1 ring-white/30 relative">
-            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
+        <div class="flex items-center bg-[#191F28]/90 backdrop-blur-md shadow-2xl border border-white/10 rounded-full p-1.5 gap-1 relative">
+            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/10 rounded-full border border-white/5 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
             
             <button id="nav-btn-home" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='index.html'">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-house text-base text-[#191F28] drop-shadow-sm transition-colors"></i>
-                    <span class="text-[10px] font-bold text-[#191F28] drop-shadow-sm whitespace-nowrap transition-colors">홈</span>
+                    <i class="fa-solid fa-house text-base text-white transition-colors"></i>
+                    <span class="text-[10px] font-bold text-white whitespace-nowrap transition-colors">홈</span>
                 </div>
             </button>
 
             <button id="nav-btn-random" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('screen-game-menu')">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-dice text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">복불복</span>
+                    <i class="fa-solid fa-dice text-base text-gray-500 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-500 group-hover:text-white whitespace-nowrap transition-colors">복불복</span>
                 </div>
             </button>
 
             <button id="nav-btn-members" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('screen-members')">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-users text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">멤버</span>
+                    <i class="fa-solid fa-users text-base text-gray-500 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-500 group-hover:text-white whitespace-nowrap transition-colors">멤버</span>
                 </div>
             </button>
 
-            <button id="nav-btn-settings" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('admin-login')">
+            <button id="nav-btn-settings" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); switchScreen('screen-admin-login')">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-gear text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">설정</span>
+                    <i class="fa-solid fa-gear text-base text-gray-500 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-500 group-hover:text-white whitespace-nowrap transition-colors">설정</span>
                 </div>
             </button>
         </div>
     </nav>
 
-    <!-- 관리자 로그인 -->
-    <div id="modal-admin-login" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-center">
-            <h3 class="text-lg font-bold text-main mb-4">관리자 로그인</h3>
-            <input type="password" id="admin-pw" class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-center text-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="비밀번호 입력">
-            <div class="flex gap-2">
-                <button onclick="window.haptic(); closeAdminLogin()" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold text-gray-500 active:bg-gray-200 transition-colors">취소</button>
-                <button onclick="window.haptic(); checkAdminPw()" class="flex-1 py-3 bg-blue-500 rounded-xl font-bold text-white shadow-md active:bg-blue-600 transition-colors">확인</button>
-            </div>
-        </div>
-    </div>
+    <!-- 관리자 로그인 화면 (네이티브 전체 화면으로 완벽 개편) -->
+    <div id="screen-admin-login" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[32px] font-extrabold text-white mb-6 mt-4 tracking-tight px-1">관리자 권한</h2>
 
-    <!-- 관리자 패널 -->
-    <div id="modal-admin-panel" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-main">관리자 설정</h3>
-                <button onclick="window.haptic(); closeAdminPanel()" class="text-gray-400 hover:text-gray-600 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="space-y-4">
-                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-left">
-                    <p class="text-xs font-bold text-gray-500 mb-2">게임별 초기화</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="window.haptic(); adminResetGame('car')" class="py-3 bg-blue-100 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-200 transition-colors active:scale-95">차량<br>초기화</button>
-                        <button onclick="window.haptic(); adminResetGame('chore')" class="py-3 bg-red-100 text-red-600 rounded-xl text-xs font-bold hover:bg-red-200 transition-colors active:scale-95">당번<br>초기화</button>
-                        <button onclick="window.haptic(); adminResetGame('trip')" class="py-3 bg-purple-100 text-purple-600 rounded-xl text-xs font-bold hover:bg-purple-200 transition-colors active:scale-95">여행<br>초기화</button>
-                    </div>
+        <div class="w-full flex flex-col gap-4 px-1">
+            <div class="glass-card p-6 flex flex-col gap-5">
+                <div class="w-14 h-14 bg-[#222831] rounded-2xl flex items-center justify-center text-gray-400 text-2xl border border-white/5">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-left flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-bold text-gray-500 mb-0.5">무한 뽑기 모드</p>
-                        <p class="text-[10px] text-gray-400">1회 제한 해제</p>
+                <div>
+                    <h3 class="text-xl font-extrabold text-white mb-1">인증이 필요합니다</h3>
+                    <p class="text-[13px] text-gray-500 font-medium mb-5">시스템 설정을 변경하려면 관리자 비밀번호를 입력해주세요.</p>
+                    
+                    <input type="password" id="admin-pw" class="w-full bg-[#111111] border border-white/10 rounded-2xl px-5 py-4 text-left text-lg mb-5 text-white focus:ring-1 focus:ring-[#3182F6] outline-none transition-all font-bold placeholder:font-medium placeholder:text-gray-600" placeholder="비밀번호 입력">
+                    
+                    <div class="flex gap-3">
+                        <button onclick="window.haptic(); switchScreen('screen-game-menu')" class="flex-1 py-4 bg-[#222831] rounded-2xl font-bold text-gray-300 hover:bg-[#2A323D] active:scale-95 transition-all border border-white/5">취소</button>
+                        <button onclick="window.haptic(); checkAdminPw()" class="flex-1 py-4 bg-[#3182F6] rounded-2xl font-bold text-white shadow-lg active:scale-95 transition-all">확인</button>
                     </div>
-                    <button id="btn-unlimited-toggle" onclick="window.haptic(); adminToggleUnlimited()" class="w-12 h-7 bg-gray-300 rounded-full relative transition-colors"><div class="w-5 h-5 bg-white rounded-full absolute top-1 left-1 transition-transform shadow-sm"></div></button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Script -->
+    <!-- 관리자 패널 화면 (네이티브 전체 화면으로 완벽 개편) -->
+    <div id="screen-admin-panel" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
+        <div class="flex justify-between items-center mb-6 mt-4 px-1">
+            <h2 class="text-[32px] font-extrabold text-white tracking-tight">관리자 설정</h2>
+            <button onclick="window.haptic(); switchScreen('screen-game-menu')" class="w-10 h-10 bg-[#222831] rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-white/5">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        
+        <div class="w-full flex flex-col gap-4 px-1">
+            <div class="glass-card p-6 flex flex-col gap-4">
+                <div>
+                    <h3 class="text-[17px] font-extrabold text-white mb-1">데이터 초기화</h3>
+                    <p class="text-[12px] text-gray-500 font-medium mb-2">각 게임의 결과 및 진행 상태를 강제로 초기화합니다.</p>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="window.haptic(); adminResetGame('car')" class="py-5 bg-[#222831] border border-white/5 text-gray-300 rounded-[20px] text-sm font-bold hover:bg-[#2A323D] active:scale-95 transition-all flex flex-col items-center gap-3">
+                        <i class="fa-solid fa-car-side text-xl text-gray-400"></i>차량
+                    </button>
+                    <button onclick="window.haptic(); adminResetGame('chore')" class="py-5 bg-[#222831] border border-white/5 text-gray-300 rounded-[20px] text-sm font-bold hover:bg-[#2A323D] active:scale-95 transition-all flex flex-col items-center gap-3">
+                        <i class="fa-solid fa-broom text-xl text-gray-400"></i>당번
+                    </button>
+                    <button onclick="window.haptic(); adminResetGame('trip')" class="py-5 bg-[#222831] border border-white/5 text-gray-300 rounded-[20px] text-sm font-bold hover:bg-[#2A323D] active:scale-95 transition-all flex flex-col items-center gap-3">
+                        <i class="fa-solid fa-plane-departure text-xl text-gray-400"></i>여행
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 flex items-center justify-between">
+                <div>
+                    <h3 class="text-[17px] font-extrabold text-white mb-1">무한 뽑기 모드</h3>
+                    <p class="text-[12px] text-gray-500 font-medium">1회 뽑기 제한을 해제합니다.</p>
+                </div>
+                <button id="btn-unlimited-toggle" onclick="window.haptic(); adminToggleUnlimited()" class="w-14 h-8 bg-gray-700 rounded-full relative transition-colors duration-300">
+                    <div class="w-6 h-6 bg-white rounded-full absolute top-1 left-1 transition-transform shadow-md"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script (원본 절대 보존) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -646,28 +690,34 @@
 
             let unlimitedBanner = document.getElementById('noti-unlimited');
             if (admin.unlimited) {
-                if (!unlimitedBanner) { unlimitedBanner = createNotification('noti-unlimited', '🔥 무한 뽑기 모드 활성화 중!', 'bg-red-500'); container.appendChild(unlimitedBanner); }
+                if (!unlimitedBanner) { unlimitedBanner = createNotification('noti-unlimited', '무한 뽑기 모드 활성화', 'bg-[#F43F5E]', 'fa-solid fa-fire'); container.appendChild(unlimitedBanner); }
             } else { if (unlimitedBanner) unlimitedBanner.remove(); }
             updateUnlimitedUI(admin.unlimited);
 
-            updatePersistentBanner('car', (resets.car || 0) > (data.car?.timestamp || 0), '🚗 차량 배치가 초기화되었습니다!', 'bg-blue-500');
-            updatePersistentBanner('chore', (resets.chore || 0) > (data.chore?.timestamp || 0), '🧹 당번이 초기화되었습니다!', 'bg-green-500');
-            updatePersistentBanner('trip', (resets.trip || 0) > (data.trip?.timestamp || 0), '✈️ 여행지가 초기화되었습니다!', 'bg-purple-500');
+            updatePersistentBanner('car', (resets.car || 0) > (data.car?.timestamp || 0), '차량 배치 초기화 완료!', 'bg-[#3182F6]', 'fa-solid fa-car-side');
+            updatePersistentBanner('chore', (resets.chore || 0) > (data.chore?.timestamp || 0), '당번 초기화 완료!', 'bg-[#10B981]', 'fa-solid fa-broom');
+            updatePersistentBanner('trip', (resets.trip || 0) > (data.trip?.timestamp || 0), '여행지 초기화 완료!', 'bg-[#F97316]', 'fa-solid fa-plane-departure');
         }
 
-        function updatePersistentBanner(key, shouldShow, msg, color) {
+        function updatePersistentBanner(key, shouldShow, msg, themeClass, iconClass) {
             const container = document.getElementById('notification-container');
             const id = `noti-reset-${key}`;
             let el = document.getElementById(id);
-            if (shouldShow) { if (!el) { el = createNotification(id, msg, color); container.appendChild(el); } }
-            else { if (el) { el.style.opacity = '0'; el.style.transform = 'translateY(-100%)'; setTimeout(() => { if(el && el.parentNode) el.remove(); }, 300); } }
+            if (shouldShow) { 
+                if (!el) { el = createNotification(id, msg, themeClass, iconClass); container.appendChild(el); } 
+            } else { 
+                if (el) { 
+                    el.classList.add('toast-leave'); 
+                    setTimeout(() => { if(el && el.parentNode) el.remove(); }, 300); 
+                } 
+            }
         }
 
-        function createNotification(id, text, colorClass) {
+        function createNotification(id, text, themeClass, iconClass) {
             const el = document.createElement('div');
             el.id = id;
-            el.className = `${colorClass} text-white px-6 py-3 rounded-b-xl shadow-lg flex items-center gap-2 pointer-events-auto mb-2 font-bold text-xs justify-center transition-all duration-300 fade-in-up w-[90%] mx-auto mt-2`;
-            el.innerHTML = `<i class="fa-solid fa-bell"></i><span>${text}</span>`;
+            el.className = `bg-[#191F28] border border-white/10 shadow-xl shadow-black/80 rounded-2xl px-4 py-3 flex items-center gap-3 pointer-events-auto font-bold text-[13px] text-white w-auto min-w-[240px] max-w-[95%] mx-auto toast-enter`;
+            el.innerHTML = `<div class="w-8 h-8 rounded-[10px] ${themeClass} flex items-center justify-center text-white"><i class="${iconClass} text-[13px]"></i></div><span class="tracking-wide">${text}</span>`;
             return el;
         }
 
@@ -681,18 +731,15 @@
             if(btnTrip) btnTrip.style.display = (!isUnlimited && globalState.trip?.timestamp > 0) ? 'none' : 'block';
         }
 
-        window.openAdminLogin = () => document.getElementById('modal-admin-login').classList.remove('hidden');
-        window.closeAdminLogin = () => document.getElementById('modal-admin-login').classList.add('hidden');
         window.checkAdminPw = () => {
             const pw = document.getElementById('admin-pw').value;
-            if (pw === '0920') { closeAdminLogin(); document.getElementById('modal-admin-panel').classList.remove('hidden'); document.getElementById('admin-pw').value = ''; }
+            if (pw === '0920') { switchScreen('screen-admin-panel'); document.getElementById('admin-pw').value = ''; }
             else { alert('비밀번호가 틀렸습니다.'); }
         };
-        window.closeAdminPanel = () => document.getElementById('modal-admin-panel').classList.add('hidden');
         
         window.adminResetGame = async (type) => {
             if (!confirm(`${type === 'car' ? '차량' : type === 'chore' ? '당번' : '여행'} 게임을 초기화하시겠습니까?`)) return;
-            try { await updateDoc(doc(db, 'games', 'random_enjoy_state'), { [`admin.resets.${type}`]: Date.now(), [type]: { timestamp: 0 } }); closeAdminPanel(); } catch (e) { alert("초기화 실패: " + e.message); }
+            try { await updateDoc(doc(db, 'games', 'random_enjoy_state'), { [`admin.resets.${type}`]: Date.now(), [type]: { timestamp: 0 } }); switchScreen('screen-game-menu'); } catch (e) { alert("초기화 실패: " + e.message); }
         };
 
         window.adminToggleUnlimited = async () => {
@@ -702,8 +749,8 @@
         function updateUnlimitedUI(isUnlimited) {
             const btn = document.getElementById('btn-unlimited-toggle');
             const dot = btn.querySelector('div');
-            if (isUnlimited) { btn.classList.replace('bg-gray-300', 'bg-green-500'); dot.classList.replace('left-1', 'translate-x-5'); }
-            else { btn.classList.replace('bg-green-500', 'bg-gray-300'); dot.classList.replace('translate-x-5', 'left-1'); }
+            if (isUnlimited) { btn.classList.replace('bg-gray-700', 'bg-[#3182F6]'); dot.classList.replace('left-1', 'translate-x-6'); }
+            else { btn.classList.replace('bg-[#3182F6]', 'bg-gray-700'); dot.classList.replace('translate-x-6', 'left-1'); }
         }
         function canPlay(gameType) {
             if (globalState.admin?.unlimited) return true; 
@@ -755,14 +802,14 @@
                 if(data.drivers) { document.getElementById('seat-driver-a').textContent = data.drivers[0]; document.getElementById('seat-driver-b').textContent = data.drivers[1]; }
                 ['seat-p-a', 'seat-b-a', 'seat-p-b', 'seat-b-b'].forEach((id, i) => { if(data.passengers && data.passengers[i]) document.getElementById(id).textContent = data.passengers[i]; });
             }
-            document.querySelectorAll('[id^="seat-"]').forEach(el => el.style.color = '#3182ce');
+            document.querySelectorAll('[id^="seat-"]').forEach(el => el.style.color = '#FFFFFF'); // 다크모드 가시성
         }
 
         function playChoreGameAnimation(data) { window.initAudio(); window.animateShuffle(document.getElementById('result-cleaning'), MEMBERS, data.cleaner, 1500); window.animateShuffle(document.getElementById('result-dishes'), MEMBERS, data.dishwasher, 2500); }
         function displayChoreResult(data) {
             if(!data.cleaner) return;
             const c = document.getElementById('result-cleaning'); const d = document.getElementById('result-dishes');
-            c.textContent = data.cleaner; d.textContent = data.dishwasher; c.style.color = "#2563eb"; d.style.color = "#16a34a";
+            c.textContent = data.cleaner; d.textContent = data.dishwasher; c.style.color = "#34D399"; d.style.color = "#38BDF8";
         }
 
         function playTripGameAnimation(data) {
@@ -776,8 +823,8 @@
         function displayTripResult(data) {
             if(!data.step1) return;
             window.resetTripGameUI();
-            const el1 = document.getElementById('result-trip-step1'); el1.textContent = data.step1; el1.style.color = "#F97316"; // [수정] 오렌지 색상
-            if (data.step2) { window.activateStep2UI(); const el2 = document.getElementById('result-trip-step2'); el2.textContent = data.step2; el2.style.color = "#F97316"; // [수정] 오렌지 색상
+            const el1 = document.getElementById('result-trip-step1'); el1.textContent = data.step1; el1.style.color = "#FFFFFF"; 
+            if (data.step2) { window.activateStep2UI(); const el2 = document.getElementById('result-trip-step2'); el2.textContent = data.step2; el2.style.color = "#FB923C"; 
             }
             else document.getElementById('result-trip-step2').textContent = "해당 없음";
         }
