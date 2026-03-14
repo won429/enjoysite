@@ -260,13 +260,13 @@
             const el2 = document.getElementById('result-trip-step2');
             el1.textContent = '?'; el1.style.color = '';
             el2.textContent = '-'; el2.style.color = '';
-            document.getElementById('box-trip-step2').className = "bg-[#191F28] rounded-b-[28px] p-4 flex flex-col items-center justify-center border border-white/5 transition-colors duration-300 min-h-[90px] relative z-10 mt-[-12px]";
-            document.getElementById('label-step2').className = "text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 transition-colors px-2.5 py-0.5 bg-black/50 rounded-full";
+            document.getElementById('box-trip-step2').className = "bg-[#191F28] rounded-b-[32px] p-6 flex flex-col items-center justify-center border border-white/5 transition-colors duration-300 min-h-[100px] relative z-10 mt-[-16px]";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 transition-colors px-3 py-1 bg-black/50 rounded-full";
         }
 
         window.activateStep2UI = () => {
-            document.getElementById('box-trip-step2').className = "bg-[#2A1D15] rounded-b-[28px] p-4 flex flex-col items-center justify-center border border-[#F97316]/30 shadow-lg shadow-orange-900/20 transition-colors duration-300 min-h-[90px] relative z-10 mt-[-12px]";
-            document.getElementById('label-step2').className = "text-[9px] font-bold text-[#F97316] uppercase tracking-widest mb-1.5 transition-colors px-2.5 py-0.5 bg-[#F97316]/20 rounded-full text-white";
+            document.getElementById('box-trip-step2').className = "bg-[#2A1D15] rounded-b-[32px] p-6 flex flex-col items-center justify-center border border-[#F97316]/30 shadow-lg shadow-orange-900/20 transition-colors duration-300 min-h-[100px] relative z-10 mt-[-16px]";
+            document.getElementById('label-step2').className = "text-[10px] font-bold text-[#F97316] uppercase tracking-widest mb-2 transition-colors px-3 py-1 bg-[#F97316]/20 rounded-full text-white";
         }
 
         // Sound & Animation
@@ -274,17 +274,25 @@
         window.initAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
         window.playWinSound = () => {
             window.initAudio();
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.type = 'sine'; o.frequency.setValueAtTime(659, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
-            g.gain.setValueAtTime(0.3, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.4);
+            const now = audioCtx.currentTime;
+            const playNote = (freq, start, dur) => {
+                const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+                o.type = 'sine'; o.frequency.value = freq;
+                g.gain.setValueAtTime(0.2, start); g.gain.exponentialRampToValueAtTime(0.01, start + dur);
+                o.connect(g); g.connect(audioCtx.destination); o.start(start); o.stop(start + dur);
+            };
+            // 기분 좋은 빰-빠-밤! (도-미-솔) 팡파레 사운드
+            playNote(523.25, now, 0.15); 
+            playNote(659.25, now + 0.15, 0.15); 
+            playNote(783.99, now + 0.3, 0.4); 
         }
         window.playTickSound = () => {
             window.initAudio();
+            // 가볍고 경쾌한 똑딱 소리
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.type = 'triangle'; o.frequency.setValueAtTime(200, audioCtx.currentTime);
-            g.gain.setValueAtTime(0.2, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.05);
+            o.type = 'triangle'; o.frequency.setValueAtTime(800, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.03);
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.03);
         }
 
         window.animateShuffle = (el, list, final, dur, cb) => {
@@ -394,138 +402,154 @@
     </div>
 
     <!-- 3. 차량 배치 -->
-    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-[28px] font-extrabold text-white mb-4 mt-2 tracking-tight px-1">차량 탑승 준비</h2>
+    <div id="screen-car-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-28 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[28px] font-extrabold text-white mb-5 mt-2 tracking-tight px-1">차량 탑승 준비</h2>
 
-        <div class="w-full flex flex-col gap-3 px-1">
-            <!-- 설정 버튼 (알약 모양 축소) -->
+        <div class="w-full flex flex-col gap-4 px-1">
+            <!-- 설정 버튼 (알약 모양 축소 유지) -->
             <div class="bg-[#191F28] rounded-full p-1 flex border border-white/5">
                 <button id="btn-car-1" onclick="setCarConfig(1)" class="flex-1 py-2 rounded-full font-bold text-[13px] transition-all bg-[#3182F6] text-white shadow-lg">1대 (6인승)</button>
                 <button id="btn-car-2" onclick="setCarConfig(2)" class="flex-1 py-2 rounded-full font-bold text-[13px] transition-all text-gray-400 hover:bg-white/5">2대 (3인승)</button>
             </div>
 
-            <!-- 옵션 카드 (알약 모양 축소) -->
+            <!-- 옵션 카드 (알약 모양 축소 유지) -->
             <div class="flex flex-col gap-2">
-                <div class="flex justify-between items-center bg-[#191F28] rounded-full py-2 px-4 border border-white/5 shadow-sm">
-                    <span class="text-[13px] font-extrabold text-white">운전자는 누구?</span>
-                    <div class="bg-black/60 p-0.5 rounded-full flex text-[11px] font-bold border border-white/5">
-                        <button id="mode-random" onclick="setDriverMode('random')" class="px-3 py-1 rounded-full bg-white/10 text-white transition-all">랜덤</button>
-                        <button id="mode-manual" onclick="setDriverMode('manual')" class="px-3 py-1 rounded-full text-gray-500 transition-all">수동지정</button>
+                <div class="flex justify-between items-center bg-[#191F28] rounded-full py-2 px-5 border border-white/5 shadow-sm">
+                    <span class="text-[14px] font-extrabold text-white">운전자는 누구?</span>
+                    <div class="bg-black/60 p-0.5 rounded-full flex text-[12px] font-bold border border-white/5">
+                        <button id="mode-random" onclick="setDriverMode('random')" class="px-3 py-1.5 rounded-full bg-white/10 text-white transition-all">랜덤</button>
+                        <button id="mode-manual" onclick="setDriverMode('manual')" class="px-3 py-1.5 rounded-full text-gray-500 transition-all">수동지정</button>
                     </div>
                 </div>
                 <div id="manual-selector" class="hidden flex-wrap gap-2 px-2 pt-1"></div>
             </div>
 
-            <!-- 차량 뷰 (높이, 폰트, 여백 축소) -->
+            <!-- 차량 뷰 (스샷대로 격자 구조 복구 + 높이 확실히 축소) -->
             <div id="car-view-container" class="w-full">
                 <!-- 1대 뷰 -->
-                <div id="view-car-1" class="glass-card p-3 flex-col gap-2.5 !bg-[#13171F]">
+                <div id="view-car-1" class="glass-card p-4 flex-col gap-3 !bg-[#13171F]">
                     <!-- 앞좌석 -->
-                    <div class="flex gap-2.5">
-                        <div class="w-1/2 h-[70px] bg-[#3182F6] rounded-[20px] border border-blue-400/50 flex flex-col items-center justify-center relative">
-                            <span class="absolute top-1.5 left-1.5 text-[8px] text-blue-100 font-extrabold tracking-widest bg-black/30 px-1.5 py-0.5 rounded-full">DRIVER</span>
-                            <div id="seat-driver-1" class="text-xl font-extrabold text-white drop-shadow-md">?</div>
+                    <div class="flex gap-3">
+                        <div class="w-1/2 aspect-[5/4] bg-[#3182F6] rounded-[24px] border border-blue-400/50 flex flex-col items-center justify-center relative shadow-inner">
+                            <span class="absolute top-2 left-2 text-[10px] text-blue-100 font-extrabold tracking-widest bg-black/30 px-2 py-0.5 rounded-full">DRIVER</span>
+                            <div id="seat-driver-1" class="text-[26px] font-extrabold text-white drop-shadow-md">?</div>
                         </div>
-                        <div class="w-1/2 h-[70px] bg-[#222831] rounded-[20px] border border-white/10 flex flex-col items-center justify-center relative">
-                            <div id="seat-p-1" class="text-lg font-bold text-gray-300">?</div>
+                        <div class="w-1/2 aspect-[5/4] bg-[#222831] rounded-[24px] border border-white/10 flex flex-col items-center justify-center relative shadow-inner">
+                            <div id="seat-p-1" class="text-[22px] font-bold text-gray-300">?</div>
                         </div>
                     </div>
                     <!-- 뒷좌석들 -->
-                    <div class="flex gap-2.5">
-                        <div class="flex-1 h-[50px] bg-[#222831] rounded-xl border border-white/10 flex items-center justify-center"><div id="seat-m-1" class="text-sm font-bold text-gray-300">?</div></div>
-                        <div class="flex-1 h-[50px] bg-[#222831] rounded-xl border border-white/10 flex items-center justify-center"><div id="seat-m-2" class="text-sm font-bold text-gray-300">?</div></div>
+                    <div class="flex gap-3">
+                        <div class="flex-1 h-[60px] bg-[#222831] rounded-[20px] border border-white/10 flex items-center justify-center"><div id="seat-m-1" class="text-[18px] font-bold text-gray-300">?</div></div>
+                        <div class="flex-1 h-[60px] bg-[#222831] rounded-[20px] border border-white/10 flex items-center justify-center"><div id="seat-m-2" class="text-[18px] font-bold text-gray-300">?</div></div>
                     </div>
-                    <div class="flex gap-2.5">
-                        <div class="flex-1 h-[50px] bg-[#222831] rounded-xl border border-white/10 flex items-center justify-center"><div id="seat-b-1" class="text-sm font-bold text-gray-300">?</div></div>
-                        <div class="flex-1 h-[50px] bg-[#222831] rounded-xl border border-white/10 flex items-center justify-center"><div id="seat-b-2" class="text-sm font-bold text-gray-300">?</div></div>
+                    <div class="flex gap-3">
+                        <div class="flex-1 h-[60px] bg-[#222831] rounded-[20px] border border-white/10 flex items-center justify-center"><div id="seat-b-1" class="text-[18px] font-bold text-gray-300">?</div></div>
+                        <div class="flex-1 h-[60px] bg-[#222831] rounded-[20px] border border-white/10 flex items-center justify-center"><div id="seat-b-2" class="text-[18px] font-bold text-gray-300">?</div></div>
                     </div>
                 </div>
 
                 <!-- 2대 뷰 -->
-                <div id="view-car-2" class="hidden w-full flex-col gap-3">
+                <div id="view-car-2" class="hidden w-full flex-col gap-4">
                     <!-- CAR 1 -->
-                    <div class="glass-card p-3 !bg-[#13171F]">
-                        <div class="inline-block bg-[#3182F6]/20 text-[#3182F6] px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-widest mb-2">CAR A</div>
-                        <div class="flex gap-2 mb-2">
-                            <div class="w-1/2 h-[60px] bg-[#3182F6] rounded-xl flex flex-col items-center justify-center relative"><span class="absolute top-1.5 left-1.5 text-[7px] text-white font-extrabold tracking-widest bg-black/30 px-1 py-0.5 rounded-full">DRV</span><div id="seat-driver-a" class="text-lg font-extrabold text-white">?</div></div>
-                            <div class="w-1/2 h-[60px] bg-[#222831] rounded-xl border border-white/10 flex flex-col items-center justify-center relative"><div id="seat-p-a" class="text-base font-bold text-gray-300">?</div></div>
+                    <div class="glass-card p-4 !bg-[#13171F]">
+                        <div class="inline-flex items-center justify-center bg-[#3182F6]/20 text-[#3182F6] px-3 py-1.5 rounded-lg text-[11px] font-extrabold tracking-widest mb-3">CAR A</div>
+                        <div class="flex gap-3 mb-3">
+                            <div class="w-1/2 aspect-[5/4] bg-[#3182F6] rounded-[24px] flex flex-col items-center justify-center relative border border-blue-400/50 shadow-inner">
+                                <span class="absolute top-2 left-2 text-[10px] text-white font-extrabold tracking-widest bg-black/30 px-2 py-0.5 rounded-full">DRV</span>
+                                <div id="seat-driver-a" class="text-[26px] font-extrabold text-white">?</div>
+                            </div>
+                            <div class="w-1/2 aspect-[5/4] bg-[#222831] rounded-[24px] border border-white/10 flex flex-col items-center justify-center relative shadow-inner">
+                                <div id="seat-p-a" class="text-[22px] font-bold text-gray-300">?</div>
+                            </div>
                         </div>
-                        <div class="w-full h-[40px] bg-[#222831] rounded-xl border border-white/10 flex items-center justify-center"><div id="seat-b-a" class="text-base font-bold text-gray-300">?</div></div>
+                        <div class="w-full h-[60px] bg-[#222831] rounded-[20px] border border-white/10 flex items-center justify-center shadow-inner">
+                            <div id="seat-b-a" class="text-[20px] font-bold text-gray-300">?</div>
+                        </div>
                     </div>
                     <!-- CAR 2 -->
-                    <div class="glass-card p-3 !bg-[#13171F]">
-                        <div class="inline-block bg-[#3182F6]/20 text-[#3182F6] px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-widest mb-2">CAR B</div>
-                        <div class="flex gap-2 mb-2">
-                            <div class="w-1/2 h-[60px] bg-[#3182F6] rounded-xl flex flex-col items-center justify-center relative"><span class="absolute top-1.5 left-1.5 text-[7px] text-white font-extrabold tracking-widest bg-black/30 px-1 py-0.5 rounded-full">DRV</span><div id="seat-driver-b" class="text-lg font-extrabold text-white">?</div></div>
-                            <div class="w-1/2 h-[60px] bg-[#222831] rounded-xl border border-white/10 flex flex-col items-center justify-center relative"><div id="seat-p-b" class="text-base font-bold text-gray-300">?</div></div>
+                    <div class="glass-card p-4 !bg-[#13171F]">
+                        <div class="inline-flex items-center justify-center bg-[#3182F6]/20 text-[#3182F6] px-3 py-1.5 rounded-lg text-[11px] font-extrabold tracking-widest mb-3">CAR B</div>
+                        <div class="flex gap-3 mb-3">
+                            <div class="w-1/2 aspect-[5/4] bg-[#3182F6] rounded-[24px] flex flex-col items-center justify-center relative border border-blue-400/50 shadow-inner">
+                                <span class="absolute top-2 left-2 text-[10px] text-white font-extrabold tracking-widest bg-black/30 px-2 py-0.5 rounded-full">DRV</span>
+                                <div id="seat-driver-b" class="text-[26px] font-extrabold text-white">?</div>
+                            </div>
+                            <div class="w-1/2 aspect-[5/4] bg-[#222831] rounded-[24px] border border-white/10 flex flex-col items-center justify-center relative shadow-inner">
+                                <div id="seat-p-b" class="text-[22px] font-bold text-gray-300">?</div>
+                            </div>
                         </div>
-                        <div class="w-full h-[40px] bg-[#222831] rounded-xl border border-white/10 flex items-center justify-center"><div id="seat-b-b" class="text-base font-bold text-gray-300">?</div></div>
+                        <div class="w-full h-[60px] bg-[#222831] rounded-[20px] border border-white/10 flex items-center justify-center shadow-inner">
+                            <div id="seat-b-b" class="text-[20px] font-bold text-gray-300">?</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 알약 모양으로 축소된 하단 버튼 -->
-            <button id="btn-run-car" onclick="window.haptic(); requestCarGame()" class="w-full btn-solid bg-[#3182F6] text-white font-extrabold py-3 rounded-full mt-1 text-[13px] tracking-wide">결과 확인하기</button>
+            <!-- 하단 버튼 -->
+            <button id="btn-run-car" onclick="window.haptic(); requestCarGame()" class="w-full btn-solid bg-[#3182F6] text-white font-extrabold py-4 rounded-full mt-2 text-[15px] tracking-wide">결과 확인하기</button>
         </div>
     </div>
 
     <!-- 4. 당번 뽑기 화면 -->
-    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-[28px] font-extrabold text-white mb-4 mt-2 tracking-tight px-1">당번 뽑기</h2>
+    <div id="screen-chore-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-28 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[28px] font-extrabold text-white mb-5 mt-2 tracking-tight px-1">당번 뽑기</h2>
 
-        <div class="w-full flex flex-col gap-3 h-full px-1">
-            <div class="glass-card p-4 flex flex-col gap-2.5">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-[#10B981]/10 flex items-center justify-center border border-[#10B981]/30">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5620/5620473.png" alt="청소 당번 아이콘" class="w-5 h-5 object-contain drop-shadow-md">
+        <div class="w-full flex flex-col gap-4 px-1">
+            <div class="glass-card p-5 flex flex-col gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#10B981]/10 flex items-center justify-center border border-[#10B981]/30">
+                        <img src="https://cdn-icons-png.flaticon.com/512/5620/5620473.png" alt="청소 당번 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
                     </div>
-                    <span class="text-base font-extrabold text-white">청소 당번</span>
+                    <span class="text-[17px] font-extrabold text-white">청소 당번</span>
                 </div>
-                <div id="result-cleaning" class="w-full py-4 bg-[#111111] rounded-2xl border border-white/5 flex items-center justify-center font-black text-2xl text-white">?</div>
+                <div id="result-cleaning" class="w-full py-6 bg-[#111111] rounded-[20px] border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
             </div>
 
-            <div class="glass-card p-4 flex flex-col gap-2.5">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-[#0EA5E9]/10 flex items-center justify-center border border-[#0EA5E9]/30">
-                        <img src="https://cdn-icons-png.flaticon.com/512/8973/8973276.png" alt="설거지 아이콘" class="w-5 h-5 object-contain drop-shadow-md">
+            <div class="glass-card p-5 flex flex-col gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#0EA5E9]/10 flex items-center justify-center border border-[#0EA5E9]/30">
+                        <img src="https://cdn-icons-png.flaticon.com/512/8973/8973276.png" alt="설거지 아이콘" class="w-6 h-6 object-contain drop-shadow-md">
                     </div>
-                    <span class="text-base font-extrabold text-white">설거지 당번</span>
+                    <span class="text-[17px] font-extrabold text-white">설거지 당번</span>
                 </div>
-                <div id="result-dishes" class="w-full py-4 bg-[#111111] rounded-2xl border border-white/5 flex items-center justify-center font-black text-2xl text-white">?</div>
+                <div id="result-dishes" class="w-full py-6 bg-[#111111] rounded-[20px] border border-white/5 flex items-center justify-center font-black text-3xl text-white">?</div>
             </div>
 
-            <div class="mt-8 pt-4">
-                <button id="btn-run-chore" onclick="window.haptic(); requestChoreGame()" class="w-full btn-solid bg-[#10B981] text-white font-extrabold py-3.5 rounded-2xl text-sm tracking-wide">추첨 시작하기</button>
+            <!-- 버튼을 밑바닥이 아닌 위로 바짝 끌어올림 (mt-6) -->
+            <div class="mt-6">
+                <button id="btn-run-chore" onclick="window.haptic(); requestChoreGame()" class="w-full btn-solid bg-[#10B981] text-white font-extrabold py-4 rounded-full text-[15px] tracking-wide">추첨 시작하기</button>
             </div>
         </div>
     </div>
 
     <!-- 5. 여행지 뽑기 화면 -->
-    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-32 overflow-y-auto no-scrollbar relative z-10">
-        <h2 class="text-[28px] font-extrabold text-white mb-4 mt-2 tracking-tight px-1">여행지 뽑기</h2>
+    <div id="screen-trip-game" class="hidden-screen flex-1 w-full h-full flex-col p-6 pt-safe pb-28 overflow-y-auto no-scrollbar relative z-10">
+        <h2 class="text-[28px] font-extrabold text-white mb-5 mt-2 tracking-tight px-1">여행지 뽑기</h2>
 
-        <div class="w-full flex flex-col h-full gap-0 px-1">
+        <div class="w-full flex flex-col gap-0 px-1">
             <!-- Ticket Top -->
-            <div class="bg-[#191F28] rounded-t-[28px] p-5 flex flex-col items-center justify-center relative z-20 border border-white/5 min-h-[110px]">
-                <span class="px-3 py-1 bg-[#F97316]/20 text-[#F97316] rounded-full text-[10px] font-extrabold tracking-widest mb-2">REGION</span>
-                <div id="result-trip-step1" class="text-3xl font-black text-white break-keep text-center tracking-tight leading-tight">?</div>
+            <div class="bg-[#191F28] rounded-t-[32px] p-8 flex flex-col items-center justify-center relative z-20 border border-white/5 min-h-[140px]">
+                <span class="px-3 py-1 bg-[#F97316]/20 text-[#F97316] rounded-full text-[11px] font-extrabold tracking-widest mb-3">REGION</span>
+                <div id="result-trip-step1" class="text-[34px] font-black text-white break-keep text-center tracking-tight leading-tight">?</div>
             </div>
 
             <!-- Perforated edge effect -->
-            <div class="relative h-5 w-full -my-2.5 z-30 flex items-center justify-between px-2">
-                <div class="w-5 h-5 bg-[#000000] rounded-full absolute left-[-10px] border-r border-white/10"></div>
-                <div class="w-full border-t-2 border-dashed border-gray-700 mx-3"></div>
-                <div class="w-5 h-5 bg-[#000000] rounded-full absolute right-[-10px] border-l border-white/10"></div>
+            <div class="relative h-6 w-full -my-3 z-30 flex items-center justify-between px-2">
+                <div class="w-6 h-6 bg-[#000000] rounded-full absolute left-[-12px] border-r border-white/10"></div>
+                <div class="w-full border-t-2 border-dashed border-gray-700 mx-4"></div>
+                <div class="w-6 h-6 bg-[#000000] rounded-full absolute right-[-12px] border-l border-white/10"></div>
             </div>
 
             <!-- Ticket Bottom -->
-            <div id="box-trip-step2" class="bg-[#191F28] rounded-b-[28px] p-4 flex flex-col items-center justify-center border border-white/5 transition-colors duration-300 min-h-[90px] relative z-10 mt-[-12px]">
-                <span id="label-step2" class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 transition-colors px-2.5 py-0.5 bg-black/50 rounded-full">DETAIL</span>
-                <div id="result-trip-step2" class="text-xl font-bold text-gray-400 break-keep text-center transition-colors tracking-tight">-</div>
+            <div id="box-trip-step2" class="bg-[#191F28] rounded-b-[32px] p-6 flex flex-col items-center justify-center border border-white/5 transition-colors duration-300 min-h-[100px] relative z-10 mt-[-16px]">
+                <span id="label-step2" class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 transition-colors px-3 py-1 bg-black/50 rounded-full">DETAIL</span>
+                <div id="result-trip-step2" class="text-[22px] font-bold text-gray-400 break-keep text-center transition-colors tracking-tight">-</div>
             </div>
 
-            <div class="mt-8 pt-6">
-                <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full btn-solid bg-[#F97316] text-white font-extrabold py-3.5 rounded-2xl text-sm tracking-wide">여행지 확인하기</button>
+            <!-- 버튼을 밑바닥이 아닌 위로 바짝 끌어올림 (mt-8) -->
+            <div class="mt-8">
+                <button id="btn-run-trip" onclick="window.haptic(); requestTripGame()" class="w-full btn-solid bg-[#F97316] text-white font-extrabold py-4 rounded-full text-[15px] tracking-wide">여행지 확인하기</button>
             </div>
         </div>
     </div>
