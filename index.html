@@ -162,6 +162,37 @@
                 #banner-ctrl { box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
                 #apple-tv-banner .hide-scrollbar::-webkit-scrollbar { display: none; }
                 #apple-tv-banner .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                
+                /* [New] 커스텀 애니메이션 (모션 그래픽) */
+                @keyframes custom-blob {
+                    0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg); }
+                    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: rotate(180deg); }
+                }
+                @keyframes custom-float {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-12px); }
+                }
+                .animate-custom-blob { animation: custom-blob 8s ease-in-out infinite; }
+                .animate-custom-float { animation: custom-float 4s ease-in-out infinite; }
+                
+                /* [New] 리얼한 걷기 모션용 키프레임 */
+                @keyframes svg-leg-f { 0%, 100% { transform: rotate(35deg); } 50% { transform: rotate(-35deg); } }
+                @keyframes svg-leg-b { 0%, 100% { transform: rotate(-35deg); } 50% { transform: rotate(35deg); } }
+                @keyframes svg-arm-swing { 0%, 100% { transform: rotate(-40deg); } 50% { transform: rotate(40deg); } }
+                @keyframes svg-body-bob { 0%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-6px); } }
+                
+                @keyframes coin-float {
+                    0%, 100% { transform: translateY(0) scale(1); }
+                    50% { transform: translateY(-10px) scale(1.02); }
+                }
+                .animate-coin-float { animation: coin-float 2.5s ease-in-out infinite; }
+                
+                @keyframes arrow-shoot {
+                    0% { transform: translate(-10px, 10px) scale(0.8); opacity: 0; }
+                    40% { opacity: 1; }
+                    100% { transform: translate(25px, -25px) scale(1.2); opacity: 0; }
+                }
+                .animate-arrow-shoot { animation: arrow-shoot 1.5s ease-out infinite; }
             </style>
 
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
@@ -188,12 +219,49 @@
                 <!-- [New] 슬라이드 1: 우리의 발자취 오픈 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')">
                     <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <!-- 은은한 민트색 후광 -->
-                        <div class="absolute w-[280px] h-[280px] bg-teal-500/20 rounded-full blur-[80px] group-hover:bg-teal-500/30 transition-colors duration-700 pointer-events-none"></div>
+                        <!-- 동적 맥박 글로우 (공간감) -->
+                        <div class="absolute w-[300px] h-[300px] bg-teal-500/20 rounded-full blur-[90px] animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none"></div>
                         
-                        <!-- 글래스모피즘 아이콘 컨테이너 -->
-                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-teal-400/20 to-teal-600/10 border border-teal-400/30 shadow-[0_10px_40px_rgba(45,212,191,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
-                            <i class="fa-solid fa-shoe-prints text-5xl text-teal-400/90 drop-shadow-md transform -rotate-12 group-hover:rotate-0 transition-all duration-700"></i>
+                        <!-- 오가닉 변형 메쉬 그래픽 (배경에서 은은하게 맴돎) -->
+                        <div class="absolute w-48 h-48 bg-gradient-to-tr from-teal-400/40 via-cyan-500/30 to-blue-500/20 blur-2xl animate-custom-blob pointer-events-none"></div>
+                        
+                        <!-- 리얼한 걷기 캐리어 모션 (틀 완전 제거) -->
+                        <div class="relative flex flex-col items-center justify-center z-10 group-hover:scale-110 transition-transform duration-500">
+                            <!-- SVG 커스텀 걷기 애니메이션 -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-[84px] h-[84px] text-teal-200 drop-shadow-[0_12px_24px_rgba(20,184,166,0.7)]" viewBox="-10 0 110 100" fill="currentColor">
+                                <g style="animation: svg-body-bob 1s ease-in-out infinite;">
+                                    <!-- Suitcase & Handle -->
+                                    <line x1="38" y1="61" x2="20" y2="70" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                                    <rect x="0" y="60" width="24" height="34" rx="5" />
+                                    <circle cx="6" cy="96" r="3.5" />
+                                    <circle cx="18" cy="96" r="3.5" />
+
+                                    <!-- Back Arm (Holding Suitcase) -->
+                                    <rect x="44" y="32" width="12" height="28" rx="6" transform="rotate(25 50 36)" />
+
+                                    <!-- Back Leg -->
+                                    <g style="transform-origin: 50px 58px; animation: svg-leg-b 1s ease-in-out infinite;">
+                                        <rect x="44" y="54" width="12" height="34" rx="6" />
+                                    </g>
+
+                                    <!-- Torso & Head -->
+                                    <rect x="43" y="30" width="14" height="32" rx="7" />
+                                    <circle cx="50" cy="15" r="9" />
+
+                                    <!-- Front Leg -->
+                                    <g style="transform-origin: 50px 58px; animation: svg-leg-f 1s ease-in-out infinite;">
+                                        <rect x="44" y="54" width="12" height="34" rx="6" />
+                                    </g>
+
+                                    <!-- Front Arm (Swinging) -->
+                                    <g style="transform-origin: 50px 36px; animation: svg-arm-swing 1s ease-in-out infinite;">
+                                        <rect x="44" y="32" width="12" height="28" rx="6" />
+                                    </g>
+                                </g>
+                            </svg>
+                            
+                            <!-- 바닥 그림자 (걸음에 맞춰 깜빡임) -->
+                            <div class="w-16 h-3 bg-black/50 blur-md rounded-full mt-4 animate-[pulse_1s_ease-in-out_infinite]"></div>
                         </div>
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
@@ -270,12 +338,24 @@
                 <!-- 슬라이드 3: 모임비 인상 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.showDuesModal();">
                     <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <!-- 은은한 골드/앰버 후광 -->
-                        <div class="absolute w-[280px] h-[280px] bg-amber-500/20 rounded-full blur-[80px] group-hover:bg-amber-500/30 transition-colors duration-700 pointer-events-none"></div>
+                        <!-- 동적 맥박 글로우 (딜레이 적용) -->
+                        <div class="absolute w-[300px] h-[300px] bg-amber-500/20 rounded-full blur-[90px] animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none" style="animation-delay: 1s;"></div>
                         
-                        <!-- 글래스모피즘 아이콘 컨테이너 (다른 배너와 통일) -->
-                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-600/10 border border-amber-400/30 shadow-[0_10px_40px_rgba(245,158,11,0.3)] backdrop-blur-md flex items-center justify-center group-hover:scale-105 transition-all duration-700 pointer-events-none">
-                            <i class="fa-solid fa-coins text-5xl text-amber-400/90 drop-shadow-md transform group-hover:-translate-y-1 transition-all duration-700"></i>
+                        <!-- 오가닉 변형 메쉬 그래픽 (반대 방향 회전) -->
+                        <div class="absolute w-48 h-48 bg-gradient-to-bl from-amber-400/40 via-orange-500/30 to-rose-500/20 blur-2xl animate-custom-blob pointer-events-none" style="animation-direction: reverse;"></div>
+                        
+                        <!-- 모임비 인상 모션 컨테이너 (틀 완전 제거) -->
+                        <div class="relative flex flex-col items-center justify-center z-10 group-hover:scale-110 transition-transform duration-500">
+                            <div class="relative">
+                                <!-- 코인/돈 자루 아이콘 둥둥 떠다니기 -->
+                                <i class="fa-solid fa-sack-dollar text-[84px] text-amber-200 drop-shadow-[0_12px_24px_rgba(245,158,11,0.7)] animate-coin-float"></i>
+                                
+                                <!-- 상승 화살표 슉슉 날아가기 -->
+                                <i class="fa-solid fa-arrow-trend-up absolute text-rose-400 text-[42px] drop-shadow-[0_4px_12px_rgba(244,63,94,0.9)] animate-arrow-shoot" style="top: -15px; right: -35px;"></i>
+                            </div>
+                            
+                            <!-- 바닥 그림자 -->
+                            <div class="w-16 h-3 bg-black/50 blur-md rounded-full mt-4 animate-[pulse_2.5s_ease-in-out_infinite]"></div>
                         </div>
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
