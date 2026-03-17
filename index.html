@@ -21,6 +21,13 @@
             src: url('https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface-font-mac.css');
         }
 
+        @font-face {
+            font-family: 'HakgyoansimDunggeunmisoTTF-B';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
         body { 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
             background-color: #000000;
@@ -152,6 +159,11 @@
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
+        <!-- 맨 상단 좌측 텍스트 -->
+        <div class="pt-6 pb-3 fade-in-up">
+            <span class="text-[28px] text-white tracking-wide" style="font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;">enjoy tv</span>
+        </div>
+
         <!-- 대형 배너: 슬라이드 기능 추가 -->
         <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 h-[431px] bg-black relative group transition-transform duration-300">
             <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
