@@ -159,13 +159,14 @@
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
-        <!-- 맨 상단 좌측 텍스트 -->
-        <div class="pt-6 pb-3 fade-in-up">
-            <span class="text-[28px] text-white tracking-wide" style="font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;">enjoy tv</span>
-        </div>
-
         <!-- 대형 배너: 슬라이드 기능 추가 -->
         <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 h-[431px] bg-black relative group transition-transform duration-300">
+            
+            <!-- 맨 상단 좌측 텍스트 (여백 없이 배너 이미지 위에 바로 띄움) -->
+            <div class="absolute left-5 z-40 pointer-events-none" style="top: max(24px, env(safe-area-inset-top));">
+                <span class="text-[28px] text-white tracking-wide drop-shadow-lg" style="font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;">enjoy<span class="ml-1">TV</span></span>
+            </div>
+
             <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
             <style>
                 #apple-tv-banner .bg-black\/60 { background-color: #ffffff !important; width: 20px !important; border-radius: 4px !important; }
