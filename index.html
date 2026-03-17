@@ -229,7 +229,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                     </div>
                     
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">그때 그 시절, 우리.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
                             우리의 과거 여행을 다시 보고 싶을 때는?<br>엔쪽이 브이로그 정주행하러 가기.
@@ -294,7 +294,7 @@
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
                     
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">우리의 발자취.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
                             우리가 함께한 모든 순간들. 지금까지의 여행 기록을 한눈에 확인해보세요.
@@ -313,7 +313,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                     </div>
                     
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">우리의 첫 여행.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
                             풋풋했던 첫 번째 여행의 추억부터<br>대환장 막장 이야기까지! 모든 시작을 확인하세요.
@@ -332,7 +332,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                     </div>
                     
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">환승여행.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
                             익숙함과 새로움 사이. 당신의 마음은 어디로 향할까요?
@@ -351,7 +351,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                     </div>
                     
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">출장엔조이 오리지널 사운드트랙.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
                             여행의 기억이 음악이 되는 순간. 눈을 감고 그날의 온기를 다시 느껴보세요.
@@ -421,7 +421,7 @@
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
                     
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">더 나은 내일을 위한 투자.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
                             엔조이의 퀄리티를 한 단계 높이기 위해, 부득이하게 모임비를 개편합니다.
@@ -435,8 +435,9 @@
 
             </div>
             
-            <!-- 하단 투명 블러 처리 (배경과 서서히 이어지지 않음) -->
-            <div class="absolute -bottom-px left-0 right-0 h-20 bg-black/40 backdrop-blur-md pointer-events-none z-20"></div>
+            <!-- 하단 투명 블러 그라데이션 처리 (Apple TV 스타일) -->
+            <div class="absolute -bottom-px left-0 right-0 h-40 pointer-events-none z-20" style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 10%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to top, rgba(0,0,0,1) 10%, rgba(0,0,0,0) 100%);"></div>
+            <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-20"></div>
             
             <!-- 슬라이드 인디케이터 (Apple TV 스타일 정중앙 하단) -->
             <div class="absolute bottom-5 left-0 right-0 flex justify-center items-center z-30 pointer-events-none">
