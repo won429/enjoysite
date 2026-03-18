@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" style="background-color: #000000;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
     <title>Enjoy</title>
     
     <!-- 홈 화면 바로가기 아이콘 -->
@@ -156,11 +157,11 @@
         }
     </style>
 </head>
-<body class="w-full h-[100vh] flex flex-col overflow-hidden bg-black" ontouchstart="">
+<body class="absolute inset-0 w-full flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
-    <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 w-full max-w-md mx-auto relative min-h-full" style="padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));">
+    <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
         <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진 복구 -->
