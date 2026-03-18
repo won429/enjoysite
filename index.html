@@ -163,14 +163,8 @@
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <!-- 위로 쏠리게 만들던 강제 네거티브 마진 제거 및 원래 높이로 복구 -->
-        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="height: 431px;">
-            
-            <!-- 맨 상단 좌측 텍스트 (여백 없이 배너 이미지 위에 바로 띄움) -->
-            <!-- 상태바 영역만 피해서 자연스럽게 정렬되도록 복구 -->
-            <div class="absolute left-5 z-40 pointer-events-none" style="top: calc(env(safe-area-inset-top, 20px) + 18px);">
-                <span class="text-[28px] text-white tracking-wide drop-shadow-lg" style="font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;">enjoy<span class="ml-1">TV</span></span>
-            </div>
+        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진(최소 60px) 적용 -->
+        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="margin-top: calc(-1 * max(60px, env(safe-area-inset-top))); height: calc(431px + max(60px, env(safe-area-inset-top)));">
 
             <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
             <style>
