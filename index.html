@@ -163,10 +163,12 @@
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 h-[431px] bg-black relative group transition-transform duration-300">
+        <!-- [Modified] h-[431px]를 제거하고, 인라인 스타일로 안전영역(상태바)만큼 강제로 위로 끌어올리고 높이를 연장함 -->
+        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="margin-top: calc(-1 * env(safe-area-inset-top)); height: calc(431px + env(safe-area-inset-top));">
             
             <!-- 맨 상단 좌측 텍스트 (여백 없이 배너 이미지 위에 바로 띄움) -->
-            <div class="absolute left-5 z-40 pointer-events-none" style="top: max(4px, env(safe-area-inset-top));">
+            <!-- [Modified] 컨테이너가 위로 연장되었으므로, 글자 위치도 안전영역만큼 보정하여 바짝 붙임 -->
+            <div class="absolute left-5 z-40 pointer-events-none" style="top: calc(env(safe-area-inset-top) + 4px);">
                 <span class="text-[28px] text-white tracking-wide drop-shadow-lg" style="font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;">enjoy<span class="ml-1">TV</span></span>
             </div>
 
