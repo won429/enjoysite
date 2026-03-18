@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="bg-black">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -156,15 +156,15 @@
         }
     </style>
 </head>
-<body class="w-full h-[100vh] flex flex-col overflow-hidden bg-black" ontouchstart="">
+<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진 제거 및 크기 정상화 -->
-        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="height: calc(431px + env(safe-area-inset-top, 0px));">
+        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진 복구 -->
+        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="margin-top: calc(-1 * max(60px, env(safe-area-inset-top))); height: calc(431px + max(60px, env(safe-area-inset-top)));">
 
             <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
             <style>
