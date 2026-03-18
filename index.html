@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko" style="background-color: #000000;">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#000000">
     <title>Enjoy</title>
     
     <!-- 홈 화면 바로가기 아이콘 -->
@@ -157,17 +156,17 @@
         }
     </style>
 </head>
-<body class="absolute inset-0 w-full flex flex-col overflow-hidden bg-black" ontouchstart="">
+<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진 복구 -->
-        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="height: calc(431px + env(safe-area-inset-top, 0px));">
-
-            <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
+        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진(최소 60px) 적용 -->
+        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="margin-top: calc(-1 * max(60px, env(safe-area-inset-top))); height: calc(431px + max(60px, env(safe-area-inset-top)));">
+            
+            <!-- 맨 상단 좌측 텍스트 (여백 없이 배너 이미지 위에 바로 띄움) -->
             <style>
                 #apple-tv-banner button[id^="ind-"].bg-white\/60 { background-color: #ffffff !important; width: 20px !important; border-radius: 4px !important; }
                 #apple-tv-banner button[id^="ind-"].bg-white\/20 { background-color: rgba(255,255,255,0.3) !important; width: 6px !important; border-radius: 4px !important; }
@@ -228,21 +227,19 @@
                         <img src="banner_1.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
                     </div>
                     
-                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
-                    
-                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 (자연스러운 페이드 적용) -->
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); mask-image: linear-gradient(to top, black 25%, transparent 100%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] bg-gradient-to-t from-white/40 via-white/5 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">그때 그 시절, 우리.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                        <p class="text-[13px] text-gray-800 font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-sm">
                             우리의 과거 여행을 다시 보고 싶을 때는?<br>엔쪽이 브이로그 정주행하러 가기.
                         </p>
                         <div class="bg-white text-black font-bold text-[12px] whitespace-nowrap py-[7px] rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[74px] flex items-center justify-center active:scale-95 transition-transform">
                             보러가기
                         </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">시즌1 전편 절찬 스트리밍 중</p>
+                        <p class="text-[11px] text-gray-700 font-bold mt-4 drop-shadow-sm">시즌1 전편 절찬 스트리밍 중</p>
                     </div>
                 </div>
 
@@ -298,11 +295,9 @@
                         </div>
                     </div>
                     
-                    <!-- 텍스트 뒤, 배경 그래픽 앞에 깔리는 검은 투명 블러 그라데이션 -->
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-20"></div>
-                    
-                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    <!-- 텍스트 뒤, 배경 그래픽 앞에 깔리는 검은 투명 블러 그라데이션 (자연스러운 페이드 적용) -->
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); mask-image: linear-gradient(to top, black 25%, transparent 100%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">우리의 발자취.</h2>
@@ -322,21 +317,19 @@
                         <img src="banner_2.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
                     </div>
                     
-                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
-                    
-                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 (자연스러운 페이드 적용) -->
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); mask-image: linear-gradient(to top, black 25%, transparent 100%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] bg-gradient-to-t from-white/40 via-white/5 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">우리의 첫 여행.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                        <p class="text-[13px] text-gray-800 font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-sm">
                             풋풋했던 첫 번째 여행의 추억부터<br>대환장 막장 이야기까지! 모든 시작을 확인하세요.
                         </p>
                         <div class="bg-white text-black font-bold text-[12px] whitespace-nowrap py-[7px] rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[74px] flex items-center justify-center active:scale-95 transition-transform">
                             보러가기
                         </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">마라맛 에피소드 절찬 스트리밍 중</p>
+                        <p class="text-[11px] text-gray-700 font-bold mt-4 drop-shadow-sm">마라맛 에피소드 절찬 스트리밍 중</p>
                     </div>
                 </div>
 
@@ -346,21 +339,19 @@
                         <img src="banner_3.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
                     </div>
                     
-                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
-                    
-                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 (자연스러운 페이드 적용) -->
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); mask-image: linear-gradient(to top, black 25%, transparent 100%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] bg-gradient-to-t from-white/40 via-white/5 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">환승여행.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                        <p class="text-[13px] text-gray-800 font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-sm">
                             익숙함과 새로움 사이. 당신의 마음은 어디로 향할까요?
                         </p>
                         <div class="bg-white text-black font-bold text-[12px] whitespace-nowrap py-[7px] rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[74px] flex items-center justify-center active:scale-95 transition-transform">
                             보러가기
                         </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">가장 솔직한 감정들이 교차하는 곳</p>
+                        <p class="text-[11px] text-gray-700 font-bold mt-4 drop-shadow-sm">가장 솔직한 감정들이 교차하는 곳</p>
                     </div>
                 </div>
 
@@ -370,21 +361,19 @@
                         <img src="banner_4.jpg" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
                     </div>
                     
-                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
-                    
-                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 (자연스러운 페이드 적용) -->
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); mask-image: linear-gradient(to top, black 25%, transparent 100%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] bg-gradient-to-t from-white/40 via-white/5 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">출장엔조이 오리지널 사운드트랙.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                        <p class="text-[13px] text-gray-800 font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-sm">
                             여행의 기억이 음악이 되는 순간. 눈을 감고 그날의 온기를 다시 느껴보세요.
                         </p>
                         <div class="bg-white text-black font-bold text-[12px] whitespace-nowrap py-[7px] rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[74px] flex items-center justify-center active:scale-95 transition-transform">
                             감상하기
                         </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">언제 어디서든, 무제한 감상 지원</p>
+                        <p class="text-[11px] text-gray-700 font-bold mt-4 drop-shadow-sm">언제 어디서든, 무제한 감상 지원</p>
                     </div>
                 </div>
 
@@ -445,11 +434,9 @@
                         </div>
                     </div>
                     
-                    <!-- 텍스트 뒤, 배경 그래픽 앞에 깔리는 검은 투명 블러 그라데이션 -->
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-20"></div>
-                    
-                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    <!-- 텍스트 뒤, 배경 그래픽 앞에 깔리는 검은 투명 블러 그라데이션 (자연스러운 페이드 적용) -->
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); mask-image: linear-gradient(to top, black 25%, transparent 100%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-[80%] bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">더 나은 내일을 위한 투자.</h2>
@@ -697,7 +684,7 @@
             <h2 class="text-[22px] font-bold text-white tracking-tight">더보기</h2>
         </header>
 
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-3" style="padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));">
+        <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-3 pb-32">
             
             <!-- 메뉴 그룹 1: 액티비티 & 기록 -->
             <div class="mb-8 fade-in-up delay-100">
@@ -852,7 +839,7 @@
             </div>
 
             <!-- 리스트 -->
-            <div class="px-1" style="padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));"> 
+            <div class="pb-28 px-1"> 
                 <div class="flex justify-between items-end mb-5">
                     <div class="flex flex-col gap-0.5">
                         <span class="text-[10px] font-bold text-blue-400 tracking-widest uppercase ml-0.5">Schedule</span>
@@ -906,7 +893,7 @@
             </div>
 
             <!-- 회비 납부 내역 (초깔끔 무테두리 미니멀 리스트) -->
-            <div style="padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));">
+            <div class="pb-28">
                 <div class="flex justify-between items-end mb-2 px-2">
                     <h3 class="text-[18px] font-bold text-white tracking-tight">납부 내역</h3>
                     <div class="flex items-center gap-3">
@@ -935,7 +922,7 @@
     </div>
 
     <!-- 하단 플로팅 메뉴 -->
-    <nav id="bottom-nav" class="fixed left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none cursor-grab active:cursor-grabbing" style="bottom: calc(12px + env(safe-area-inset-bottom, 0px));">
+    <nav id="bottom-nav" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none cursor-grab active:cursor-grabbing">
         <div class="flex items-center bg-[#2C2C2E] shadow-[0_8px_24px_rgba(0,0,0,0.6)] border border-white/10 rounded-full p-1.5 gap-1 relative">
             <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
             
