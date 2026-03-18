@@ -156,7 +156,7 @@
         }
     </style>
 </head>
-<body class="fixed inset-0 w-full flex flex-col overflow-hidden bg-black" ontouchstart="">
+<body class="w-full h-[100vh] flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
@@ -464,9 +464,6 @@
 
             </div>
             
-            <!-- 하단부 절단면 방지: 메인 화면 검은색과 100% 부드럽게 이어주는 마감 그라데이션 -->
-            <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
-            
             <!-- 슬라이드 인디케이터 (Apple TV 스타일 정중앙 하단) -->
             <div class="absolute bottom-5 left-0 right-0 flex justify-center items-center z-50 pointer-events-none">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-white/60 transition-colors pointer-events-auto"></button>
@@ -691,8 +688,6 @@
                 };
             </script>
         </div>
-
-        <div class="pb-8"></div>
     </main>
 
     <!-- ➕ 더보기 화면 (초깔끔 무테두리 미니멀리즘 + 컬러 아이콘) -->
