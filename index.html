@@ -156,26 +156,20 @@
         }
     </style>
 </head>
-<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
+<body class="fixed inset-0 w-full flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- [Modified] pt-safe 제거하여 상단 여백 없앰 -->
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진(최소 60px) 적용 -->
-        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="margin-top: calc(-1 * max(60px, env(safe-area-inset-top))); height: calc(431px + max(60px, env(safe-area-inset-top)));">
-            
-            <!-- 맨 상단 좌측 텍스트 (여백 없이 배너 이미지 위에 바로 띄움) -->
-            <!-- [Modified] 상태바 바로 아래까지 엄청 바짝 붙임 (+18px로 조절하여 겹치지 않게 최대로 올림) -->
-            <div class="absolute left-5 z-40 pointer-events-none" style="top: calc(max(60px, env(safe-area-inset-top)) + 18px);">
-                <span class="text-[28px] text-white tracking-wide drop-shadow-lg" style="font-family: 'HakgyoansimDunggeunmisoTTF-B', sans-serif;">enjoy<span class="ml-1">TV</span></span>
-            </div>
+        <!-- [Modified] 사파리 환경에서도 상태바를 무조건 덮도록 강제 네거티브 마진 제거 및 크기 정상화 -->
+        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-6 -mx-5 bg-black relative group transition-transform duration-300" style="height: calc(431px + env(safe-area-inset-top, 0px));">
 
             <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
             <style>
-                #apple-tv-banner .bg-black\/60 { background-color: #ffffff !important; width: 20px !important; border-radius: 4px !important; }
-                #apple-tv-banner .bg-black\/20 { background-color: rgba(255,255,255,0.3) !important; width: 6px !important; border-radius: 4px !important; }
+                #apple-tv-banner button[id^="ind-"].bg-white\/60 { background-color: #ffffff !important; width: 20px !important; border-radius: 4px !important; }
+                #apple-tv-banner button[id^="ind-"].bg-white\/20 { background-color: rgba(255,255,255,0.3) !important; width: 6px !important; border-radius: 4px !important; }
                 #apple-tv-banner button[id^="ind-"] { height: 6px !important; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); margin: 0 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
                 #banner-ctrl { box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
                 #apple-tv-banner .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -236,6 +230,8 @@
                     <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
+                    
+                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">그때 그 시절, 우리.</h2>
@@ -305,6 +301,8 @@
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-20"></div>
                     
+                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">우리의 발자취.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
@@ -326,6 +324,8 @@
                     <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
+                    
+                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">우리의 첫 여행.</h2>
@@ -349,6 +349,8 @@
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
                     
+                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">환승여행.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
@@ -370,6 +372,8 @@
                     <!-- 텍스트 뒤, 이미지 앞에 깔리는 하얀 투명 블러 그라데이션 -->
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-white/30 via-white/5 to-transparent pointer-events-none z-20"></div>
+                    
+                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
                     
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">출장엔조이 오리지널 사운드트랙.</h2>
@@ -398,7 +402,7 @@
                                 <!-- [New] 기존 drop-shadow를 대체하여 깨짐을 방지하는 안전한 배경 빛 번짐 -->
                                 <div class="absolute w-[100px] h-[100px] bg-emerald-400/20 blur-[20px] rounded-full"></div>
                                 
-                                <!-- 1만원짜리 지폐 2장과 상승 화살표 그리기 커스텀 SVG (overflow="visible" 및 drop-shadow 제거로 깨짐 완벽 방지) -->
+                                <!-- 1만원짜 지폐 2장과 상승 화살표 그리기 커스텀 SVG (overflow="visible" 및 drop-shadow 제거로 깨짐 완벽 방지) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-[130px] h-[130px] relative z-10" viewBox="0 0 120 120" overflow="visible">
                                     <!-- 계단형 상승 화살표 -->
                                     <path d="M -5 95 H 25 V 60 H 55 V 25 H 85 V -5" fill="none" stroke="#FB7185" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
@@ -444,6 +448,8 @@
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] pointer-events-none z-20" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%);"></div>
                     <div class="absolute bottom-0 left-0 right-0 h-[70%] bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-20"></div>
                     
+                    <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
+                    
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-30">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">더 나은 내일을 위한 투자.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
@@ -459,13 +465,16 @@
             </div>
             
             <!-- 하단부 절단면 방지: 메인 화면 검은색과 100% 부드럽게 이어주는 마감 그라데이션 -->
-            <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-40"></div>
+            <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
             
             <!-- 슬라이드 인디케이터 (Apple TV 스타일 정중앙 하단) -->
             <div class="absolute bottom-5 left-0 right-0 flex justify-center items-center z-50 pointer-events-none">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-1.5 h-1.5 rounded-full bg-white/60 transition-colors pointer-events-auto"></button>
-                <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
-                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-1" onclick="window.moveBanner(1)" class="w-1.5 h-1.5 rounded-full bg-white/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-white/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-white/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-white/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-white/20 transition-colors pointer-events-auto"></button>
                 
                 <div class="w-px h-3 bg-white/20 mx-1 ml-2 pointer-events-none"></div>
                 
@@ -1557,9 +1566,9 @@
                 inds.forEach((ind, i) => {
                     if (ind) {
                         if (i === index) {
-                            ind.className = 'w-1.5 h-1.5 rounded-full bg-black/60 transition-colors';
+                            ind.className = 'w-1.5 h-1.5 rounded-full bg-white/60 transition-colors pointer-events-auto';
                         } else {
-                            ind.className = 'w-1.5 h-1.5 rounded-full bg-black/20 transition-colors';
+                            ind.className = 'w-1.5 h-1.5 rounded-full bg-white/20 transition-colors pointer-events-auto';
                         }
                     }
                 });
@@ -1977,7 +1986,7 @@
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, getDoc, addDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeFirestore, getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, getDoc, addDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         // [New] 파이어베이스 푸시 알림 모듈 임포트
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-messaging.js";
 
@@ -2016,7 +2025,12 @@
             try {
                 const meetingApp = getOrInitializeApp(meetingConfig, 'meetingApp');
                 const meetingAuth = getAuth(meetingApp);
-                window.meetingDb = getFirestore(meetingApp);
+                
+                // [수정] WebSockets 차단/네트워크 불안정 환경(iframe 등)에서 발생하는 연결 지연 및 
+                // "Could not reach Cloud Firestore backend" 에러를 방지하기 위해 Long Polling 강제 활성화
+                window.meetingDb = initializeFirestore(meetingApp, {
+                    experimentalForceLongPolling: true
+                });
                 
                 // [New] 푸시 알림(Messaging) 초기화 및 포그라운드 수신 준비
                 try {
