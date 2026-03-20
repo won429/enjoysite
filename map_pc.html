@@ -2,15 +2,15 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta id="viewport-meta" name="viewport" content="width=1280, viewport-fit=cover">
     <script>
-        /* 모바일 브라우저에서 '데스크탑 웹사이트 요청(PC 버전)' 시 화면 전체가 알맞게 축소되어 보이도록 뷰포트 강제 설정 */
-        if (!/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            // PC 또는 데스크탑 요청 모드: 가로 폭을 1280px로 강제 고정하여 PC 레이아웃이 무조건 발동되게 하고, 브라우저가 화면에 맞게 축소시켜 보여줌
-            document.getElementById('viewport-meta').content = 'width=1280, viewport-fit=cover';
+        /* 현재 파일은 PC 버전입니다. 일반 모바일 기기로 접속하면 모바일 버전(map.html)으로 자동 이동합니다.
+           (단, 모바일 브라우저에서 '데스크탑 웹사이트 요청'을 켠 경우에는 이동하지 않고 화면 전체가 축소되어 PC 버전이 유지됩니다.) */
+        if (/Mobi/i.test(navigator.userAgent)) {
+            window.location.replace('map.html');
         }
     </script>
-    <title>엔조이 공식 홈페이지 - 친구위치공유</title>
+    <title>엔조이 공식 홈페이지 - 친구위치공유/title>
     
     <!-- 1. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
