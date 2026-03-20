@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>친구 위치 공유 - Toss Style</title>
     
+    <!-- 접속 기기 감지 및 리다이렉트 (PC/태블릿 -> map_pc.html) -->
+    <script>
+        (function() {
+            var ua = navigator.userAgent.toLowerCase();
+            // 스마트폰 (아이폰, 안드로이드 스마트폰 등) 감지
+            var isMobile = /iphone|ipod|android.*mobile|windows ce|blackberry|symbian|windows phone|webos|opera mini|opera mobi|polaris|iemobile|lgtelecom|nokia|sonyericsson/i.test(ua);
+            // 아이패드는 데스크탑(MacIntel)으로 잡히는 경우가 있으므로 터치 포인트로 추가 확인
+            var isIpad = /ipad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            
+            // 아이패드이거나 모바일 기기가 아니면 (즉, PC나 태블릿이면) map_pc.html로 이동
+            if (isIpad || !isMobile) {
+                try {
+                    // 미리보기 환경(blob URL)에서는 상대 경로 리다이렉트 시 SyntaxError가 발생하므로 예외 처리
+                    if (window.location.protocol !== 'blob:') {
+                        window.location.replace('map_pc.html');
+                    } else {
+                        console.log('미리보기 환경에서는 PC 버전으로 리다이렉트하지 않습니다.');
+                    }
+                } catch (e) {
+                    console.error('Redirect error:', e);
+                }
+            }
+        })();
+    </script>
+
     <!-- 1. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -24,8 +49,8 @@
 
         body { 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-            background-color: #F2F4F6;
-            color: #191F28;
+            background-color: #000000;
+            color: #F2F4F6;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
             touch-action: pan-y;
@@ -33,12 +58,12 @@
 
         /* 유리 재질 카드 */
         .toss-card {
-            background: rgba(255, 255, 255, 0.65);
+            background: rgba(30, 30, 30, 0.65);
             backdrop-filter: blur(12px) saturate(180%);
             -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04); 
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2); 
             transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.1s;
             cursor: pointer;
             overflow: hidden;
@@ -50,8 +75,8 @@
         }
 
         /* 텍스트 유틸리티 */
-        .text-main { color: #191F28; }
-        .text-sub { color: #6B7684; }
+        .text-main { color: #F2F4F6; }
+        .text-sub { color: #8B95A1; }
         .text-blue { color: #3182F6; }
         
         /* 애니메이션 */
@@ -60,9 +85,9 @@
 
         /* 지도 마커 스타일 */
         .marker-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 60px; pointer-events: none; }
-        .emoji-marker { pointer-events: auto; background-color: white; border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 26px; border: 2.5px solid white; transition: transform 0.2s; z-index: 10; }
+        .emoji-marker { pointer-events: auto; background-color: #222; border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-size: 26px; border: 2.5px solid #444; transition: transform 0.2s; z-index: 10; }
         .emoji-marker:active { transform: scale(0.9); }
-        .marker-name { pointer-events: auto; text-align: center; font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.95); padding: 4px 8px; border-radius: 12px; margin-top: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #333; border: 1px solid rgba(0,0,0,0.05); z-index: 20; }
+        .marker-name { pointer-events: auto; text-align: center; font-size: 11px; font-weight: bold; background: rgba(30,30,30,0.95); padding: 4px 8px; border-radius: 12px; margin-top: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); color: #F2F4F6; border: 1px solid rgba(255,255,255,0.1); z-index: 20; }
 
         /* 안전 영역 */
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
@@ -82,24 +107,24 @@
         }
     </style>
 </head>
-<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-gradient-to-br from-[#F2F4F6] via-[#E8ECF2] to-[#DEE2E6]" ontouchstart="">
+<body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 로그인 모달 -->
-    <div id="login-modal" class="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl scale-in text-center relative">
-            <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl text-blue-500 shadow-sm">
+    <div id="login-modal" class="fixed inset-0 z-[999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-300">
+        <div class="bg-[#191F28] w-full max-w-xs rounded-3xl p-6 shadow-2xl scale-in text-center relative">
+            <div class="w-16 h-16 bg-[#2A323D] rounded-full flex items-center justify-center mx-auto mb-5 text-2xl text-blue-500 shadow-sm">
                 <i class="fa-solid fa-lock"></i>
             </div>
             <!-- ID 추가: 텍스트 변경을 위해 -->
-            <h2 id="login-title" class="text-xl font-bold text-main mb-2">당신은 누구십니까?</h2>
-            <p id="login-desc" class="text-sub text-sm mb-6">우리 6명만 들어올 수 있어요.<br>이름을 입력해주세요.</p>
+            <h2 id="login-title" class="text-xl font-bold text-main mb-2">로그인 하기</h2>
+            <p id="login-desc" class="text-sub text-sm mb-6">우리 6명만 들어올 수 있어요.<br>별명을 입력해주세요.</p>
             
             <!-- ID 추가: 폼 영역 제어를 위해 -->
             <div id="login-form" class="space-y-3">
-                <input type="text" id="login-input" placeholder="이름 입력" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-center text-base font-bold text-main focus:outline-none focus:border-blue-500 focus:bg-white transition-all placeholder-gray-400">
+                <input type="text" id="login-input" placeholder="별명 입력" class="w-full bg-[#2A323D] border border-[#333D4B] rounded-xl px-4 py-3.5 text-center text-base font-bold text-white focus:outline-none focus:border-blue-500 focus:bg-[#333D4B] transition-all placeholder-gray-500">
                 <p id="login-error" class="text-red-500 text-xs font-bold h-4"></p>
                 <button onclick="tryLogin()" class="w-full bg-[#3182F6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md shadow-blue-500/20 active:scale-95">
-                    입장하기
+                    로그인
                 </button>
             </div>
         </div>
@@ -110,24 +135,24 @@
         
         <!-- 지도 탭 (풀화면 + 하단 메뉴 스타일 상단바) -->
         <div id="view-map" class="absolute inset-0 w-full h-full">
-            <div class="w-full h-full relative bg-gray-100 fade-in-up">
+            <div class="w-full h-full relative bg-black fade-in-up">
                 <div id="map" class="w-full h-full z-0 outline-none"></div>
                 
                 <!-- 상단 상태바 (하단 메뉴 디자인 + 상단 밀착 top-0) -->
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 z-20 pt-safe w-auto pointer-events-none">
-                    <div class="flex items-center bg-white/10 backdrop-blur-[4px] backdrop-saturate-[180%] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full px-4 py-2 gap-3 ring-1 ring-white/30 pointer-events-auto mt-2">
+                    <div class="flex items-center bg-black shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-white/10 rounded-full px-4 py-2 gap-3 ring-1 ring-white/10 pointer-events-auto mt-2">
                         <!-- 접속자 정보 -->
                         <div class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-user-group text-xs text-[#4E5968]"></i>
-                            <span id="map-count" class="font-bold text-sm tabular-nums text-[#191F28]">0</span>
+                            <i class="fa-solid fa-user-group text-xs text-gray-400"></i>
+                            <span id="map-count" class="font-bold text-sm tabular-nums text-white">0</span>
                         </div>
 
                         <!-- 구분선 -->
-                        <div class="w-px h-3 bg-black/10"></div>
+                        <div class="w-px h-3 bg-white/20"></div>
 
                         <!-- 새로고침 -->
                         <div onclick="updateLocation()" class="cursor-pointer active:scale-90 transition-transform flex items-center justify-center w-6 h-6">
-                            <i id="refresh-icon" class="fa-solid fa-rotate-right text-sm text-[#191F28]"></i>
+                            <i id="refresh-icon" class="fa-solid fa-rotate-right text-sm text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -148,13 +173,13 @@
             
             <div class="toss-card p-6 mb-4 fade-in-up delay-100 !cursor-default active:transform-none">
                 <label class="block text-xs font-bold text-sub mb-1.5 ml-1">내 이름</label>
-                <div id="profile-name" class="w-full bg-gray-50 rounded-xl px-4 py-3.5 text-base text-main font-bold border border-gray-100"></div>
+                <div id="profile-name" class="w-full bg-[#2A323D] rounded-xl px-4 py-3.5 text-base text-main font-bold border border-[#333D4B]"></div>
                 
                 <div class="mt-5">
                     <label class="block text-xs font-bold text-sub mb-1.5 ml-1">현재 위치 (자동 감지)</label>
                     <div class="flex items-center gap-2">
-                        <div id="current-address-display" class="flex-1 bg-gray-50 rounded-xl px-4 py-3.5 text-sm text-gray-600 border border-gray-100 truncate">위치 정보 없음</div>
-                        <button onclick="updateLocation()" class="w-12 h-12 rounded-xl bg-gray-900 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform">
+                        <div id="current-address-display" class="flex-1 bg-[#2A323D] rounded-xl px-4 py-3.5 text-sm text-gray-300 border border-[#333D4B] truncate">위치 정보 없음</div>
+                        <button onclick="updateLocation()" class="w-12 h-12 rounded-xl bg-gray-700 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform">
                             <i class="fa-solid fa-location-crosshairs"></i>
                         </button>
                     </div>
@@ -168,7 +193,7 @@
                 </div>
             </div>
 
-            <button onclick="logout()" class="w-full bg-red-50 text-red-500 border border-red-100 font-bold py-4 rounded-2xl active:bg-red-100 transition-colors text-sm fade-in-up delay-200">
+            <button onclick="logout()" class="w-full bg-[#2A323D] text-red-400 border border-[#333D4B] font-bold py-4 rounded-2xl active:bg-[#333D4B] transition-colors text-sm fade-in-up delay-200">
                 로그아웃
             </button>
         </div>
@@ -177,34 +202,34 @@
 
     <!-- 하단 플로팅 메뉴 (index.html 스타일) -->
     <nav id="bottom-nav" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none hidden">
-        <div class="flex items-center bg-white/10 backdrop-blur-[4px] backdrop-saturate-[180%] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1.5 gap-1 ring-1 ring-white/30 relative">
-            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0" style="left: 6px; width: 64px;"></div>
+        <div class="flex items-center bg-black shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-white/10 rounded-full p-1.5 gap-1 ring-1 ring-white/10 relative">
+            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] rounded-full backdrop-blur-[2px] border border-white/10 z-0" style="left: 6px; width: 64px;"></div>
             
-            <button onclick="window.location.href='index.html'" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform">
+            <button onclick="if(window.location.protocol !== 'blob:') window.location.href='index.html'" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-house text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">홈</span>
+                    <i class="fa-solid fa-house text-base text-gray-400 group-hover:text-white transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors drop-shadow-sm whitespace-nowrap">홈</span>
                 </div>
             </button>
 
             <button onclick="switchTab('map')" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" id="nav-btn-map">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-map text-base text-[#191F28] drop-shadow-sm transition-colors"></i>
-                    <span class="text-[10px] font-bold text-[#191F28] drop-shadow-sm whitespace-nowrap transition-colors">지도</span>
+                    <i class="fa-solid fa-map text-base text-white drop-shadow-sm transition-colors"></i>
+                    <span class="text-[10px] font-bold text-white drop-shadow-sm whitespace-nowrap transition-colors">지도</span>
                 </div>
             </button>
 
             <button onclick="switchTab('friends')" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" id="nav-btn-friends">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-user-group text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">친구</span>
+                    <i class="fa-solid fa-user-group text-base text-gray-400 group-hover:text-white transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors drop-shadow-sm whitespace-nowrap">친구</span>
                 </div>
             </button>
 
             <button onclick="switchTab('profile')" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" id="nav-btn-profile">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-gear text-base text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm"></i>
-                    <span class="text-[10px] font-medium text-[#4E5968] group-hover:text-gray-900 transition-colors drop-shadow-sm whitespace-nowrap">설정</span>
+                    <i class="fa-solid fa-gear text-base text-gray-400 group-hover:text-white transition-colors drop-shadow-sm"></i>
+                    <span class="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors drop-shadow-sm whitespace-nowrap">설정</span>
                 </div>
             </button>
         </div>
@@ -442,6 +467,7 @@
                 let isOnline = false;
                 let infoStr = "위치 정보 없음";
                 let timeClass = "text-gray-400";
+                let dateInfoStr = "";
                 
                 if (hasData && friend.timestamp) {
                     const date = new Date(friend.timestamp);
@@ -449,8 +475,13 @@
                     isOnline = diff < 10 * 60 * 1000; // 10분 이내 접속
                     
                     const timeStr = date.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+                    const yyyy = date.getFullYear();
+                    const mm = String(date.getMonth() + 1).padStart(2, '0');
+                    const dd = String(date.getDate()).padStart(2, '0');
+                    dateInfoStr = `${yyyy}.${mm}.${dd} ${timeStr}`;
+                    
                     const addr = friend.address || "주소 미상";
-                    infoStr = `${addr} · ${timeStr}`;
+                    infoStr = addr;
                     
                     if(isOnline) timeClass = "text-blue-500 font-bold";
                 }
@@ -458,7 +489,7 @@
                 // 토스 스타일 리스트 아이템
                 grid.innerHTML += `
                 <div class="toss-card p-4 flex items-center gap-4 group" ${hasData ? `onclick="window.haptic(); showOnMap(${friend.latitude}, ${friend.longitude})"` : ''}>
-                    <div class="relative w-12 h-12 flex-shrink-0 bg-gray-50 rounded-[20px] flex items-center justify-center text-2xl border border-gray-100 shadow-sm group-active:scale-95 transition-transform">
+                    <div class="relative w-12 h-12 flex-shrink-0 bg-[#2A323D] rounded-[20px] flex items-center justify-center text-2xl border border-[#333D4B] shadow-sm group-active:scale-95 transition-transform">
                         ${emoji}
                         <div class="absolute -bottom-1 -right-1 flex items-center justify-center">
                             ${isOnline ? '<span class="online-dot"></span>' : '<span class="offline-dot"></span>'}
@@ -467,11 +498,12 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 mb-0.5">
                             <h4 class="font-bold text-main text-base truncate">${name}</h4>
-                            ${isMe ? '<span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-1.5 py-0.5 rounded">나</span>' : ''}
+                            ${isMe ? '<span class="bg-blue-900/50 text-blue-400 text-[10px] font-bold px-1.5 py-0.5 rounded">나</span>' : ''}
                         </div>
                         <p class="text-xs text-sub truncate ${hasData ? '' : 'opacity-50'}">${infoStr}</p>
+                        ${dateInfoStr ? `<p class="text-[10px] mt-0.5 truncate ${timeClass}">${dateInfoStr}</p>` : ''}
                     </div>
-                    ${hasData ? `<div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-colors"><i class="fa-solid fa-location-dot text-sm"></i></div>` : ''}
+                    ${hasData ? `<div class="w-8 h-8 rounded-full bg-[#2A323D] flex items-center justify-center text-gray-400 group-hover:text-blue-400 group-hover:bg-blue-900/50 transition-colors"><i class="fa-solid fa-location-dot text-sm"></i></div>` : ''}
                 </div>`;
             });
         }
@@ -513,16 +545,29 @@
             const btns = ['map', 'friends', 'profile'];
             btns.forEach(b => {
                 const btn = document.getElementById('nav-btn-' + b);
+                if (!btn) return;
+                
                 const icon = btn.querySelector('i');
                 const text = btn.querySelector('span');
                 
                 if (b === activeTab) {
-                    icon.className = icon.className.replace('text-[#4E5968]', 'text-[#191F28]').replace('text-gray-400', 'text-[#191F28]');
-                    text.className = text.className.replace('font-medium', 'font-bold').replace('text-[#4E5968]', 'text-[#191F28]').replace('text-gray-400', 'text-[#191F28]');
-                    // FontAwesome solid/regular 전환이 필요하다면 여기서 처리
+                    if (icon) {
+                        icon.classList.remove('text-gray-400');
+                        icon.classList.add('text-white');
+                    }
+                    if (text) {
+                        text.classList.remove('font-medium', 'text-gray-400');
+                        text.classList.add('font-bold', 'text-white');
+                    }
                 } else {
-                    icon.className = icon.className.replace('text-[#191F28]', 'text-[#4E5968]');
-                    text.className = text.className.replace('font-bold', 'font-medium').replace('text-[#191F28]', 'text-[#4E5968]');
+                    if (icon) {
+                        icon.classList.remove('text-white');
+                        icon.classList.add('text-gray-400');
+                    }
+                    if (text) {
+                        text.classList.remove('font-bold', 'text-white');
+                        text.classList.add('font-medium', 'text-gray-400');
+                    }
                 }
             });
         }
@@ -587,7 +632,7 @@
             const container = document.getElementById('emoji-list');
             container.innerHTML = emojis.map(e => {
                 const isSelected = e === myEmoji;
-                const bgClass = isSelected ? "bg-blue-100 border-blue-200" : "bg-white border-gray-100";
+                const bgClass = isSelected ? "bg-blue-900/50 border-blue-500/50" : "bg-[#2A323D] border-[#333D4B]";
                 return `<button onclick="setEmoji('${e}')" class="text-2xl w-12 h-12 flex-shrink-0 rounded-2xl border ${bgClass} flex items-center justify-center shadow-sm active:scale-90 transition-all">${e}</button>`;
             }).join('');
         }
