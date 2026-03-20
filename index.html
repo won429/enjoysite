@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <script>
+        // 스마트폰(모바일)이 아닌 기기(PC, Mac, 아이패드, 갤럭시 탭 등)로 접속 시 PC 버전으로 자동 이동
+        try {
+            const ua = navigator.userAgent.toLowerCase();
+            const isMobile = /iphone|ipod|android.*mobile|windows phone|blackberry/i.test(ua);
+            // 미리보기(blob:) 환경이 아닐 때만 리다이렉트 실행 (미리보기 오류 방지)
+            if (!isMobile && window.location.protocol !== 'blob:') {
+                window.location.replace('index_pc.html');
+            }
+        } catch (e) {
+            console.warn("미리보기 환경에서는 리다이렉트를 건너뜁니다.", e);
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Enjoy - Toss Style (Cloud Backup)</title>
@@ -1040,19 +1053,6 @@
         </div>
     </div>
 
-    <!-- [New] 푸시 알림 유도 강제 팝업 (닫기 버튼 없음) -->
-    <div id="push-prompt-modal" class="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-[#1C1C1E] rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-center border border-white/5 relative">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-blue-500/20 text-blue-400">
-                <i class="fa-solid fa-bell animate-bounce"></i>
-            </div>
-            <h3 class="text-lg font-bold text-main mb-2">알림을 켜주세요!</h3>
-            <p class="text-[#A1A1A6] text-sm mb-6 leading-relaxed break-keep">새로운 에피소드나 회비 공지 등<br>중요한 소식을 놓치지 않게 알려드릴게요.</p>
-            <!-- 오직 허용 버튼만 존재 -->
-            <button onclick="window.haptic(); window.requestPushPermission(); window.closeModal('push-prompt-modal');" class="w-full bg-[#3182F6] text-white font-bold py-3.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md shadow-blue-500/20 active:scale-95">알림 허용하기</button>
-        </div>
-    </div>
-
     <!-- UI Logic Scripts -->
     <script>
         // Global Variables
@@ -1904,10 +1904,10 @@
             initBannerScrollListener(); 
             window.startAutoBanner(); 
             
-            // [New] 접속 후 1.5초 뒤에 아직 권한을 묻지 않은 경우(default)에만 푸시 팝업 표시
+            // [Modified] 접속 후 1.5초 뒤에 아직 권한을 묻지 않은 경우(default) 시스템 팝업 바로 호출
             setTimeout(() => {
                 if ('Notification' in window && Notification.permission === 'default') {
-                    window.showModal('push-prompt-modal');
+                    window.requestPushPermission();
                 }
             }, 1500);
         };
