@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1440">
-    <title>엔조이 공식 홈페이지</title>
+    <title>Enjoy - Toss Style (Cloud Backup) PC Ver.</title>
     
     <!-- 모바일 기기(스마트폰) 감지 및 모바일 버전(index.html)으로 리다이렉트 -->
     <!-- 컴퓨터(PC) 및 태블릿(아이패드, 갤럭시탭 등)은 현재 페이지(PC 버전) 유지 -->
@@ -117,10 +117,29 @@
         #nav-indicator { will-change: transform, width; }
         .nav-transition { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         
-        /* 상단 메뉴 애니메이션 */
-        #top-nav { transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        #top-nav button { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: center; }
+        /* 상단 메뉴 애니메이션 및 다이나믹 아일랜드 효과 */
+        #top-nav { margin: 0 auto; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #top-nav-inner { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #top-nav button { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: center; }
         
+        #top-nav.island {
+            width: max-content !important;
+            top: 16px !important;
+            height: 48px !important;
+            border-radius: 9999px;
+            background-color: rgba(20, 20, 20, 0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+        #top-nav.island #top-nav-inner {
+            width: max-content !important;
+            padding-left: 28px !important;
+            padding-right: 12px !important;
+            gap: 40px;
+        }
+
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -147,18 +166,18 @@
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
 
     <!-- 상단 탭 메뉴 (PC 버전) -->
-    <nav id="top-nav" class="fixed top-0 left-0 right-0 z-50 flex justify-center bg-black border-b border-white/5 h-10">
-        <div class="flex items-center justify-between w-full px-8 md:px-12 h-full">
+    <nav id="top-nav" class="fixed top-0 left-0 right-0 z-50 flex justify-center bg-transparent h-10">
+        <div id="top-nav-inner" class="flex items-center justify-between w-full px-8 md:px-12 h-full">
             <!-- 로고 및 페이지 타이틀 (동적 변경) -->
             <div class="flex items-center gap-3">
-                <div class="text-[22px] font-black text-white cursor-pointer" onclick="window.haptic(); window.goHome()">
+                <div class="text-[22px] font-black text-white cursor-pointer shrink-0" onclick="window.haptic(); window.goHome()">
                     엔조이<span class="text-blue-500">.</span>
                 </div>
-                <div id="top-nav-title" class="hidden text-[15px] font-bold text-gray-400 border-l border-white/20 pl-3"></div>
+                <div id="top-nav-title" class="hidden text-[15px] font-bold text-gray-400 border-l border-white/20 pl-3 whitespace-nowrap"></div>
             </div>
             
             <!-- 메뉴 컨테이너 -->
-            <div class="flex items-center p-1.5 gap-2 relative h-full">
+            <div class="flex items-center p-1.5 gap-2 relative h-full shrink-0">
                 <div id="nav-indicator" class="absolute bottom-[6px] h-[3px] bg-[#3182F6] rounded-full transition-all duration-300 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
                 
                 <button id="nav-home" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goHome()">
@@ -190,7 +209,7 @@
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- PC용으로 최대 너비(max-w-[1200px]) 확장 및 여백 조정 -->
-    <main id="home-screen" class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide pt-12 px-8 md:px-12 pb-16 w-full relative min-h-full">
+    <main id="home-screen" class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide pt-0 px-8 md:px-12 pb-16 w-full relative min-h-full" onscroll="window.checkScroll(this)">
         
         <!-- 대형 배너: PC용 사이즈업 -->
         <div id="apple-tv-banner" class="fade-in-up delay-100 mb-10 -mx-8 md:-mx-12 mt-0 aspect-[1920/600] min-h-[480px] max-h-[800px] bg-black relative group transition-transform duration-300 overflow-hidden">
@@ -693,8 +712,8 @@
     </main>
 
     <!-- ➕ 더보기 화면 (PC 확장) -->
-    <div id="more-screen" class="hidden fixed top-10 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-8 pb-16 w-full">
+    <div id="more-screen" class="hidden fixed top-0 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
+        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-14 pb-16 w-full" onscroll="window.checkScroll(this)">
             <!-- PC용 3단 대시보드 레이아웃: 100% 전체 사용 -->
             <div class="w-full grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
                 
@@ -817,8 +836,8 @@
     </div>
 
     <!-- 📅 일정 화면 (PC 확장) -->
-    <div id="schedule-screen" class="hidden fixed top-10 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
-        <header class="flex-none pt-4 px-12 pb-2 flex justify-end items-center bg-black/80 backdrop-blur-md z-10 sticky top-0 border-b border-white/5">
+    <div id="schedule-screen" class="hidden fixed top-0 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
+        <header class="flex-none pt-12 px-12 pb-2 flex justify-end items-center bg-transparent z-10 sticky top-0">
             <div class="flex items-center bg-[#1C1C1E] rounded-full p-1 border border-white/10 shadow-inner">
                 <button onclick="window.haptic(); window.changeMonth(-1)" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 transition-colors active:scale-90"><i class="fa-solid fa-chevron-left text-[14px]"></i></button>
                 <span id="cal-title" class="text-[16px] font-bold text-white tabular-nums px-4 tracking-wide">2024.05</span>
@@ -826,7 +845,7 @@
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-4 pb-16 w-full">
+        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-4 pb-16 w-full" onscroll="window.checkScroll(this)">
             <!-- PC용 좌우 분할 레이아웃: 100% 전체 사용 및 2열 리스트 -->
             <div class="w-full flex flex-col lg:flex-row gap-10 items-start">
                 
@@ -868,12 +887,12 @@
     </div>
 
     <!-- 💰 모임통장 화면 (PC 확장) -->
-    <div id="meeting-screen" class="hidden fixed top-10 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
-        <header class="flex-none pt-4 px-12 pb-2 flex justify-end items-center bg-black/80 backdrop-blur-md z-10 sticky top-0 border-b border-white/5">
+    <div id="meeting-screen" class="hidden fixed top-0 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
+        <header class="flex-none pt-12 px-12 pb-2 flex justify-end items-center bg-transparent z-10 sticky top-0">
             <button onclick="window.haptic(); window.openPasswordModal()" class="text-gray-400 hover:text-white transition-colors active:scale-90 p-1.5"><i class="fa-solid fa-gear text-[18px]"></i></button>
         </header>
 
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-4 pb-16 w-full">
+        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-4 pb-16 w-full" onscroll="window.checkScroll(this)">
             <!-- PC용 좌우 분할 레이아웃: 100% 전체 사용 및 2열 리스트 -->
             <div class="w-full flex flex-col lg:flex-row gap-10 items-start">
                 
@@ -1062,6 +1081,16 @@
         window.haptic = function() {
             if (navigator.vibrate) navigator.vibrate(10);
         }
+
+        window.checkScroll = function(el) {
+            const nav = document.getElementById('top-nav');
+            if(!nav) return;
+            if (el.scrollTop > 30) {
+                nav.classList.add('island');
+            } else {
+                nav.classList.remove('island');
+            }
+        };
         
         window.scrollVlogs = function(id, direction) {
             window.haptic();
@@ -1232,7 +1261,7 @@
                 const row = document.getElementById('admin-member-list').children[idx]; 
                 row.querySelector('input').value = m.amount; 
                 const btn = row.querySelector('button'); 
-                btn.className = `text-sm font-bold px-5 py-2.5 rounded-xl transition-colors ${m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : 'bg-red-900/30 text-red-400'}`; 
+                btn.className = `text-sm font-bold px-5 py-2.5 rounded-xl transition-colors ${m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : 'bg-red-900/30 text-red-400'}">${m.status === 'paid' ? '납부' : '미납'}`; 
                 btn.innerText = m.status === 'paid' ? '납부' : '미납'; 
                 
                 totalBalanceInput.value = currentBalance;
@@ -1900,6 +1929,21 @@
                     }
                 }
             });
+            
+            setTimeout(() => {
+                let activeEl = null;
+                if(index===2) activeEl = document.getElementById('home-screen');
+                else if(index===1) activeEl = document.querySelector('#more-screen .overflow-y-auto');
+                else if(index===3) activeEl = document.querySelector('#schedule-screen .overflow-y-auto');
+                else if(index===4) activeEl = document.querySelector('#meeting-screen .overflow-y-auto');
+                
+                if (activeEl) {
+                    window.checkScroll(activeEl);
+                } else {
+                    const nav = document.getElementById('top-nav');
+                    if(nav) nav.classList.remove('island');
+                }
+            }, 50);
         };
 
         window.onload = () => {
