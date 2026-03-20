@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script>
-        /* 모바일 브라우저에서 '데스크탑 웹사이트 요청(PC 버전)' 시 화면 전체가 알맞게 축소되어 보이도록 뷰포트 확대/축소 제한 해제 */
-        if (window.innerWidth >= 768 || !/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            document.getElementById('viewport-meta').content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
+        /* 모바일 브라우저에서 '데스크탑 웹사이트 요청(PC 버전)' 시 화면 전체가 알맞게 축소되어 보이도록 뷰포트 강제 설정 */
+        if (!/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            // PC 또는 데스크탑 요청 모드: 가로 폭을 1280px로 강제 고정하여 PC 레이아웃이 무조건 발동되게 하고, 브라우저가 화면에 맞게 축소시켜 보여줌
+            document.getElementById('viewport-meta').content = 'width=1280, viewport-fit=cover';
         }
     </script>
-    <title>엔조이 공식 홈페이지 - 친구위치공유</title>
+    <title>친구 위치 공유 - Toss Style</title>
     
     <!-- 1. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
