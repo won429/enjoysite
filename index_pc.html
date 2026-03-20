@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>엔조이 공식 홈페이지</title>
+    <meta name="viewport" content="width=1440">
+    <title>Enjoy - Toss Style (Cloud Backup) PC Ver.</title>
     
     <!-- 모바일 기기(스마트폰) 감지 및 모바일 버전(index.html)으로 리다이렉트 -->
     <!-- 컴퓨터(PC) 및 태블릿(아이패드, 갤럭시탭 등)은 현재 페이지(PC 버전) 유지 -->
@@ -190,7 +190,7 @@
 
     <!-- 메인 컨텐츠 (홈 화면) -->
     <!-- PC용으로 최대 너비(max-w-[1200px]) 확장 및 여백 조정 -->
-    <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide pt-12 px-8 md:px-12 pb-16 w-full relative min-h-full">
+    <main id="home-screen" class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide pt-12 px-8 md:px-12 pb-16 w-full relative min-h-full">
         
         <!-- 대형 배너: PC용 사이즈업 -->
         <div id="apple-tv-banner" class="fade-in-up delay-100 mb-10 -mx-8 md:-mx-12 mt-0 aspect-[1920/600] min-h-[480px] max-h-[800px] bg-black relative group transition-transform duration-300 overflow-hidden">
@@ -469,99 +469,131 @@
             </div>
             
             <!-- 대전충남 컨텐츠 -->
-            <div id="content-daejeon" class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory">
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                    </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">그날 엔조이 이야기</p>
-                </div>
-
-                <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="coming_3.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="환승연애" onerror="this.src='https://placehold.co/640x360/FFD1DC/pink?text=Coming+Soon'">
-                        <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
-                            <i class="fa-solid fa-lock text-white/90 text-4xl drop-shadow-md"></i>
+            <div id="content-daejeon" class="flex relative group w-full">
+                <button onclick="window.scrollVlogs('scroll-daejeon', -1)" class="absolute left-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-r from-black/90 to-transparent items-center justify-start pl-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-left text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
+                <div id="scroll-daejeon" class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth w-full">
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
                         </div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">그날 엔조이 이야기</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-400 leading-tight text-center truncate mt-3">환승연애</p>
+
+                    <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="coming_3.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="환승연애" onerror="this.src='https://placehold.co/640x360/FFD1DC/pink?text=Coming+Soon'">
+                            <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+                                <i class="fa-solid fa-lock text-white/90 text-4xl drop-shadow-md"></i>
+                            </div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-400 leading-tight text-center truncate mt-3">환승연애</p>
+                    </div>
                 </div>
+                <button onclick="window.scrollVlogs('scroll-daejeon', 1)" class="absolute right-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-l from-black/90 to-transparent items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-right text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
             </div>
 
             <!-- 대구경북 컨텐츠 -->
-            <div id="content-daegu" class="hidden overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory">
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_4.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔쪽이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+            <div id="content-daegu" class="hidden relative group w-full">
+                <button onclick="window.scrollVlogs('scroll-daegu', -1)" class="absolute left-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-r from-black/90 to-transparent items-center justify-start pl-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-left text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
+                <div id="scroll-daegu" class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth w-full">
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_4.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔쪽이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔쪽이</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔쪽이</p>
-                </div>
 
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8qwffNq5TB_YGJH4btLJbbc&jct=DBXu6dKvJyJZaQu2FVU4Lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_3.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌1</div>
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8qwffNq5TB_YGJH4btLJbbc&jct=DBXu6dKvJyJZaQu2FVU4Lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_3.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌1</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요</p>
                 </div>
+                <button onclick="window.scrollVlogs('scroll-daegu', 1)" class="absolute right-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-l from-black/90 to-transparent items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-right text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
             </div>
 
             <!-- 경남 컨텐츠 -->
-            <div id="content-gyeongnam" class="hidden overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory">
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="coming_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요 2" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌2</div>
-                    </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요 2</p>
-                </div>
-
-                <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="coming_4.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="엔조이 숙려 캠프" onerror="this.src='https://placehold.co/640x360/E0F2F1/teal?text=Coming+Soon'">
-                        <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
-                            <i class="fa-solid fa-lock text-white/90 text-4xl drop-shadow-md"></i>
+            <div id="content-gyeongnam" class="hidden relative group w-full">
+                <button onclick="window.scrollVlogs('scroll-gyeongnam', -1)" class="absolute left-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-r from-black/90 to-transparent items-center justify-start pl-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-left text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
+                <div id="scroll-gyeongnam" class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth w-full">
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="coming_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요 2" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌2</div>
                         </div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요 2</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-400 leading-tight text-center truncate mt-3">엔조이 숙려 캠프</p>
+
+                    <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="coming_4.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="엔조이 숙려 캠프" onerror="this.src='https://placehold.co/640x360/E0F2F1/teal?text=Coming+Soon'">
+                            <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+                                <i class="fa-solid fa-lock text-white/90 text-4xl drop-shadow-md"></i>
+                            </div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-400 leading-tight text-center truncate mt-3">엔조이 숙려 캠프</p>
+                    </div>
                 </div>
+                <button onclick="window.scrollVlogs('scroll-gyeongnam', 1)" class="absolute right-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-l from-black/90 to-transparent items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-right text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
             </div>
 
             <!-- 제주 컨텐츠 -->
-            <div id="content-jeju" class="hidden overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory">
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                    </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">그날 엔조이 이야기</p>
-                </div>
-
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="출장엔조이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">매주 업로드</div>
-                    </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">출장엔조이</p>
-                </div>
-
-                <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="coming_2.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="F1 더 엔조이 무비" onerror="this.src='https://placehold.co/640x360/FEE2E2/red?text=Coming+Soon'">
-                        <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
-                            <i class="fa-solid fa-lock text-white/90 text-4xl drop-shadow-md"></i>
+            <div id="content-jeju" class="hidden relative group w-full">
+                <button onclick="window.scrollVlogs('scroll-jeju', -1)" class="absolute left-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-r from-black/90 to-transparent items-center justify-start pl-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-left text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
+                <div id="scroll-jeju" class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth w-full">
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
                         </div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">그날 엔조이 이야기</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-400 leading-tight text-center truncate mt-3">F1 더 엔조이 무비</p>
+
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="출장엔조이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">매주 업로드</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">출장엔조이</p>
+                    </div>
+
+                    <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="coming_2.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="F1 더 엔조이 무비" onerror="this.src='https://placehold.co/640x360/FEE2E2/red?text=Coming+Soon'">
+                            <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+                                <i class="fa-solid fa-lock text-white/90 text-4xl drop-shadow-md"></i>
+                            </div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-400 leading-tight text-center truncate mt-3">F1 더 엔조이 무비</p>
+                    </div>
                 </div>
+                <button onclick="window.scrollVlogs('scroll-jeju', 1)" class="absolute right-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-l from-black/90 to-transparent items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-right text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
             </div>
 
             <!-- 통합 탭 전환 스크립트 -->
@@ -598,54 +630,62 @@
                 <h3 class="text-[26px] font-bold text-main tracking-tight">전체보기</h3>
             </div>
             
-            <div class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory">
-                <!-- 1. 그날 엔조이 이야기 -->
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+            <div class="flex relative group w-full">
+                <button onclick="window.scrollVlogs('scroll-all', -1)" class="absolute left-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-r from-black/90 to-transparent items-center justify-start pl-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-left text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
+                <div id="scroll-all" class="flex overflow-x-auto gap-6 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth w-full">
+                    <!-- 1. 그날 엔조이 이야기 -->
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_2.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="그날 엔조이 이야기" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">그날 엔조이 이야기</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">그날 엔조이 이야기</p>
-                </div>
 
-                <!-- 2. 엔쪽이 -->
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_4.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔쪽이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                    <!-- 2. 엔쪽이 -->
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_4.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔쪽이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔쪽이</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔쪽이</p>
-                </div>
 
-                <!-- 3. 엔조이 인기가요 -->
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8qwffNq5TB_YGJH4btLJbbc&jct=DBXu6dKvJyJZaQu2FVU4Lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_3.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌1</div>
+                    <!-- 3. 엔조이 인기가요 -->
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8qwffNq5TB_YGJH4btLJbbc&jct=DBXu6dKvJyJZaQu2FVU4Lw')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_3.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌1</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요</p>
-                </div>
 
-                <!-- 4. 출장엔조이 -->
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="nbc_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="출장엔조이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">매주 업로드</div>
+                    <!-- 4. 출장엔조이 -->
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="nbc_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="출장엔조이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">매주 업로드</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">출장엔조이</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">출장엔조이</p>
-                </div>
 
-                <!-- 5. 엔조이 인기가요 2 -->
-                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
-                    <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
-                        <img src="coming_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요 2" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌2</div>
+                    <!-- 5. 엔조이 인기가요 2 -->
+                    <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/@enjoy_trip')" class="min-w-[340px] w-[340px] snap-start group cursor-pointer">
+                        <div class="relative aspect-video rounded-[24px] overflow-hidden shadow-lg bg-[#111]">
+                            <img src="coming_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="엔조이 인기가요 2" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[12px] px-3 py-1 rounded-md font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">시즌2</div>
+                        </div>
+                        <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요 2</p>
                     </div>
-                    <p class="text-lg font-bold text-gray-200 leading-tight text-center truncate mt-3">엔조이 인기가요 2</p>
                 </div>
+                <button onclick="window.scrollVlogs('scroll-all', 1)" class="absolute right-0 top-0 z-20 w-16 h-[191px] bg-gradient-to-l from-black/90 to-transparent items-center justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex cursor-pointer hover:text-white text-white/60">
+                    <i class="fa-solid fa-chevron-right text-[40px] drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                </button>
             </div>
         </div>
 
@@ -1023,6 +1063,15 @@
             if (navigator.vibrate) navigator.vibrate(10);
         }
         
+        window.scrollVlogs = function(id, direction) {
+            window.haptic();
+            const container = document.getElementById(id);
+            if(container) {
+                const scrollAmount = 340 + 24; // 1개 카드 너비 + 갭
+                container.scrollBy({ left: direction * scrollAmount * 2, behavior: 'smooth' }); // 샤라라하고 2개씩 수욱 이동
+            }
+        };
+
         window.closeModal = (id) => {
             document.getElementById(id).classList.add('hidden');
             document.getElementById(id).classList.remove('flex');
