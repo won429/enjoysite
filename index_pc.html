@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1440">
-    <title>엔조이 공식 홈페이지</title>
+    <title>Enjoy - Toss Style (Cloud Backup) PC Ver.</title>
     
     <!-- 모바일 기기(스마트폰) 감지 및 모바일 버전(index.html)으로 리다이렉트 -->
     <!-- 컴퓨터(PC) 및 태블릿(아이패드, 갤럭시탭 등)은 현재 페이지(PC 버전) 유지 -->
@@ -161,6 +161,13 @@
             color: white;
             box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
         }
+
+        /* 더보기 드롭다운 고정 스타일 */
+        .dropdown-open {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            pointer-events: auto !important;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
@@ -200,9 +207,128 @@
                     <span class="text-[15px] font-medium text-gray-400 group-hover:text-white transition-colors relative z-10">여행지도</span>
                 </button>
 
-                <button id="nav-more" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMore()">
+                <button id="nav-more" class="peer relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.toggleMoreDropdown(event);">
                     <span class="text-[15px] font-medium text-gray-400 group-hover:text-white transition-colors relative z-10">더보기</span>
                 </button>
+
+                <!-- 더보기 드롭다운 메뉴 (샤라라 슈욱 애니메이션) -->
+                <div id="more-dropdown" class="absolute right-0 top-[40px] w-[860px] bg-[rgba(20,20,20,0.85)] backdrop-blur-2xl border border-white/10 rounded-[28px] shadow-[0_16px_60px_rgba(0,0,0,0.8)] opacity-0 translate-y-[-15px] pointer-events-none peer-hover:opacity-100 peer-hover:translate-y-0 peer-hover:pointer-events-auto hover:opacity-100 hover:translate-y-0 hover:pointer-events-auto transition-all duration-500 z-[100] p-6 grid grid-cols-3 gap-8 cursor-default transform-gpu">
+                    
+                    <!-- 메뉴 그룹 1: 액티비티 & 기록 -->
+                    <div class="flex flex-col">
+                        <h4 class="text-[13px] font-bold text-gray-500 mb-3 px-2">액티비티 & 기록</h4>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="window.haptic(); window.location.href='map.html'" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-amber-500/15 flex items-center justify-center text-amber-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">위치 공유</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">얘들아 어디야? 실시간 위치 확인</div>
+                                </div>
+                            </button>
+
+                            <button onclick="window.haptic(); if(confirm('새로운 버전인 우리의 발자취가 있음에도 불구하고 들어가시겠습니까?')) window.goToTravel();" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-emerald-500/15 flex items-center justify-center text-emerald-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-plane-departure"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">여행 기록</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">우리들의 지난 추억을 떠올려봐요</div>
+                                </div>
+                            </button>
+
+                            <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-teal-500/15 flex items-center justify-center text-teal-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-shoe-prints"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="flex items-center">
+                                        <span class="text-[15px] font-semibold text-white tracking-tight">우리의 발자취</span>
+                                        <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5 inline-flex items-center justify-center leading-none">NEW</span>
+                                    </div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">지금까지의 여행기록을 한눈에!</div>
+                                </div>
+                            </button>
+
+                            <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-cyan-500/15 flex items-center justify-center text-cyan-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-train-subway"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="flex items-center">
+                                        <span class="text-[15px] font-semibold text-white tracking-tight">지하철 도착 정보</span>
+                                        <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5 inline-flex items-center justify-center leading-none">NEW</span>
+                                    </div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">실시간 지하철 도착 시간을 확인하세요!</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 메뉴 그룹 2: 소통 & 플레이 -->
+                    <div class="flex flex-col">
+                        <h4 class="text-[13px] font-bold text-gray-500 mb-3 px-2">소통 & 플레이</h4>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="window.haptic(); window.playGame()" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-red-500/15 flex items-center justify-center text-red-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-dice"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">복불복 게임</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">오늘 엔조이의 운명은?</div>
+                                </div>
+                            </button>
+
+                            <button onclick="window.haptic(); window.goToMusic()" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-indigo-500/15 flex items-center justify-center text-indigo-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-headphones"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">엔조이 음악</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">언제 어디서든 무제한 감상 지원</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 메뉴 그룹 3: 기타 -->
+                    <div class="flex flex-col">
+                        <h4 class="text-[13px] font-bold text-gray-500 mb-3 px-2">기타</h4>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="window.haptic(); window.requestPushPermission()" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-blue-500/15 flex items-center justify-center text-blue-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-bell"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">푸시 알림 켜기</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">새로운 소식을 바로 받아보세요</div>
+                                </div>
+                            </button>
+
+                            <button onclick="window.haptic(); window.location.href='kakaopay://'" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-yellow-400/15 flex items-center justify-center text-yellow-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">개발자 후원하기</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">따뜻한 커피 한 잔 사주기 ☕️</div>
+                                </div>
+                            </button>
+
+                            <button onclick="window.haptic(); window.showSecretModal()" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-gray-600/20 flex items-center justify-center text-gray-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-gift"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="text-[15px] font-semibold text-white tracking-tight">새로운 기능 준비 중</div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">어떤 서비스가 추가될까요?</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </nav>
@@ -711,130 +837,6 @@
         <div class="pb-16"></div>
     </main>
 
-    <!-- ➕ 더보기 화면 (PC 확장) -->
-    <div id="more-screen" class="hidden fixed top-0 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
-        <div class="flex-1 overflow-y-auto scrollbar-hide px-12 pt-14 pb-16 w-full" onscroll="window.checkScroll(this)">
-            <!-- PC용 3단 대시보드 레이아웃: 100% 전체 사용 -->
-            <div class="w-full grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
-                
-                <!-- 메뉴 그룹 1: 액티비티 & 기록 -->
-                <div class="bg-[#111111] p-6 rounded-[24px] border border-white/5 shadow-2xl fade-in-up delay-100 flex flex-col">
-                    <h4 class="text-[14px] font-bold text-gray-500 mb-4 px-2">액티비티 & 기록</h4>
-                    <div class="flex flex-col gap-4">
-                        <button onclick="window.haptic(); window.location.href='map.html'" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-amber-500/15 flex items-center justify-center text-amber-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-map-location-dot"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">위치 공유</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">얘들아 어디야? 실시간 위치 확인</div>
-                            </div>
-                        </button>
-
-                        <button onclick="window.haptic(); if(confirm('새로운 버전인 우리의 발자취가 있음에도 불구하고 들어가시겠습니까?')) window.goToTravel();" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-emerald-500/15 flex items-center justify-center text-emerald-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-plane-departure"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">여행 기록</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">우리들의 지난 추억을 떠올려봐요</div>
-                            </div>
-                        </button>
-
-                        <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-teal-500/15 flex items-center justify-center text-teal-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-shoe-prints"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="flex items-center">
-                                    <span class="text-[16px] font-semibold text-white tracking-tight">우리의 발자취</span>
-                                    <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5 inline-flex items-center justify-center leading-none">NEW</span>
-                                </div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">지금까지의 여행기록을 한눈에!</div>
-                            </div>
-                        </button>
-
-                        <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/Test/')" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-cyan-500/15 flex items-center justify-center text-cyan-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-train-subway"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="flex items-center">
-                                    <span class="text-[16px] font-semibold text-white tracking-tight">지하철 도착 정보</span>
-                                    <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5 inline-flex items-center justify-center leading-none">NEW</span>
-                                </div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">실시간 지하철 도착 시간을 확인하세요!</div>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 메뉴 그룹 2: 소통 & 플레이 -->
-                <div class="bg-[#111111] p-6 rounded-[24px] border border-white/5 shadow-2xl fade-in-up delay-200 flex flex-col">
-                    <h4 class="text-[14px] font-bold text-gray-500 mb-4 px-2">소통 & 플레이</h4>
-                    <div class="flex flex-col gap-4">
-                        <button onclick="window.haptic(); window.playGame()" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-red-500/15 flex items-center justify-center text-red-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-dice"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">복불복 게임</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">오늘 엔조이의 운명은?</div>
-                            </div>
-                        </button>
-
-                        <button onclick="window.haptic(); window.goToMusic()" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-indigo-500/15 flex items-center justify-center text-indigo-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-headphones"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">엔조이 음악</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">언제 어디서든 무제한 감상 지원</div>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 메뉴 그룹 3: 기타 -->
-                <div class="bg-[#111111] p-6 rounded-[24px] border border-white/5 shadow-2xl fade-in-up delay-300 flex flex-col">
-                    <h4 class="text-[14px] font-bold text-gray-500 mb-4 px-2">기타</h4>
-                    <div class="flex flex-col gap-4">
-                        <button onclick="window.haptic(); window.requestPushPermission()" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-blue-500/15 flex items-center justify-center text-blue-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-bell"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">푸시 알림 켜기</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">새로운 소식을 바로 받아보세요</div>
-                            </div>
-                        </button>
-
-                        <button onclick="window.haptic(); window.location.href='kakaopay://'" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-yellow-400/15 flex items-center justify-center text-yellow-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-mug-hot"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">개발자 후원하기</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">따뜻한 커피 한 잔 사주기 ☕️</div>
-                            </div>
-                        </button>
-
-                        <button onclick="window.haptic(); window.showSecretModal()" class="w-full flex items-center py-3 px-4 bg-[#1C1C1E] rounded-[16px] hover:bg-[#2C2C2E] transition-all">
-                            <div class="w-11 h-11 rounded-[14px] bg-gray-600/20 flex items-center justify-center text-gray-400 text-[18px] mr-4 shrink-0">
-                                <i class="fa-solid fa-gift"></i>
-                            </div>
-                            <div class="flex-1 text-left flex flex-col justify-center">
-                                <div class="text-[16px] font-semibold text-white tracking-tight">새로운 기능 준비 중</div>
-                                <div class="text-[13px] font-medium text-[#8B95A1] mt-0.5">어떤 서비스가 추가될까요?</div>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
     <!-- 📅 일정 화면 (PC 확장) -->
     <div id="schedule-screen" class="hidden fixed top-0 bottom-0 left-0 w-full z-30 flex-col overflow-hidden bg-black">
         <header class="flex-none pt-12 px-12 pb-2 flex justify-end items-center bg-transparent z-10 sticky top-0">
@@ -1081,6 +1083,22 @@
         window.haptic = function() {
             if (navigator.vibrate) navigator.vibrate(10);
         }
+
+        window.toggleMoreDropdown = function(e) {
+            if(e) e.stopPropagation();
+            const dropdown = document.getElementById('more-dropdown');
+            if(dropdown) {
+                dropdown.classList.toggle('dropdown-open');
+            }
+        };
+
+        document.addEventListener('click', function(e) {
+            const btn = document.getElementById('nav-more');
+            const dropdown = document.getElementById('more-dropdown');
+            if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('dropdown-open');
+            }
+        });
 
         window.checkScroll = function(el) {
             const nav = document.getElementById('top-nav');
@@ -1848,6 +1866,9 @@
             const more = document.getElementById('more-screen');
             const sched = document.getElementById('schedule-screen');
             const meet = document.getElementById('meeting-screen');
+            const dropdown = document.getElementById('more-dropdown');
+            
+            if(dropdown) dropdown.classList.remove('dropdown-open');
             
             home.classList.add('hidden'); 
             if(more) { more.classList.add('hidden'); more.classList.remove('flex'); }
