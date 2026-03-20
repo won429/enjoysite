@@ -3,7 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>엔조이 공식 홈페이지</title>
+    <title>Enjoy - Toss Style (Cloud Backup) PC Ver.</title>
+    
+    <!-- 모바일 기기(스마트폰) 감지 및 모바일 버전(index.html)으로 리다이렉트 (태블릿 제외) -->
+    <script>
+        (function() {
+            var ua = navigator.userAgent.toLowerCase();
+            // 아이폰 감지
+            var isIphone = ua.indexOf('iphone') > -1;
+            // 안드로이드 스마트폰 감지 (갤럭시 탭 등의 태블릿은 'mobile' 키워드가 없어 제외됨)
+            var isAndroidMobile = ua.indexOf('android') > -1 && ua.indexOf('mobile') > -1;
+            
+            if (isIphone || isAndroidMobile) {
+                window.location.replace('index.html');
+            }
+        })();
+    </script>
     
     <!-- 홈 화면 바로가기 아이콘 -->
     <link rel="apple-touch-icon" href="icon.png">
