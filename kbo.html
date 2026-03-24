@@ -3,29 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>엔조이 공식 홈페이지 - KBO리그</title>
+    <title>KBO League Schedule</title>
     
-    <!-- PC 및 태블릿 접속 시 index_pc.html로 리다이렉션 -->
-    <script>
-        (function() {
-            try {
-                var ua = navigator.userAgent.toLowerCase();
-                var isMobilePhone = /iphone|ipod|android.*mobile|blackberry|windows phone|opera mini|iemobile/i.test(ua);
-                var isIPadOS = ua.includes('macintosh') && navigator.maxTouchPoints > 1;
-
-                if (!isMobilePhone || isIPadOS) {
-                    if (window.location.protocol !== 'blob:' && window.location.protocol !== 'data:') {
-                        window.location.replace('index_pc.html');
-                    } else {
-                        console.warn('미리보기 환경이므로 PC 버전 리다이렉션을 건너뜁니다.');
-                    }
-                }
-            } catch (e) {
-                console.warn('리다이렉션 처리 중 오류 발생:', e);
-            }
-        })();
-    </script>
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
