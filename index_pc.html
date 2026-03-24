@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1440">
-    <title>엔조이 공식 홈페이지</title>
+    <title>Enjoy - Toss Style (Cloud Backup) PC Ver.</title>
     
     <!-- 모바일 기기(스마트폰) 감지 및 모바일 버전(index.html)으로 리다이렉트 -->
     <!-- 컴퓨터(PC) 및 태블릿(아이패드, 갤럭시탭 등)은 현재 페이지(PC 버전) 유지 -->
@@ -187,6 +187,10 @@
                 
                 <button id="nav-home" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goHome()">
                     <span class="text-[15px] font-bold text-white transition-colors relative z-10">홈</span>
+                </button>
+                
+                <button id="nav-kbo" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goToKbo()">
+                    <span class="text-[15px] font-medium text-gray-500 group-hover:text-white transition-colors relative z-10">KBO리그</span>
                 </button>
                 
                 <button id="nav-calendar" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goSchedule()">
@@ -1458,6 +1462,27 @@
         window.goToMusic = () => window.openBrowser("https://won429.github.io/enjoy/");
         window.playGame = () => window.location.href = "game.html";
         window.goToTravel = () => window.openBrowser("https://won429.github.io/enjoy_trip/");
+        
+        window.goToKbo = () => {
+            const m = document.getElementById('common-modal');
+            document.getElementById('modal-title').innerText = '안내';
+            document.getElementById('modal-desc').innerHTML = '아직 pc버전 개발이 되지않아<br>모바일 버전으로 연결됩니다.<br>양해바랍니다.';
+            document.getElementById('modal-icon').className = 'fa-solid fa-mobile-screen text-blue-400';
+            document.getElementById('modal-icon-bg').className = 'w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl bg-[#2C2C2E] text-gray-400';
+            
+            const btn = m.querySelector('button');
+            const originalOnclick = btn.getAttribute('onclick');
+            
+            btn.onclick = function() {
+                window.haptic();
+                window.closeModal('common-modal');
+                window.location.href = 'kbo.html';
+                btn.onclick = null; 
+            };
+            
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        };
         
         window.goHome = () => { window.activeTabIndex = 2; window.updateTabUI(2); }
         window.goMore = () => { window.activeTabIndex = 1; window.updateTabUI(1); }
