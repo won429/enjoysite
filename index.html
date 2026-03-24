@@ -16,7 +16,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>엔조이 공식 홈페이지</title>
+    <title>Enjoy - Toss Style (Cloud Backup)</title>
     
     <!-- 홈 화면 바로가기 아이콘 -->
     <link rel="apple-touch-icon" href="icon.png">
@@ -150,7 +150,7 @@
     <main id="home-screen" class="flex-1 overflow-y-auto scrollbar-hide px-5 pb-24 w-full max-w-md mx-auto relative min-h-full">
         
         <!-- 대형 배너: 슬라이드 기능 추가 -->
-        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-1 -mx-5 h-[504px] bg-black relative group transition-transform duration-300">
+        <div id="apple-tv-banner" class="fade-in-up delay-100 mb-0 -mx-5 h-[450px] bg-black relative group transition-transform duration-300">
             <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
             <style>
                 #apple-tv-banner .bg-black\/60 { background-color: #ffffff !important; width: 20px !important; border-radius: 4px !important; }
@@ -438,6 +438,14 @@
                     <i id="banner-ctrl-icon" class="fa-solid fa-pause text-[8px] text-white"></i>
                 </button>
             </div>
+        </div>
+
+        <!-- [New] KBO 리그 일정 보러가기 (알약 모양 버튼) -->
+        <div class="-mt-2 mb-2 px-1 fade-in-up delay-150">
+            <button onclick="window.haptic(); window.location.href='kbo.html'" class="w-full bg-gradient-to-br from-red-400/25 to-blue-400/25 text-white font-bold text-[16px] py-2 rounded-full flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-white/5 active:scale-95 transition-transform">
+                <i class="fa-solid fa-baseball text-gray-300"></i>
+                2026 KBO 리그 일정 보러가기
+            </button>
         </div>
 
         <!-- [Modified] 대전충남 & 대구경북 통합 탭 브이로그 섹션 -->
@@ -896,53 +904,45 @@
     <!-- 하단 플로팅 메뉴 -->
     <nav id="bottom-nav" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto touch-pan-x select-none cursor-grab active:cursor-grabbing">
         <div class="flex items-center bg-[#2C2C2E] shadow-[0_8px_24px_rgba(0,0,0,0.6)] border border-white/10 rounded-full p-1.5 gap-1 relative">
-            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0 nav-transition" style="left: 6px; width: 56px;"></div>
-            
-            <!-- 홈 메뉴 -->
-            <button id="nav-home" class="relative px-3 py-2 rounded-full group min-w-[56px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goHome()">
-                <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-house text-[14px] text-white transition-colors"></i>
-                    <span class="text-[9px] font-bold text-white whitespace-nowrap transition-colors">홈</span>
-                </div>
-            </button>
+            <div id="nav-indicator" class="absolute top-1 bottom-1 bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full backdrop-blur-[2px] border border-white/20 z-0 nav-transition" style="left: 6px; width: 64px;"></div>
             
             <!-- 일정 메뉴 -->
-            <button id="nav-calendar" class="relative px-3 py-2 rounded-full group min-w-[56px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goSchedule()">
+            <button id="nav-calendar" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goSchedule()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-regular fa-calendar-days text-[14px] text-gray-300 group-hover:text-white transition-colors"></i>
-                    <span class="text-[9px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">일정</span>
+                    <i class="fa-regular fa-calendar-days text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">일정</span>
                 </div>
             </button>
             
             <!-- 모임통장 메뉴 -->
-            <button id="nav-meeting" class="relative px-3 py-2 rounded-full group min-w-[56px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMeeting()">
+            <button id="nav-meeting" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMeeting()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-users text-[14px] text-gray-300 group-hover:text-white transition-colors"></i>
-                    <span class="text-[9px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">모임통장</span>
+                    <i class="fa-solid fa-users text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">모임통장</span>
                 </div>
             </button>
 
-            <!-- KBO 메뉴 -->
-            <button id="nav-kbo" class="relative px-3 py-2 rounded-full group min-w-[56px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='kbo.html'">
+            <!-- 홈 메뉴 -->
+            <button id="nav-home" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goHome()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-baseball text-[14px] text-gray-300 group-hover:text-white transition-colors"></i>
-                    <span class="text-[9px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">KBO</span>
+                    <i class="fa-solid fa-house text-base text-white transition-colors"></i>
+                    <span class="text-[10px] font-bold text-white whitespace-nowrap transition-colors">홈</span>
                 </div>
             </button>
             
             <!-- 음악 메뉴 -->
-            <button id="nav-music" class="relative px-3 py-2 rounded-full group min-w-[56px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goToMusic()">
+            <button id="nav-music" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goToMusic()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-headphones text-[14px] text-gray-300 group-hover:text-white transition-colors"></i>
-                    <span class="text-[9px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">음악</span>
+                    <i class="fa-solid fa-headphones text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">음악</span>
                 </div>
             </button>
 
             <!-- [Modified] 더보기 메뉴 -->
-            <button id="nav-more" class="relative px-3 py-2 rounded-full group min-w-[56px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMore()">
+            <button id="nav-more" class="relative px-5 py-2 rounded-full group min-w-[64px] z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.goMore()">
                 <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                    <i class="fa-solid fa-bars text-[14px] text-gray-300 group-hover:text-white transition-colors"></i>
-                    <span class="text-[9px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">더보기</span>
+                    <i class="fa-solid fa-bars text-base text-gray-300 group-hover:text-white transition-colors"></i>
+                    <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">더보기</span>
                 </div>
             </button>
         </div>
