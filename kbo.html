@@ -50,8 +50,8 @@
         
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
         
-        /* 헤더가 Absolute로 고정되면서 메인 콘텐츠가 아래로 밀려나야 함 */
-        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 80px); }
+        /* 🔥 잘림 현상 해결: 헤더가 덮지 않도록 콘텐츠 시작점(패딩) 정밀 조정 🔥 */
+        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px); }
 
         #nav-indicator { will-change: transform, width; }
         .nav-transition { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -131,12 +131,12 @@
 
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] bg-black relative flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
 
-        <!-- 🔥 글로벌 헤더 (공간이 남으면 스르륵 늘어나는 캡슐 적용) 🔥 -->
-        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-4 z-20 bg-black/80 backdrop-blur-md border-b border-white/5">
-            <div class="mt-3 flex items-center gap-2 w-full pb-2">
+        <!-- 🔥 글로벌 헤더 (선 제거 및 깔끔한 유리 재질 유지, 상하 여백 최적화) 🔥 -->
+        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20 bg-black/80 backdrop-blur-md">
+            <div class="mt-2 flex items-center gap-2 w-full pb-1">
                 
                 <!-- 1. 타이틀 캡슐 (flex-1을 가져서 빈 공간이 생기면 자연스럽게 채움) -->
-                <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg border border-white/5 min-h-[36px]">
+                <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg border border-white/5 min-h-[36px] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
                     <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
                         <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight">
                             KBO 리그 일정<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>
@@ -146,19 +146,13 @@
                 </div>
 
                 <!-- 2. 컨트롤 캡슐 (내부 내용에 따라 너비가 스르륵 변함) -->
-                <div class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative">
+                <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] origin-right">
                     
-                    <!-- 달력 탭 전용 컨트롤 (좌우 화살표, 3월) -->
-                    <div id="ctrl-cal" class="ctrl-item ctrl-show flex items-center justify-center gap-3 h-full" style="grid-area: 1/1;">
-                        <button class="text-gray-400 hover:text-white text-[13px] transition-colors px-1" onclick="navigateCalendar(-1)">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        <div class="w-px h-3 bg-white/10"></div>
-                        <span id="header-month-display" class="text-[12px] font-bold text-white min-w-[28px] text-center">3월</span>
-                        <div class="w-px h-3 bg-white/10"></div>
-                        <button class="text-gray-400 hover:text-white text-[13px] transition-colors px-1" onclick="navigateCalendar(1)">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
+                    <!-- 구단 선택 필터 (기존 달력 화살표 자리) -->
+                    <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
+                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all">전체</button>
+                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all">KIA</button>
+                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all">삼성</button>
                     </div>
                     
                     <!-- 목록/순위 탭 전용 컨트롤 (날짜순, 최신순) -->
@@ -175,27 +169,36 @@
         <!-- 1. 달력 화면 (메인) 배경을 bg-black으로 통일 -->
         <main id="calendar-screen" class="hidden flex-1 relative w-full flex-col bg-black overflow-y-auto scrollbar-hide pb-24">
             <div class="px-5 pt-main flex-1 flex flex-col">
-                <div class="flex justify-between items-end mb-6">
-                    <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2">
-                            <!-- 월간/주간 전환 토글 -->
-                            <div class="flex gap-1 bg-white/5 p-1 rounded-full border border-white/10 w-fit">
-                                <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-[#3182F6] text-white shadow-sm transition-all">월간</button>
-                                <button onclick="setViewMode('week')" id="btn-mode-week" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">주간</button>
-                            </div>
-                            
-                            <!-- 팀 선택 필터 -->
-                            <div class="flex gap-1 bg-white/5 p-1 rounded-full border border-white/10 w-fit">
-                                <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-3 py-1 text-xs font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all">전체</button>
-                                <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">KIA</button>
-                                <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">삼성</button>
-                            </div>
-                        </div>
-                        <h2 id="calendar-title" class="text-2xl font-bold text-white mt-1">2026년 3월</h2>
+                
+                <!-- 🔥 상단 대형 배너 🔥 -->
+                <div class="w-full aspect-[2.2/1] bg-gradient-to-br from-[#1e3a8a] via-[#312e81] to-[#0f172a] rounded-2xl mb-6 relative overflow-hidden flex flex-col justify-center p-5 shadow-xl border border-white/10 shrink-0">
+                    <!-- 배너 배경 빛번짐(Glow) 효과 -->
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#3182F6] rounded-full blur-3xl opacity-30 -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-red-500 rounded-full blur-3xl opacity-20 translate-y-1/4 -translate-x-1/4 pointer-events-none"></div>
+                    
+                    <span class="text-blue-200 font-extrabold text-[10px] tracking-wider bg-black/30 backdrop-blur-sm px-2 py-1 rounded-md w-fit mb-2 border border-white/5 relative z-10">2026 KBO OPENING</span>
+                    <h2 class="text-white text-[18px] font-extrabold leading-snug tracking-tight mb-1 relative z-10">2026 프로야구 개막까지<br><span id="d-day-count" class="text-[34px] font-black tracking-tighter text-white drop-shadow-lg">D-Day</span></h2>
+                    <p class="text-blue-200/70 text-[11px] font-medium relative z-10">3월 28일, 새로운 시즌이 시작됩니다</p>
+                    
+                    <!-- 우측 하단 야구공 아이콘 장식 -->
+                    <i class="fa-solid fa-baseball text-[90px] absolute -right-4 -bottom-6 text-white/5 transform -rotate-12 pointer-events-none"></i>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-4">
+                        <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 transition-all active:scale-95">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                        </button>
+                        <h2 id="calendar-title" class="text-2xl font-bold text-white text-center min-w-[100px]">2026년 3월</h2>
+                        <button onclick="navigateCalendar(1)" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 transition-all active:scale-95">
+                            <i class="fa-solid fa-chevron-right text-sm"></i>
+                        </button>
                     </div>
-                    <button onclick="goToToday()" class="text-xs font-medium text-[#3182F6] bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 active:scale-95 transition-transform mb-1">
-                        오늘로 이동
-                    </button>
+                    <!-- 월간/주간 전환 토글 -->
+                    <div class="flex gap-1 bg-white/5 p-1 rounded-full border border-white/10 w-fit shrink-0">
+                        <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-[#3182F6] text-white shadow-sm transition-all">월간</button>
+                        <button onclick="setViewMode('week')" id="btn-mode-week" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">주간</button>
+                    </div>
                 </div>
 
                 <!-- 요일 헤더 -->
@@ -263,7 +266,7 @@
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)">
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none">
                         <i class="fa-solid fa-calendar-days text-base text-white transition-colors"></i>
-                        <span class="text-[10px] font-bold text-white whitespace-nowrap transition-colors">달력</span>
+                        <span class="text-[10px] font-bold text-white whitespace-nowrap transition-colors">야구</span>
                     </div>
                 </button>
 
@@ -528,9 +531,10 @@
                 }
             }
 
-            // 🔥 오른쪽 캡슐 너비 조절 (글자 깜빡임 제거) 🔥
-            const ctrlCal = document.getElementById('ctrl-cal');
+            // 🔥 오른쪽 캡슐 너비 조절 (글자 깜빡임 제거 및 유령 껍데기 제거) 🔥
+            const ctrlTeam = document.getElementById('ctrl-team');
             const ctrlSort = document.getElementById('ctrl-sort');
+            const ctrlWrapper = document.getElementById('ctrl-wrapper');
             const sortText = document.getElementById('sort-text');
             const mainText = document.getElementById('di-main-text');
 
@@ -539,21 +543,30 @@
             else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>`;
 
-            if (index !== 0 && sortText) {
-                sortText.innerText = index === 1 ? '날짜순' : '최신순';
+            if (index === 1 && sortText) {
+                sortText.innerText = '날짜순';
             }
 
-            // 2. 가로 폭 스르륵 애니메이션 시작 (빈 공간을 자연스럽게 채움)
+            // 2. 가로 폭 스르륵 애니메이션 시작 (강제 속성을 빼고 자연스럽게 갭까지 채움)
             if (index === 0) {
-                ctrlCal.classList.remove('ctrl-hide');
-                ctrlCal.classList.add('ctrl-show');
+                ctrlTeam.classList.remove('ctrl-hide');
+                ctrlTeam.classList.add('ctrl-show');
                 ctrlSort.classList.remove('ctrl-show');
                 ctrlSort.classList.add('ctrl-hide');
-            } else {
-                ctrlCal.classList.remove('ctrl-show');
-                ctrlCal.classList.add('ctrl-hide');
+                ctrlWrapper.classList.remove('max-w-0', 'opacity-0', '!border-transparent', '!-ml-2');
+            } else if (index === 1) {
+                ctrlTeam.classList.remove('ctrl-show');
+                ctrlTeam.classList.add('ctrl-hide');
                 ctrlSort.classList.remove('ctrl-hide');
                 ctrlSort.classList.add('ctrl-show');
+                ctrlWrapper.classList.remove('max-w-0', 'opacity-0', '!border-transparent', '!-ml-2');
+            } else if (index === 2) {
+                ctrlTeam.classList.remove('ctrl-show');
+                ctrlTeam.classList.add('ctrl-hide');
+                ctrlSort.classList.remove('ctrl-show');
+                ctrlSort.classList.add('ctrl-hide');
+                ctrlWrapper.classList.remove('max-w-0');
+                ctrlWrapper.classList.add('opacity-0', '!border-transparent', '!-ml-2');
             }
 
             // 3. 메인 콘텐츠 화면 즉시 페이드인
@@ -605,15 +618,15 @@
             const btnSamsung = document.getElementById('btn-team-삼성');
             
             [btnAll, btnKia, btnSamsung].forEach(btn => {
-                btn.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all';
+                btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all';
             });
             
             if (team === 'all') {
-                btnAll.className = 'px-3 py-1 text-xs font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all';
+                btnAll.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all';
             } else if (team === 'KIA') {
-                btnKia.className = 'px-3 py-1 text-xs font-bold rounded-full bg-red-600 text-white shadow-sm transition-all';
+                btnKia.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-red-600 text-white shadow-sm transition-all';
             } else if (team === '삼성') {
-                btnSamsung.className = 'px-3 py-1 text-xs font-bold rounded-full bg-blue-600 text-white shadow-sm transition-all';
+                btnSamsung.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-blue-600 text-white shadow-sm transition-all';
             }
             
             renderCalendar();
@@ -629,13 +642,11 @@
             
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const monthDisplay = document.getElementById('header-month-display');
 
             if (viewMode === 'month') {
                 if(weekDaysHeader) weekDaysHeader.classList.remove('hidden');
                 grid.className = 'grid grid-cols-7 gap-2';
                 document.getElementById('calendar-title').innerText = `${year}년 ${month + 1}월`;
-                if(monthDisplay) monthDisplay.innerText = `${month + 1}월`;
                 
                 const firstDay = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -664,7 +675,6 @@
                 let weekNum = Math.ceil((thursday.getDate() + firstDayOfMonth) / 7);
                 
                 document.getElementById('calendar-title').innerText = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
-                if(monthDisplay) monthDisplay.innerText = `${thursday.getMonth() + 1}월`;
 
                 for (let i = 0; i < 7; i++) {
                     let d = new Date(startOfWeek);
@@ -721,7 +731,7 @@
                     }
                     
                     grid.innerHTML += `
-                        <div class="flex flex-col gap-3 fade-in-up" style="animation-delay: ${i * 0.05}s">
+                        <div class="flex flex-col gap-3">
                             <div class="flex items-center gap-2">
                                 <h3 class="text-lg font-bold ${dateStr === todayStr ? 'text-[#3182F6]' : 'text-white'}">${d.getMonth() + 1}월 ${d.getDate()}일 일정</h3>
                                 <span class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">${matchesToday.length > 0 ? matchesToday.length + '경기' : '일정 없음'}</span>
@@ -890,6 +900,9 @@
                 filteredData = filteredData.filter(match => match.team1 === selectedTeam || match.team2 === selectedTeam);
             }
 
+            const wrapper = document.createElement('div');
+            wrapper.className = 'fade-in-up space-y-4 w-full';
+
             filteredData.forEach((match, i) => {
                 let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
                 let iconColor = selectedTeam === 'KIA' ? 'text-red-600' : 'text-[#3182F6]';
@@ -903,8 +916,7 @@
                 let icon2 = logo2 ? `<img src="${logo2}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full ${c2} flex items-center justify-center text-white text-sm font-bold">${match.team2.substring(0,1)}</div>`;
                 
                 const card = document.createElement('div');
-                card.className = `list-card p-4 fade-in-up`;
-                card.style.animationDelay = `${i * 0.05}s`;
+                card.className = `list-card p-4`;
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
@@ -928,8 +940,9 @@
                         </div>
                     </div>
                 `;
-                container.appendChild(card);
+                wrapper.appendChild(card);
             });
+            container.appendChild(wrapper);
         }
 
         // --- 순위 로직 ---
@@ -938,10 +951,10 @@
             if (!container) return;
 
             let html = `
-                <div class="px-5 pt-4">
-                    <div class="list-card overflow-hidden fade-in-up">
+                <div class="px-5">
+                    <div class="fade-in-up">
                         <!-- 테이블 헤더 -->
-                        <div class="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
+                        <div class="flex justify-between items-center p-3 border-b border-white/20">
                             <div class="w-10 text-center text-xs font-bold text-gray-400">순위</div>
                             <div class="flex-1 text-left text-xs font-bold text-gray-400 pl-2">팀명</div>
                             <div class="w-8 text-center text-xs font-bold text-gray-400">승</div>
@@ -984,6 +997,20 @@
         window.onload = () => {
             setTeamFilter(selectedTeam);
             switchTab(0);
+
+            // D-Day 계산
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const opening = new Date(2026, 2, 28); // 2026년 3월 28일
+            const diff = opening.getTime() - today.getTime();
+            const dDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            
+            const countEl = document.getElementById('d-day-count');
+            if(countEl) {
+                if(dDay > 0) countEl.innerText = `D-${dDay}`;
+                else if(dDay === 0) countEl.innerText = `D-Day`;
+                else countEl.innerText = `D+${Math.abs(dDay)}`;
+            }
         };
     </script>
 </body>
