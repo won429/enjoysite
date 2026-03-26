@@ -13,6 +13,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* 🔥 구단별 다이내믹 테마 색상 변수 🔥 */
+        :root {
+            --point-color: #3182F6;
+            --point-bg: rgba(49, 130, 246, 0.15);
+            --app-bg: #000000;
+        }
+        body[data-theme="KIA"] {
+            --point-color: #ea0029; /* 타이거즈 레드 */
+            --point-bg: rgba(234, 0, 41, 0.15);
+            --app-bg: #140003; /* 은은하고 고급스러운 딥 레드 배경 */
+        }
+        body[data-theme="삼성"] {
+            --point-color: #2563eb; /* 라이온즈 블루 */
+            --point-bg: rgba(37, 99, 235, 0.15);
+            --app-bg: #000514; /* 은은하고 고급스러운 딥 블루 배경 */
+        }
+        body[data-theme="all"] {
+            --point-color: #3182F6;
+            --point-bg: rgba(49, 130, 246, 0.15);
+            --app-bg: #000000;
+        }
+
+        /* 테마 적용 클래스 (부드러운 컬러 전환 애니메이션 포함) */
+        .app-bg { background-color: var(--app-bg) !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .text-point { color: var(--point-color) !important; transition: color 0.5s ease; }
+        .bg-point { background-color: var(--point-color) !important; transition: background-color 0.5s ease; }
+        .bg-point-sub { background-color: var(--point-bg) !important; transition: background-color 0.5s ease; }
+
         body { 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif";
             -webkit-tap-highlight-color: transparent;
@@ -122,14 +150,14 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .today {
-            background: rgba(49, 130, 246, 0.15);
-            border: 1px solid rgba(49, 130, 246, 0.5);
+            background: var(--point-bg) !important;
+            border: 1px solid var(--point-color) !important;
         }
     </style>
 </head>
-<body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden">
+<body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden" data-theme="all">
 
-    <div id="mobile-wrapper" class="w-full h-full max-w-[430px] bg-black relative flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
+    <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
         <!-- 🔥 글로벌 헤더 (선 제거 및 깔끔한 유리 재질 유지, 상하 여백 최적화) 🔥 -->
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20 bg-black/80 backdrop-blur-md">
@@ -139,9 +167,9 @@
                 <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg border border-white/5 min-h-[36px] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
                     <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
                         <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight">
-                            KBO 리그 일정<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>
+                            KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>
                         </h1>
-                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">2026시즌 정규리그</span>
+                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">2026시즌</span>
                     </div>
                 </div>
 
@@ -166,25 +194,11 @@
             </div>
         </header>
 
-        <!-- 1. 달력 화면 (메인) 배경을 bg-black으로 통일 -->
-        <main id="calendar-screen" class="hidden flex-1 relative w-full flex-col bg-black overflow-y-auto scrollbar-hide pb-24">
+        <!-- 1. 달력 화면 (메인) -->
+        <main id="calendar-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="px-5 pt-main flex-1 flex flex-col">
                 
-                <!-- 🔥 상단 대형 배너 🔥 -->
-                <div class="w-full aspect-[2.2/1] bg-gradient-to-br from-[#1e3a8a] via-[#312e81] to-[#0f172a] rounded-2xl mb-6 relative overflow-hidden flex flex-col justify-center p-5 shadow-xl border border-white/10 shrink-0">
-                    <!-- 배너 배경 빛번짐(Glow) 효과 -->
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#3182F6] rounded-full blur-3xl opacity-30 -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
-                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-red-500 rounded-full blur-3xl opacity-20 translate-y-1/4 -translate-x-1/4 pointer-events-none"></div>
-                    
-                    <span class="text-blue-200 font-extrabold text-[10px] tracking-wider bg-black/30 backdrop-blur-sm px-2 py-1 rounded-md w-fit mb-2 border border-white/5 relative z-10">2026 KBO OPENING</span>
-                    <h2 class="text-white text-[18px] font-extrabold leading-snug tracking-tight mb-1 relative z-10">2026 프로야구 개막까지<br><span id="d-day-count" class="text-[34px] font-black tracking-tighter text-white drop-shadow-lg">D-Day</span></h2>
-                    <p class="text-blue-200/70 text-[11px] font-medium relative z-10">3월 28일, 새로운 시즌이 시작됩니다</p>
-                    
-                    <!-- 우측 하단 야구공 아이콘 장식 -->
-                    <i class="fa-solid fa-baseball text-[90px] absolute -right-4 -bottom-6 text-white/5 transform -rotate-12 pointer-events-none"></i>
-                </div>
-
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-center items-center mb-4">
                     <div class="flex items-center gap-4">
                         <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 transition-all active:scale-95">
                             <i class="fa-solid fa-chevron-left text-sm"></i>
@@ -194,9 +208,157 @@
                             <i class="fa-solid fa-chevron-right text-sm"></i>
                         </button>
                     </div>
-                    <!-- 월간/주간 전환 토글 -->
+                </div>
+
+                <!-- 🔥 상단 배너 영역 (가로 스크롤 캐러셀 및 자동 스와이프) 🔥 -->
+                <div class="relative w-full mb-6 shrink-0">
+                    <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-3 pb-1" style="touch-action: pan-x pan-y;">
+                        
+                        <!-- 배너 1: D-Day -->
+                        <div class="min-w-full bg-[#1C1C1E] rounded-2xl p-5 border border-white/5 shrink-0 flex justify-between items-center transition-transform active:scale-[0.98] snap-center">
+                            <div class="flex flex-col">
+                                <span class="text-[11px] font-bold text-point mb-1.5 tracking-wide">2026 KBO LEAGUE</span>
+                                <h2 class="text-white/80 text-[13px] font-bold tracking-tight mb-0.5">정규시즌 개막까지</h2>
+                                <div id="d-day-count" class="text-[34px] font-extrabold text-white leading-none tracking-tighter">D-Day</div>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
+                                <i class="fa-solid fa-baseball text-xl text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <!-- 🔥 배너 2: KIA vs SSG 매치 (진짜 미친 퀄리티의 e스포츠급 대결 그래픽) 🔥 -->
+                        <div class="min-w-full bg-[#050505] rounded-2xl border border-white/10 shrink-0 flex flex-col justify-center transition-transform active:scale-[0.98] snap-center relative overflow-hidden group">
+                            
+                            <!-- 미친 퀄리티: 스캔라인 + 다크 그라데이션 베이스 -->
+                            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
+                            
+                            <!-- 미친 퀄리티: 양팀 컬러 뿜어져 나오는 역동적 사선 배경 -->
+                            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-red-800/50 via-black to-red-600/50 opacity-60 transform -skew-x-12 scale-125 z-0"></div>
+                            
+                            <!-- 미친 퀄리티: 거대한 배경 워터마크 -->
+                            <div class="absolute inset-0 flex justify-center items-center overflow-hidden z-0 pointer-events-none opacity-[0.04]">
+                                <span class="text-[110px] font-black italic text-white tracking-tighter select-none">OPENING</span>
+                            </div>
+
+                            <!-- 미친 퀄리티: 화면을 찢는 듯한 중앙 발광 사선 (라이트세이버 느낌) -->
+                            <div class="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                                <div class="w-[2px] h-[200%] bg-gradient-to-b from-transparent via-white to-transparent transform rotate-[20deg] shadow-[0_0_20px_#fff,0_0_40px_rgba(255,255,255,0.5)]"></div>
+                            </div>
+
+                            <div class="flex justify-between items-start w-full relative z-10 px-5 pt-4 pb-1">
+                                <!-- 까리한 사선 라벨 -->
+                                <div class="bg-gradient-to-r from-red-600 to-red-900 px-3 py-0.5 shadow-[0_0_15px_rgba(220,38,38,0.6)] transform -skew-x-12 border-l-2 border-white/80">
+                                    <span class="text-[9px] font-black text-white tracking-[0.2em] italic block transform skew-x-12 pl-1">OPENING SERIES</span>
+                                </div>
+                                <span class="text-[10px] text-gray-200 font-black bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 shadow-lg tracking-wide">3. 28 (토) 14:00</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center w-full relative z-10 px-6 mt-1 mb-3">
+                                <!-- AWAY: KIA -->
+                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:-translate-x-3">
+                                    <div class="relative">
+                                        <!-- 불타는 듯한 네온 글로우 -->
+                                        <div class="absolute inset-0 bg-red-600 blur-[20px] opacity-70 rounded-full animate-pulse"></div>
+                                        <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
+                                    </div>
+                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">KIA</span>
+                                </div>
+                                
+                                <!-- VS 메탈릭 입체 텍스트 -->
+                                <div class="flex items-center justify-center relative z-20">
+                                    <div class="absolute inset-0 bg-black blur-xl rounded-full scale-150"></div>
+                                    <span class="text-[40px] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#d4d4d8] to-[#52525b] tracking-tighter transform -skew-x-12 drop-shadow-[0_4px_4px_rgba(0,0,0,1)] relative z-10 pr-2" style="-webkit-text-stroke: 1px rgba(255,255,255,0.2);">VS</span>
+                                </div>
+                                
+                                <!-- HOME: SSG -->
+                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:translate-x-3">
+                                    <div class="relative">
+                                        <!-- 불타는 듯한 네온 글로우 -->
+                                        <div class="absolute inset-0 bg-red-500 blur-[20px] opacity-70 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+                                        <img src="https://i.namu.wiki/i/X91DumdvUw7RDajMJ7nMRWGsbwd62jUhLShdLTuGu4FTbqMD9m_UHcNVTHEF9Cr-C1BahIZMvHc21r065oSPvEShTnuCOg1ksdxuTNY2BQXI46WOwPfVJssZo5nJk18dT2wQls6s5ZAzAC8_Wywy6g.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
+                                    </div>
+                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">SSG</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🔥 배너 3: 롯데 vs 삼성 매치 (블루 톤 클래식 라이벌전) 🔥 -->
+                        <div class="min-w-full bg-[#050505] rounded-2xl border border-white/10 shrink-0 flex flex-col justify-center transition-transform active:scale-[0.98] snap-center relative overflow-hidden group">
+                            
+                            <!-- 스캔라인 + 다크 그라데이션 베이스 -->
+                            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
+                            
+                            <!-- 삼성 블루 & 롯데 오렌지 역동적 사선 배경 -->
+                            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-orange-800/40 via-black to-blue-700/50 opacity-60 transform -skew-x-12 scale-125 z-0"></div>
+                            
+                            <!-- 거대한 배경 워터마크 -->
+                            <div class="absolute inset-0 flex justify-center items-center overflow-hidden z-0 pointer-events-none opacity-[0.04]">
+                                <span class="text-[100px] font-black italic text-white tracking-tighter select-none">CLASSIC</span>
+                            </div>
+
+                            <!-- 라이트세이버 사선 -->
+                            <div class="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                                <div class="w-[2px] h-[200%] bg-gradient-to-b from-transparent via-white to-transparent transform rotate-[20deg] shadow-[0_0_20px_#fff,0_0_40px_rgba(255,255,255,0.5)]"></div>
+                            </div>
+
+                            <div class="flex justify-between items-start w-full relative z-10 px-5 pt-4 pb-1">
+                                <!-- 삼성 블루 사선 라벨 -->
+                                <div class="bg-gradient-to-r from-blue-600 to-blue-900 px-3 py-0.5 shadow-[0_0_15px_rgba(37,99,235,0.6)] transform -skew-x-12 border-l-2 border-white/80">
+                                    <span class="text-[9px] font-black text-white tracking-[0.2em] italic block transform skew-x-12 pl-1">CLASSIC SERIES</span>
+                                </div>
+                                <span class="text-[10px] text-gray-200 font-black bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 shadow-lg tracking-wide">3. 28 (토) 14:00 · 대구</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center w-full relative z-10 px-6 mt-1 mb-3">
+                                <!-- AWAY: 롯데 -->
+                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:-translate-x-3">
+                                    <div class="relative">
+                                        <!-- 오렌지 글로우 -->
+                                        <div class="absolute inset-0 bg-orange-600 blur-[20px] opacity-70 rounded-full animate-pulse"></div>
+                                        <img src="https://i.namu.wiki/i/oKJnVn3EqFm31jpNrP1fqDq1k3xaBnvwfqAKYLjw1Z7UrnqjuouFt8IXymJrANkqsNzqvZ8o0qKwuO550eEFvknICMiYdtMkje1LqgX6yZFE1X_ptk56w8dxB3oqwMJhn5DYDr4bipTLN5dC7aG3sA.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
+                                    </div>
+                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">롯데</span>
+                                </div>
+                                
+                                <!-- VS 메탈릭 입체 텍스트 -->
+                                <div class="flex items-center justify-center relative z-20">
+                                    <div class="absolute inset-0 bg-black blur-xl rounded-full scale-150"></div>
+                                    <span class="text-[40px] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#d4d4d8] to-[#52525b] tracking-tighter transform -skew-x-12 drop-shadow-[0_4px_4px_rgba(0,0,0,1)] relative z-10 pr-2" style="-webkit-text-stroke: 1px rgba(255,255,255,0.2);">VS</span>
+                                </div>
+                                
+                                <!-- HOME: 삼성 -->
+                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:translate-x-3">
+                                    <div class="relative">
+                                        <!-- 블루 네온 글로우 -->
+                                        <div class="absolute inset-0 bg-blue-600 blur-[20px] opacity-70 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+                                        <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
+                                    </div>
+                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">삼성</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <!-- 배너 컨트롤 영역 (점 & 일시정지 버튼) -->
+                    <div class="absolute -bottom-3.5 left-0 w-full flex justify-center items-center px-4 z-10 pointer-events-none">
+                        <!-- 인디케이터 (점) -->
+                        <div class="flex items-center gap-1.5">
+                            <div class="banner-dot w-3 h-1.5 rounded-full bg-white transition-all duration-300"></div>
+                            <div class="banner-dot w-1.5 h-1.5 rounded-full bg-gray-500 transition-all duration-300"></div>
+                            <div class="banner-dot w-1.5 h-1.5 rounded-full bg-gray-500 transition-all duration-300"></div>
+                        </div>
+                        <!-- 일시정지/재생 버튼 -->
+                        <button id="banner-pause-btn" class="absolute right-2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-white bg-black/50 backdrop-blur-sm rounded-full border border-white/10 transition-all active:scale-95 pointer-events-auto">
+                            <i id="banner-pause-icon" class="fa-solid fa-pause text-[8px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 월간/주간 전환 토글 (원래 위치인 달력 바로 위 우측으로 복구) -->
+                <div class="flex justify-end mb-3">
                     <div class="flex gap-1 bg-white/5 p-1 rounded-full border border-white/10 w-fit shrink-0">
-                        <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-[#3182F6] text-white shadow-sm transition-all">월간</button>
+                        <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-point text-white shadow-sm transition-all">월간</button>
                         <button onclick="setViewMode('week')" id="btn-mode-week" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">주간</button>
                     </div>
                 </div>
@@ -223,7 +385,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2">
                         <h3 id="sheet-date-title" class="text-lg font-bold text-white">3월 28일 일정</h3>
-                        <span id="sheet-match-count" class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">5경기</span>
+                        <span id="sheet-match-count" class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">5경기</span>
                     </div>
                     <button onclick="closeBottomSheet()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
                         <i class="fa-solid fa-xmark"></i>
@@ -238,14 +400,14 @@
         </main>
 
         <!-- 2. 목록 화면 -->
-        <main id="list-screen" class="hidden flex-1 relative w-full flex-col bg-black overflow-y-auto scrollbar-hide pb-24">
+        <main id="list-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="px-5 pt-main space-y-4" id="match-list-container">
                 <!-- JS로 목록 렌더링 -->
             </div>
         </main>
 
         <!-- 3. 순위 화면 -->
-        <main id="ranking-screen" class="hidden flex-1 relative w-full flex-col bg-black overflow-y-auto scrollbar-hide pb-24">
+        <main id="ranking-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="w-full pt-main pb-10" id="ranking-container">
                 <!-- JS로 순위표 데이터가 렌더링 됩니다 -->
             </div>
@@ -475,8 +637,8 @@
         };
 
         // --- 캘린더 상태 ---
-        let currentDate = new Date(2026, 2, 1);
-        const todayStr = '2026-03-28';
+        let currentDate = new Date();
+        const todayStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
         let viewMode = 'month';
         let selectedTeam = localStorage.getItem('kbo_selected_team') || 'all';
 
@@ -539,9 +701,9 @@
             const mainText = document.getElementById('di-main-text');
 
             // 1. 텍스트는 딜레이나 깜빡임(투명도) 없이 즉시 변경
-            if (index === 0) mainText.innerHTML = `KBO 리그 일정<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>`;
-            else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>`;
-            else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-[#3182F6] rounded-full ml-1 mb-0.5"></span>`;
+            if (index === 0) mainText.innerHTML = `KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
 
             if (index === 1 && sortText) {
                 sortText.innerText = '날짜순';
@@ -597,10 +759,10 @@
             const btnWeek = document.getElementById('btn-mode-week');
             
             if (mode === 'month') {
-                btnMonth.className = 'px-3 py-1 text-xs font-bold rounded-full bg-[#3182F6] text-white shadow-sm transition-all';
+                btnMonth.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-white shadow-sm transition-all';
                 btnWeek.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all';
             } else {
-                btnWeek.className = 'px-3 py-1 text-xs font-bold rounded-full bg-[#3182F6] text-white shadow-sm transition-all';
+                btnWeek.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-white shadow-sm transition-all';
                 btnMonth.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all';
             }
             
@@ -613,6 +775,9 @@
             selectedTeam = team;
             localStorage.setItem('kbo_selected_team', team);
             
+            // 🔥 테마 색상 적용 🔥
+            document.body.setAttribute('data-theme', team);
+            
             const btnAll = document.getElementById('btn-team-all');
             const btnKia = document.getElementById('btn-team-KIA');
             const btnSamsung = document.getElementById('btn-team-삼성');
@@ -622,11 +787,11 @@
             });
             
             if (team === 'all') {
-                btnAll.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all';
+                btnAll.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
             } else if (team === 'KIA') {
-                btnKia.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-red-600 text-white shadow-sm transition-all';
+                btnKia.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
             } else if (team === '삼성') {
-                btnSamsung.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-blue-600 text-white shadow-sm transition-all';
+                btnSamsung.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
             }
             
             renderCalendar();
@@ -676,6 +841,8 @@
                 
                 document.getElementById('calendar-title').innerText = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
 
+                // 🔥 1. 주간 7일치 데이터를 먼저 배열로 수집 🔥
+                let weekDays = [];
                 for (let i = 0; i < 7; i++) {
                     let d = new Date(startOfWeek);
                     d.setDate(d.getDate() + i);
@@ -689,19 +856,24 @@
                     if (selectedTeam !== 'all') {
                         matchesToday = matchesToday.filter(match => match.team1 === selectedTeam || match.team2 === selectedTeam);
                     }
+                    weekDays.push({ d, dateStr, matches: matchesToday });
+                }
+
+                // 🔥 2. 연속으로 일정이 없는 날을 묶어서 병합 렌더링 🔥
+                let idx = 0;
+                while (idx < 7) {
+                    let currentDay = weekDays[idx];
                     
-                    let matchesHtml = '';
-                    if (matchesToday.length === 0) {
-                        matchesHtml = `<div class="text-[13px] text-gray-500 bg-white/5 rounded-xl p-4 text-center border border-white/5">예정된 경기가 없습니다.</div>`;
-                    } else {
-                        matchesHtml = `<div class="space-y-3">` + matchesToday.map(match => {
+                    if (currentDay.matches.length > 0) {
+                        // 일정이 있는 날은 기존처럼 개별 렌더링
+                        let matchesHtml = `<div class="space-y-3">` + currentDay.matches.map(match => {
                             let c1 = teamColors[match.team1] || 'bg-gray-500';
                             let c2 = teamColors[match.team2] || 'bg-gray-500';
                             let logo1 = teamLogos[match.team1];
                             let logo2 = teamLogos[match.team2];
                             
                             let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                            let iconColor = selectedTeam === 'KIA' ? 'text-red-600' : 'text-[#3182F6]';
+                            let iconColor = 'text-point';
                             
                             let icon1 = logo1 ? `<img src="${logo1}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c1}"></div>`;
                             let icon2 = logo2 ? `<img src="${logo2}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c2}"></div>`;
@@ -722,23 +894,63 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">
+                                    <button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs">
                                         <i class="fa-solid fa-chevron-right"></i>
                                     </button>
                                 </div>
                             `;
                         }).join('') + `</div>`;
-                    }
-                    
-                    grid.innerHTML += `
-                        <div class="flex flex-col gap-3">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-lg font-bold ${dateStr === todayStr ? 'text-[#3182F6]' : 'text-white'}">${d.getMonth() + 1}월 ${d.getDate()}일 일정</h3>
-                                <span class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">${matchesToday.length > 0 ? matchesToday.length + '경기' : '일정 없음'}</span>
+
+                        grid.innerHTML += `
+                            <div class="flex flex-col gap-3">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-lg font-bold ${currentDay.dateStr === todayStr ? 'text-point' : 'text-white'}">${currentDay.d.getMonth() + 1}월 ${currentDay.d.getDate()}일 일정</h3>
+                                    <span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${currentDay.matches.length}경기</span>
+                                </div>
+                                ${matchesHtml}
                             </div>
-                            ${matchesHtml}
-                        </div>
-                    `;
+                        `;
+                        idx++;
+                    } else {
+                        // 일정이 없는 날 연속 병합 로직
+                        let startIdx = idx;
+                        while (idx < 7 && weekDays[idx].matches.length === 0) {
+                            idx++;
+                        }
+                        let endIdx = idx - 1;
+
+                        let startDay = weekDays[startIdx];
+                        let endDay = weekDays[endIdx];
+
+                        // 기간 내에 오늘이 포함되어 있는지 체크
+                        let isTodayInRange = false;
+                        for (let k = startIdx; k <= endIdx; k++) {
+                            if (weekDays[k].dateStr === todayStr) isTodayInRange = true;
+                        }
+                        let titleColor = isTodayInRange ? 'text-point' : 'text-white';
+
+                        let titleHtml = '';
+                        if (startIdx === endIdx) {
+                            // 하루만 없을 때
+                            titleHtml = `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일</h3>`;
+                        } else {
+                            // 여러 날 없을 때 (물결표로 묶음)
+                            titleHtml = `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일 ~ ${endDay.d.getMonth() + 1}월 ${endDay.d.getDate()}일</h3>`;
+                        }
+
+                        grid.innerHTML += `
+                            <div class="flex flex-col gap-3">
+                                <div class="flex items-center gap-2">
+                                    ${titleHtml}
+                                    <span class="text-[10px] font-bold text-gray-400 bg-white/10 px-2 py-0.5 rounded-full border border-white/5">일정 없음</span>
+                                </div>
+                                <div class="text-[12px] text-gray-500 bg-white/5 rounded-xl p-5 text-center border border-white/5 flex flex-col items-center justify-center gap-2">
+                                    <i class="fa-solid fa-bed text-2xl text-gray-600 mb-1"></i>
+                                    이 기간에는 예정된 경기가 없습니다.
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
             }
         }
@@ -759,7 +971,7 @@
             let hasMatchClass = matchesToday.length > 0 ? 'has-match' : '';
             let todayClass = isToday ? 'today' : '';
             let textClass = matchesToday.length > 0 ? 'text-white font-bold' : 'text-gray-400 font-medium';
-            if (isToday) textClass = 'text-[#3182F6] font-extrabold';
+            if (isToday) textClass = 'text-point font-extrabold';
 
             let dotsHtml = '';
             let topIconHtml = '';
@@ -780,7 +992,7 @@
                         let logoHtml = logo ? `<img src="${logo}" class="w-5 h-5 object-contain">` : `<div class="w-1.5 h-1.5 rounded-full ${teamColors[displayTeam] || 'bg-gray-500'}"></div>`;
                         
                         if (isHome) {
-                            let iconColor = selectedTeam === 'KIA' ? 'text-red-600' : 'text-[#3182F6]';
+                            let iconColor = 'text-point';
                             topIconHtml = `<i class="fa-solid fa-house ${iconColor} text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2"></i>`;
                         }
                         return logoHtml;
@@ -816,7 +1028,7 @@
 
         function goToToday() {
             if (navigator.vibrate) navigator.vibrate(5);
-            currentDate = new Date(2026, 2, 1);
+            currentDate = new Date();
             renderCalendar();
             closeBottomSheet();
         }
@@ -852,7 +1064,7 @@
                     let logo2 = teamLogos[match.team2];
                     
                     let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                    let iconColor = selectedTeam === 'KIA' ? 'text-red-600' : 'text-[#3182F6]';
+                    let iconColor = 'text-point';
                     
                     let icon1 = logo1 ? `<img src="${logo1}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c1}"></div>`;
                     let icon2 = logo2 ? `<img src="${logo2}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c2}"></div>`;
@@ -873,7 +1085,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">
+                            <button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </button>
                         </div>
@@ -905,7 +1117,7 @@
 
             filteredData.forEach((match, i) => {
                 let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                let iconColor = selectedTeam === 'KIA' ? 'text-red-600' : 'text-[#3182F6]';
+                let iconColor = 'text-point';
                 
                 let c1 = teamColors[match.team1] || 'bg-gray-500';
                 let c2 = teamColors[match.team2] || 'bg-gray-500';
@@ -920,7 +1132,7 @@
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-bold text-[#3182F6] bg-blue-500/10 px-2 py-0.5 rounded-full">${match.date}</span>
+                        <span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${match.date}</span>
                         <button class="text-gray-500 hover:text-white transition-colors p-1">
                             <i class="fa-regular fa-bell"></i>
                         </button>
@@ -980,7 +1192,7 @@
                             </div>
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.w}</div>
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.l}</div>
-                            <div class="w-12 text-center text-sm font-medium text-blue-400">${team.winRate}</div>
+                            <div class="w-12 text-center text-sm font-medium text-point">${team.winRate}</div>
                             <div class="w-10 text-center text-[11px] font-medium text-gray-500">${team.gb}</div>
                         </div>
                 `;
@@ -1010,6 +1222,81 @@
                 if(dDay > 0) countEl.innerText = `D-${dDay}`;
                 else if(dDay === 0) countEl.innerText = `D-Day`;
                 else countEl.innerText = `D+${Math.abs(dDay)}`;
+            }
+
+            // --- 배너 자동 롤링 및 인디케이터 로직 ---
+            const bannerCarousel = document.getElementById('banner-carousel');
+            const bannerDots = document.querySelectorAll('.banner-dot');
+            const pauseBtn = document.getElementById('banner-pause-btn');
+            const pauseIcon = document.getElementById('banner-pause-icon');
+            
+            let currentBanner = 0;
+            const totalBanners = 3;
+            let bannerInterval;
+            let isPlaying = true; // 자동 스크롤 상태
+
+            function updateBannerDots(index) {
+                bannerDots.forEach((dot, i) => {
+                    if (i === index) {
+                        dot.classList.add('w-3', 'bg-white');
+                        dot.classList.remove('w-1.5', 'bg-gray-500');
+                    } else {
+                        dot.classList.add('w-1.5', 'bg-gray-500');
+                        dot.classList.remove('w-3', 'bg-white');
+                    }
+                });
+            }
+
+            function startBannerAutoScroll() {
+                clearInterval(bannerInterval);
+                if (!isPlaying) return; // 정지 상태면 실행 안함
+                bannerInterval = setInterval(() => {
+                    if(!bannerCarousel) return;
+                    currentBanner = (currentBanner + 1) % totalBanners;
+                    bannerCarousel.scrollTo({
+                        left: currentBanner * bannerCarousel.clientWidth,
+                        behavior: 'smooth'
+                    });
+                    updateBannerDots(currentBanner);
+                }, 3000); // 3초 주기
+            }
+
+            if (bannerCarousel) {
+                // 일시정지 버튼 토글 이벤트
+                if (pauseBtn) {
+                    pauseBtn.addEventListener('click', () => {
+                        isPlaying = !isPlaying;
+                        if (isPlaying) {
+                            pauseIcon.classList.remove('fa-play');
+                            pauseIcon.classList.add('fa-pause');
+                            startBannerAutoScroll();
+                        } else {
+                            pauseIcon.classList.remove('fa-pause');
+                            pauseIcon.classList.add('fa-play');
+                            clearInterval(bannerInterval);
+                        }
+                    });
+                }
+
+                // 사용자가 수동으로 스와이프할 때 인디케이터 점 동기화
+                bannerCarousel.addEventListener('scroll', () => {
+                    const scrollPos = bannerCarousel.scrollLeft;
+                    const width = bannerCarousel.clientWidth;
+                    if (width === 0) return;
+                    const newIndex = Math.round(scrollPos / width);
+                    if (newIndex !== currentBanner) {
+                        currentBanner = newIndex;
+                        updateBannerDots(currentBanner);
+                    }
+                });
+
+                // 터치 중에는 자동 스크롤을 멈춰서 사용자 경험(UX) 개선
+                bannerCarousel.addEventListener('touchstart', () => clearInterval(bannerInterval), {passive: true});
+                bannerCarousel.addEventListener('touchend', () => {
+                    if (isPlaying) startBannerAutoScroll();
+                }, {passive: true});
+                
+                startBannerAutoScroll();
             }
         };
     </script>
