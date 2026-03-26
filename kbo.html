@@ -214,7 +214,7 @@
                 <div class="relative w-full mb-6 shrink-0">
                     <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-3 pb-1" style="touch-action: pan-x pan-y;">
                         
-                        <!-- 배너 1: D-Day -->
+                        <!-- 배너 1: D-Day (기본 고정 배너) -->
                         <div class="min-w-full bg-[#1C1C1E] rounded-2xl p-5 border border-white/5 shrink-0 flex justify-between items-center transition-transform active:scale-[0.98] snap-center">
                             <div class="flex flex-col">
                                 <span class="text-[11px] font-bold text-point mb-1.5 tracking-wide">2026 KBO LEAGUE</span>
@@ -226,132 +226,23 @@
                             </div>
                         </div>
 
-                        <!-- 🔥 배너 2: KIA vs SSG 매치 (진짜 미친 퀄리티의 e스포츠급 대결 그래픽) 🔥 -->
-                        <div class="min-w-full bg-[#050505] rounded-2xl border border-white/10 shrink-0 flex flex-col justify-center transition-transform active:scale-[0.98] snap-center relative overflow-hidden group">
-                            
-                            <!-- 미친 퀄리티: 스캔라인 + 다크 그라데이션 베이스 -->
-                            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
-                            
-                            <!-- 미친 퀄리티: 양팀 컬러 뿜어져 나오는 역동적 사선 배경 -->
-                            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-red-800/50 via-black to-red-600/50 opacity-60 transform -skew-x-12 scale-125 z-0"></div>
-                            
-                            <!-- 미친 퀄리티: 거대한 배경 워터마크 -->
-                            <div class="absolute inset-0 flex justify-center items-center overflow-hidden z-0 pointer-events-none opacity-[0.04]">
-                                <span class="text-[110px] font-black italic text-white tracking-tighter select-none">OPENING</span>
-                            </div>
-
-                            <!-- 미친 퀄리티: 화면을 찢는 듯한 중앙 발광 사선 (라이트세이버 느낌) -->
-                            <div class="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-                                <div class="w-[2px] h-[200%] bg-gradient-to-b from-transparent via-white to-transparent transform rotate-[20deg] shadow-[0_0_20px_#fff,0_0_40px_rgba(255,255,255,0.5)]"></div>
-                            </div>
-
-                            <div class="flex justify-between items-start w-full relative z-10 px-5 pt-4 pb-1">
-                                <!-- 까리한 사선 라벨 -->
-                                <div class="bg-gradient-to-r from-red-600 to-red-900 px-3 py-0.5 shadow-[0_0_15px_rgba(220,38,38,0.6)] transform -skew-x-12 border-l-2 border-white/80">
-                                    <span class="text-[9px] font-black text-white tracking-[0.2em] italic block transform skew-x-12 pl-1">OPENING SERIES</span>
-                                </div>
-                                <span class="text-[10px] text-gray-200 font-black bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 shadow-lg tracking-wide">3. 28 (토) 14:00</span>
-                            </div>
-                            
-                            <div class="flex justify-between items-center w-full relative z-10 px-6 mt-1 mb-3">
-                                <!-- AWAY: KIA -->
-                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:-translate-x-3">
-                                    <div class="relative">
-                                        <!-- 불타는 듯한 네온 글로우 -->
-                                        <div class="absolute inset-0 bg-red-600 blur-[20px] opacity-70 rounded-full animate-pulse"></div>
-                                        <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
-                                    </div>
-                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">KIA</span>
-                                </div>
-                                
-                                <!-- VS 메탈릭 입체 텍스트 -->
-                                <div class="flex items-center justify-center relative z-20">
-                                    <div class="absolute inset-0 bg-black blur-xl rounded-full scale-150"></div>
-                                    <span class="text-[40px] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#d4d4d8] to-[#52525b] tracking-tighter transform -skew-x-12 drop-shadow-[0_4px_4px_rgba(0,0,0,1)] relative z-10 pr-2" style="-webkit-text-stroke: 1px rgba(255,255,255,0.2);">VS</span>
-                                </div>
-                                
-                                <!-- HOME: SSG -->
-                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:translate-x-3">
-                                    <div class="relative">
-                                        <!-- 불타는 듯한 네온 글로우 -->
-                                        <div class="absolute inset-0 bg-red-500 blur-[20px] opacity-70 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
-                                        <img src="https://i.namu.wiki/i/X91DumdvUw7RDajMJ7nMRWGsbwd62jUhLShdLTuGu4FTbqMD9m_UHcNVTHEF9Cr-C1BahIZMvHc21r065oSPvEShTnuCOg1ksdxuTNY2BQXI46WOwPfVJssZo5nJk18dT2wQls6s5ZAzAC8_Wywy6g.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
-                                    </div>
-                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">SSG</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 🔥 배너 3: 롯데 vs 삼성 매치 (블루 톤 클래식 라이벌전) 🔥 -->
-                        <div class="min-w-full bg-[#050505] rounded-2xl border border-white/10 shrink-0 flex flex-col justify-center transition-transform active:scale-[0.98] snap-center relative overflow-hidden group">
-                            
-                            <!-- 스캔라인 + 다크 그라데이션 베이스 -->
-                            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-0"></div>
-                            
-                            <!-- 삼성 블루 & 롯데 오렌지 역동적 사선 배경 -->
-                            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-orange-800/40 via-black to-blue-700/50 opacity-60 transform -skew-x-12 scale-125 z-0"></div>
-                            
-                            <!-- 거대한 배경 워터마크 -->
-                            <div class="absolute inset-0 flex justify-center items-center overflow-hidden z-0 pointer-events-none opacity-[0.04]">
-                                <span class="text-[100px] font-black italic text-white tracking-tighter select-none">CLASSIC</span>
-                            </div>
-
-                            <!-- 라이트세이버 사선 -->
-                            <div class="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-                                <div class="w-[2px] h-[200%] bg-gradient-to-b from-transparent via-white to-transparent transform rotate-[20deg] shadow-[0_0_20px_#fff,0_0_40px_rgba(255,255,255,0.5)]"></div>
-                            </div>
-
-                            <div class="flex justify-between items-start w-full relative z-10 px-5 pt-4 pb-1">
-                                <!-- 삼성 블루 사선 라벨 -->
-                                <div class="bg-gradient-to-r from-blue-600 to-blue-900 px-3 py-0.5 shadow-[0_0_15px_rgba(37,99,235,0.6)] transform -skew-x-12 border-l-2 border-white/80">
-                                    <span class="text-[9px] font-black text-white tracking-[0.2em] italic block transform skew-x-12 pl-1">CLASSIC SERIES</span>
-                                </div>
-                                <span class="text-[10px] text-gray-200 font-black bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10 shadow-lg tracking-wide">3. 28 (토) 14:00 · 대구</span>
-                            </div>
-                            
-                            <div class="flex justify-between items-center w-full relative z-10 px-6 mt-1 mb-3">
-                                <!-- AWAY: 롯데 -->
-                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:-translate-x-3">
-                                    <div class="relative">
-                                        <!-- 오렌지 글로우 -->
-                                        <div class="absolute inset-0 bg-orange-600 blur-[20px] opacity-70 rounded-full animate-pulse"></div>
-                                        <img src="https://i.namu.wiki/i/oKJnVn3EqFm31jpNrP1fqDq1k3xaBnvwfqAKYLjw1Z7UrnqjuouFt8IXymJrANkqsNzqvZ8o0qKwuO550eEFvknICMiYdtMkje1LqgX6yZFE1X_ptk56w8dxB3oqwMJhn5DYDr4bipTLN5dC7aG3sA.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
-                                    </div>
-                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">롯데</span>
-                                </div>
-                                
-                                <!-- VS 메탈릭 입체 텍스트 -->
-                                <div class="flex items-center justify-center relative z-20">
-                                    <div class="absolute inset-0 bg-black blur-xl rounded-full scale-150"></div>
-                                    <span class="text-[40px] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#d4d4d8] to-[#52525b] tracking-tighter transform -skew-x-12 drop-shadow-[0_4px_4px_rgba(0,0,0,1)] relative z-10 pr-2" style="-webkit-text-stroke: 1px rgba(255,255,255,0.2);">VS</span>
-                                </div>
-                                
-                                <!-- HOME: 삼성 -->
-                                <div class="flex flex-col items-center gap-2 w-[70px] transform transition-transform duration-500 group-hover:translate-x-3">
-                                    <div class="relative">
-                                        <!-- 블루 네온 글로우 -->
-                                        <div class="absolute inset-0 bg-blue-600 blur-[20px] opacity-70 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
-                                        <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-14 h-14 object-contain relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.9)]">
-                                    </div>
-                                    <span class="text-[16px] font-black text-white tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">삼성</span>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- 이후 배너들은 자바스크립트(renderBanners)를 통해 일정에 따라 자동으로 렌더링됩니다 -->
 
                     </div>
                     
                     <!-- 배너 컨트롤 영역 (점 & 일시정지 버튼) -->
-                    <div class="absolute -bottom-3.5 left-0 w-full flex justify-center items-center px-4 z-10 pointer-events-none">
-                        <!-- 인디케이터 (점) -->
-                        <div class="flex items-center gap-1.5">
-                            <div class="banner-dot w-3 h-1.5 rounded-full bg-white transition-all duration-300"></div>
-                            <div class="banner-dot w-1.5 h-1.5 rounded-full bg-gray-500 transition-all duration-300"></div>
-                            <div class="banner-dot w-1.5 h-1.5 rounded-full bg-gray-500 transition-all duration-300"></div>
+                    <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
+                        <!-- 점을 정중앙에 고정하기 위한 래퍼 -->
+                        <div class="relative flex items-center justify-center">
+                            <!-- 인디케이터 (점) -->
+                            <div id="banner-dots-container" class="flex items-center gap-1.5">
+                                <div class="banner-dot w-3 h-1.5 rounded-full bg-white transition-all duration-300"></div>
+                            </div>
+                            <!-- 일시정지/재생 버튼 (점 그룹 정중앙은 유지하면서 바로 우측에 딱 붙임) -->
+                            <button id="banner-pause-btn" class="absolute -right-8 w-6 h-6 flex items-center justify-center text-gray-300 hover:text-white bg-black/60 backdrop-blur-sm rounded-full border border-white/10 transition-all active:scale-95 pointer-events-auto shadow-md">
+                                <i id="banner-pause-icon" class="fa-solid fa-pause text-[9px]"></i>
+                            </button>
                         </div>
-                        <!-- 일시정지/재생 버튼 -->
-                        <button id="banner-pause-btn" class="absolute right-2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-white bg-black/50 backdrop-blur-sm rounded-full border border-white/10 transition-all active:scale-95 pointer-events-auto">
-                            <i id="banner-pause-icon" class="fa-solid fa-pause text-[8px]"></i>
-                        </button>
                     </div>
                 </div>
 
@@ -414,7 +305,7 @@
         </main>
 
         <!-- 하단 플로팅 메뉴 -->
-        <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[88%] max-w-[300px] px-2 touch-pan-x select-none">
+        <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[88%] max-w-[340px] px-2 touch-pan-x select-none">
             <div class="flex items-center justify-between bg-[#1C1C1E] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1 gap-0.5 ring-1 ring-white/30 relative transition-all duration-300">
                 <div id="nav-indicator" class="absolute top-1 bottom-1 bg-gray-500 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full border border-white/20 z-0 nav-transition" style="left: 4px; width: 66px;"></div>
                 
@@ -622,6 +513,13 @@
             '한화': 'bg-orange-500', 'KT': 'bg-black', 'NC': 'bg-teal-600', '키움': 'bg-red-800'
         };
 
+        // 배너 그라데이션용 구단별 헥스(HEX) 컬러 (진하고 쨍하게)
+        const teamHex = {
+            'LG': '#C30452', '두산': '#131230', 'KIA': '#EA0029', 
+            '삼성': '#2563eb', 'SSG': '#CE0E2D', '롯데': '#041e42', 
+            '한화': '#FF6600', 'KT': '#333333', 'NC': '#315288', '키움': '#820024'
+        };
+
         // 구단별 로고 이미지
         const teamLogos = {
             '삼성': 'https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg',
@@ -796,6 +694,7 @@
             
             renderCalendar();
             renderList();
+            renderBanners(); // 팀 필터링 시 배너도 실시간으로 맞춰서 재렌더링
             closeBottomSheet();
         }
 
@@ -1205,10 +1104,128 @@
             container.innerHTML = html;
         }
 
+        // --- 배너 동적 렌더링 및 자동 스크롤 전역 상태 ---
+        let currentBanner = 0;
+        let totalBanners = 1;
+        let bannerInterval;
+        let isPlaying = true;
+
+        function updateBannerDots(index) {
+            const bannerDots = document.querySelectorAll('.banner-dot');
+            bannerDots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('w-3', 'bg-white');
+                    dot.classList.remove('w-1.5', 'bg-gray-500');
+                } else {
+                    dot.classList.add('w-1.5', 'bg-gray-500');
+                    dot.classList.remove('w-3', 'bg-white');
+                }
+            });
+        }
+
+        function renderBanners() {
+            const carousel = document.getElementById('banner-carousel');
+            if(!carousel) return;
+            
+            // 기본 D-Day 배너만 남기고 동적 배너 초기화
+            while (carousel.children.length > 1) {
+                carousel.removeChild(carousel.lastChild);
+            }
+
+            const now = new Date();
+            
+            // 🔥 자동 일정 관리 로직: 경기 시작 후 5시간 전인 매치만 필터링 🔥
+            let validMatches = scheduleData.filter(match => {
+                // 특정 팀 필터 적용
+                if (selectedTeam !== 'all' && match.team1 !== selectedTeam && match.team2 !== selectedTeam) return false;
+                
+                const matchStart = new Date(`${match.date}T${match.time}:00`);
+                // 시작 후 5시간 더한 만료 시간 계산
+                const matchEnd = new Date(matchStart.getTime() + 5 * 60 * 60 * 1000); 
+                return now < matchEnd; // 만료 시간이 지나지 않은 매치만 표시
+            });
+
+            // 🔥 가장 가까운 매치 추출 (전체 탭이면 해당 일자 전 구단 경기 모두 표시) 🔥
+            let topMatches = [];
+            if (validMatches.length > 0) {
+                if (selectedTeam === 'all') {
+                    // 가장 가까운 날짜를 찾아서 그날 열리는 모든 경기 가져오기
+                    const firstDate = validMatches[0].date;
+                    topMatches = validMatches.filter(m => m.date === firstDate);
+                } else {
+                    // 특정 구단 선택 시 해당 구단의 다가오는 경기 최대 3개 표시
+                    topMatches = validMatches.slice(0, 3);
+                }
+            }
+
+            topMatches.forEach(match => {
+                const hex1 = teamHex[match.team1] || '#888888';
+                const hex2 = teamHex[match.team2] || '#888888';
+                
+                const d = new Date(match.date);
+                const days = ['일', '월', '화', '수', '목', '금', '토'];
+                const dateStr = `${d.getMonth()+1}. ${d.getDate()} (${days[d.getDay()]}) ${match.time}`;
+
+                const div = document.createElement('div');
+                div.className = 'min-w-full bg-[#18181b] rounded-2xl border border-white/5 shrink-0 p-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg';
+                
+                div.innerHTML = `
+                    <!-- 진하고 깊어진 대각선 블렌딩 그라데이션 (알파값 D0 = 82% 수준으로 쨍하게) -->
+                    <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}D0 0%, transparent 50%, ${hex2}D0 100%); opacity: 0.85;"></div>
+                    
+                    <div class="flex justify-between items-center mb-5 relative z-10">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1 h-3 rounded-sm" style="background-color: ${hex2}"></div>
+                            <span class="text-[11px] font-extrabold text-white tracking-wider">${match.stadium}</span>
+                        </div>
+                        <span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center relative z-10">
+                        <div class="flex items-center gap-3 w-[42%]">
+                            <img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span>
+                                <span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center w-[16%]">
+                            <span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 w-[42%] text-right">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span>
+                                <span class="text-[15px] font-bold text-white tracking-wide">${match.team2}</span>
+                            </div>
+                            <img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md">
+                        </div>
+                    </div>
+                `;
+                carousel.appendChild(div);
+            });
+
+            // 점 인디케이터 동기화
+            totalBanners = carousel.children.length;
+            const dotsContainer = document.getElementById('banner-dots-container');
+            if(dotsContainer) {
+                dotsContainer.innerHTML = '';
+                for(let i=0; i<totalBanners; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = `banner-dot w-${i===currentBanner?'3':'1.5'} h-1.5 rounded-full bg-${i===currentBanner?'white':'gray-500'} transition-all duration-300`;
+                    dotsContainer.appendChild(dot);
+                }
+            }
+            if (currentBanner >= totalBanners) currentBanner = 0;
+            updateBannerDots(currentBanner);
+        }
+
         // 초기 실행
         window.onload = () => {
             setTeamFilter(selectedTeam);
             switchTab(0);
+            renderBanners();
 
             // D-Day 계산
             const today = new Date();
@@ -1226,32 +1243,14 @@
 
             // --- 배너 자동 롤링 및 인디케이터 로직 ---
             const bannerCarousel = document.getElementById('banner-carousel');
-            const bannerDots = document.querySelectorAll('.banner-dot');
             const pauseBtn = document.getElementById('banner-pause-btn');
             const pauseIcon = document.getElementById('banner-pause-icon');
-            
-            let currentBanner = 0;
-            const totalBanners = 3;
-            let bannerInterval;
-            let isPlaying = true; // 자동 스크롤 상태
-
-            function updateBannerDots(index) {
-                bannerDots.forEach((dot, i) => {
-                    if (i === index) {
-                        dot.classList.add('w-3', 'bg-white');
-                        dot.classList.remove('w-1.5', 'bg-gray-500');
-                    } else {
-                        dot.classList.add('w-1.5', 'bg-gray-500');
-                        dot.classList.remove('w-3', 'bg-white');
-                    }
-                });
-            }
 
             function startBannerAutoScroll() {
                 clearInterval(bannerInterval);
                 if (!isPlaying) return; // 정지 상태면 실행 안함
                 bannerInterval = setInterval(() => {
-                    if(!bannerCarousel) return;
+                    if(!bannerCarousel || totalBanners <= 1) return;
                     currentBanner = (currentBanner + 1) % totalBanners;
                     bannerCarousel.scrollTo({
                         left: currentBanner * bannerCarousel.clientWidth,
