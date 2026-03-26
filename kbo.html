@@ -159,8 +159,8 @@
 
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
-        <!-- 🔥 글로벌 헤더 (선 제거 및 깔끔한 유리 재질 유지, 상하 여백 최적화) 🔥 -->
-        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20 bg-black/80 backdrop-blur-md">
+        <!-- 🔥 글로벌 헤더 (분리감 제거, 배경 완벽 일치) 🔥 -->
+        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20 app-bg">
             <div class="mt-2 flex items-center gap-2 w-full pb-1">
                 
                 <!-- 1. 타이틀 캡슐 (flex-1을 가져서 빈 공간이 생기면 자연스럽게 채움) -->
@@ -307,7 +307,7 @@
         <!-- 하단 플로팅 메뉴 -->
         <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[88%] max-w-[340px] px-2 touch-pan-x select-none">
             <div class="flex items-center justify-between bg-[#1C1C1E] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1 gap-0.5 ring-1 ring-white/30 relative transition-all duration-300">
-                <div id="nav-indicator" class="absolute top-1 bottom-1 bg-gray-500 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full border border-white/20 z-0 nav-transition" style="left: 4px; width: 66px;"></div>
+                <div id="nav-indicator" class="absolute top-1 bottom-1 bg-point shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full border border-white/20 z-0 nav-transition" style="left: 4px; width: 66px;"></div>
                 
                 <a href="https://won429.github.io/enjoysite/" class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" style="text-decoration: none;">
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none">
@@ -629,14 +629,11 @@
                 ctrlWrapper.classList.add('opacity-0', '!border-transparent', '!-ml-2');
             }
 
-            // 3. 메인 콘텐츠 화면 즉시 페이드인
+            // 3. 메인 콘텐츠 화면 즉시 노출 (애니메이션 제거)
             screens.forEach((screen, i) => {
                 if (i === index) {
                     screen.classList.remove('hidden');
                     screen.classList.add('flex');
-                    screen.classList.remove('fade-screen');
-                    void screen.offsetWidth; // 애니메이션 재시작 트릭
-                    screen.classList.add('fade-screen');
                 } else {
                     screen.classList.add('hidden');
                     screen.classList.remove('flex');
@@ -901,9 +898,9 @@
                 }
             }
 
-            // 월간 뷰일 경우 날짜마다 약간의 시차를 두고 부드럽게 등장하게 설정
-            let delayStyle = viewMode === 'month' ? `style="animation-delay: ${index * 0.015}s"` : '';
-            let animClass = viewMode === 'month' ? 'fade-in-up' : '';
+            // 월간 뷰일 경우 날짜마다 약간의 시차를 두고 부드럽게 등장하게 설정 (애니메이션 제거)
+            let delayStyle = '';
+            let animClass = '';
 
             return `
                 <div class="calendar-day cursor-pointer relative ${hasMatchClass} ${todayClass} ${animClass}" ${delayStyle} onclick="openDateSheet('${dateStr}')">
@@ -1012,7 +1009,7 @@
             }
 
             const wrapper = document.createElement('div');
-            wrapper.className = 'fade-in-up space-y-4 w-full';
+            wrapper.className = 'space-y-4 w-full';
 
             filteredData.forEach((match, i) => {
                 let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
@@ -1063,7 +1060,7 @@
 
             let html = `
                 <div class="px-5">
-                    <div class="fade-in-up">
+                    <div>
                         <!-- 테이블 헤더 -->
                         <div class="flex justify-between items-center p-3 border-b border-white/20">
                             <div class="w-10 text-center text-xs font-bold text-gray-400">순위</div>
@@ -1170,8 +1167,8 @@
                 div.className = 'min-w-full bg-[#18181b] rounded-2xl border border-white/5 shrink-0 p-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg';
                 
                 div.innerHTML = `
-                    <!-- 진하고 깊어진 대각선 블렌딩 그라데이션 (알파값 D0 = 82% 수준으로 쨍하게) -->
-                    <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}D0 0%, transparent 50%, ${hex2}D0 100%); opacity: 0.85;"></div>
+                    <!-- 적당히 깊이감 있는 대각선 직접 블렌딩 그라데이션 (알파값 80 = 50% 수준으로 밸런스 조절) -->
+                    <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}80 0%, ${hex2}80 100%); opacity: 0.85;"></div>
                     
                     <div class="flex justify-between items-center mb-5 relative z-10">
                         <div class="flex items-center gap-1.5">
