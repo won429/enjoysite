@@ -83,20 +83,17 @@ def get_pitcher_from_summary(game, side):
         if p: return str(p)
     return "미정"
 
-# 💡 [새로 추가됨] 1~9번 타자 라인업을 훔쳐오는 기법
 def get_lineup_deep(data, side):
     lineup = []
     def search(obj):
         nonlocal lineup
         if lineup: return
         if isinstance(obj, dict):
-            # 네이버의 다양한 라인업 배열 이름들 대응
             for key in [f"{side}Lineup", f"{side}TeamLineup", f"{side}Batters", "lineup", "batters", "players"]:
                 if key in obj and isinstance(obj[key], list) and len(obj[key]) > 0:
                     if isinstance(obj[key][0], dict):
-                        # 딕셔너리 형태일 때 선수 이름만 쏙쏙 빼오기
                         temp = [p.get('name') or p.get('playerName') for p in obj[key] if isinstance(p, dict)]
-                        temp = [t for t in temp if t] # 빈칸 제거
+                        temp = [t for t in temp if t]
                         if len(temp) >= 9:
                             lineup = temp[:9]
                             return
@@ -107,9 +104,8 @@ def get_lineup_deep(data, side):
         elif isinstance(obj, list):
             for item in obj: search(item)
     search(data)
-    return [p for p in lineup if p][:9] # 빈칸 제거 후 1~9번 타자만 리턴
+    return [p for p in lineup if p][:9]
 
-# 💡 [새로 추가됨] 선발 투수만 콕 집어서 찾아내는 기법
 def get_pitcher_deep(data, side):
     pitcher = "미정"
     def search(obj):
@@ -127,24 +123,26 @@ def get_pitcher_deep(data, side):
     return pitcher
 
 # ==========================================
-# 🚀 2. "100% 화면 스크래핑 + 심층 침투" 메인 크롤러 🚀
+# 🚀 2. "100% 화면 스크래핑 + 상세 침투" 메인 크롤러 🚀
 # ==========================================
 def fetch_todays_games():
     kst = timezone(timedelta(hours=9))
     today = datetime.now(kst)
     today_dash = today.strftime('%Y-%m-%d')
-    today_prefix = today.strftime('%Y%m%d')
+    today_prefix = today.strftime('%Y%m%d') # 🔥 무조건 이 날짜로 시작해야 합격!
     
-    print(f"\n📅 [1단계] 오늘({today_dash}) KBO 경기 껍데기(일정)를 찾습니다...")
+    print(f"\n📅 [1단계] 100% 웹 스크래핑 모드 - 오늘({today_dash}) KBO 경기 일정을 화면에서 직접 뜯어옵니다...")
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept-Language": "ko-KR,ko;q=0.9"
     }
 
+    # 🔥 API는 전부 버렸습니다! 오직 일반 네이버 화면만 접속합니다.
+    # 🔥 date 파라미터에 짝대기(-)를 빼고 붙여야 네이버가 2008년으로 안 튕깁니다.
     urls = [
-        "https://m.sports.naver.com/kbaseball",
-        "https://m.sports.naver.com/kbaseball/schedule/index"
+        f"https://m.sports.naver.com/kbaseball/schedule/index?date={today_prefix}",
+        "https://m.sports.naver.com/kbaseball"
     ]
 
     games_list = []
@@ -153,10 +151,13 @@ def fetch_todays_games():
     def extract_games_summary(obj):
         if isinstance(obj, dict):
             game_id = str(obj.get('gameId', '')) or str(obj.get('id', ''))
-            if game_id and game_id.startswith(today_prefix):
+            
+            # 🔥 무조건 ID에 오늘 날짜(20260328)가 포함되어야 통과!
+            if game_id and today_prefix in game_id:
                 a_name = get_team_name(obj, "away")
                 h_name = get_team_name(obj, "home")
                 
+                # 🔥 야구팀이 맞는지 한 번 더 검사!
                 if a_name and h_name and (is_kbo_team(a_name) or is_kbo_team(h_name)):
                     if game_id not in seen_ids:
                         seen_ids.add(game_id)
@@ -170,7 +171,7 @@ def fetch_todays_games():
                             "homeScore": get_score(obj, "home"),
                             "awayPitcher": get_pitcher_from_summary(obj, "away"),
                             "homePitcher": get_pitcher_from_summary(obj, "home"),
-                            "awayLineup": [], # 여기서부터 2단계에서 채울 예정입니다.
+                            "awayLineup": [], 
                             "homeLineup": []
                         })
                     return 
@@ -178,13 +179,17 @@ def fetch_todays_games():
         elif isinstance(obj, list):
             for item in obj: extract_games_summary(item)
 
-    # 1차 스캔: 경기 일정 찾기
+    # 1차 스캔: 경기 일정 찾기 (화면 통째로 뜯어오기)
     for url in urls:
+        print(f"👉 웹페이지 접속 시도: {url[:60]}...")
         try:
             res = requests.get(url, headers=headers, timeout=10)
             res.encoding = 'utf-8'
             soup = BeautifulSoup(res.text, 'html.parser')
+            
+            print(f"   ㄴ 화면 접속 성공! [타이틀: {soup.title.string if soup.title else '알 수 없음'}]")
 
+            # 네이버 최신 화면 속 JSON 보물상자 직접 뜯기
             next_data = soup.find('script', id='__NEXT_DATA__')
             if next_data and next_data.string:
                 extract_games_summary(json.loads(next_data.string))
@@ -197,22 +202,25 @@ def fetch_todays_games():
                             if start != -1 and end != -1:
                                 extract_games_summary(json.loads(s.string[start:end+1]))
                         except: pass
-
+            
             if len(games_list) > 0:
-                print(f"   ㄴ ✅ 총 {len(games_list)}개의 경기 일정을 찾았습니다!")
+                print(f"   ㄴ ✅ 1단계 성공! 총 {len(games_list)}개의 오늘 야구 경기를 화면에서 찾았습니다!")
                 break
-        except: continue
+        except Exception as e: 
+            print(f"   ㄴ ⚠️ 탐색 에러: {e}")
+            continue
 
     if not games_list:
-        print(f"\n❌ {today_dash} 오늘은 예정된 KBO 경기가 없습니다.")
+        print(f"\n❌ {today_dash} 오늘은 화면상에 예정된 KBO 경기가 없습니다.")
         return
 
-    # 🔥 2차 스캔: 각 경기장(상세페이지)으로 쳐들어가서 타자/투수 라인업 털어오기! 🔥
-    print("\n🕵️‍♂️ [2단계] 찾아낸 각 경기장에 직접 입장하여 라인업 명단을 탈취합니다...")
+    # 🔥 2차 스캔: 찾아낸 경기 기록실 화면에 직접 들어가서 라인업 털어오기! 🔥
+    print("\n🕵️‍♂️ [2단계] 웹 기록실에 각각 직접 입장하여 라인업을 훔쳐옵니다...")
     for game in games_list:
         game_id = game['gameId']
+        # API 아님! 우리가 폰으로 누르는 그 기록실 사이트 주소입니다.
         detail_url = f"https://m.sports.naver.com/game/{game_id}/record"
-        print(f" 👉 [{game['awayTeam']} vs {game['homeTeam']}] 상세 페이지 진입 중...")
+        print(f" 👉 [{game['awayTeam']} vs {game['homeTeam']}] 상세 페이지 접속 중...")
         
         try:
             res = requests.get(detail_url, headers=headers, timeout=10)
@@ -227,7 +235,6 @@ def fetch_todays_games():
                 game['awayLineup'] = get_lineup_deep(detail_json, "away")
                 game['homeLineup'] = get_lineup_deep(detail_json, "home")
                 
-                # 혹시 일정표에서 선발 투수 이름을 못 가져왔다면 여기서 더 깊게 파서 추출
                 if game['awayPitcher'] == "미정":
                     game['awayPitcher'] = get_pitcher_deep(detail_json, "away")
                 if game['homePitcher'] == "미정":
@@ -235,7 +242,7 @@ def fetch_todays_games():
                     
                 print(f"   ㄴ ✅ 라인업 확보! (AWAY: {len(game['awayLineup'])}명 / HOME: {len(game['homeLineup'])}명)")
             else:
-                print("   ㄴ ⚠️ 상세 페이지에 데이터가 없습니다. (아직 라인업 발표 전일 수 있습니다)")
+                print("   ㄴ ⚠️ 상세 페이지에 데이터가 없습니다. (아직 라인업 발표 전이거나 기록실이 안 열림)")
         except Exception as e:
             print(f"   ㄴ ❌ 상세 페이지 접근 에러: {e}")
 
@@ -251,8 +258,8 @@ def fetch_todays_games():
             "homeScore": game['homeScore'],
             "awayPitcher": game['awayPitcher'],
             "homePitcher": game['homePitcher'],
-            "awayLineup": game['awayLineup'], # 🔥 훔쳐온 라인업 배열 전송!
-            "homeLineup": game['homeLineup'], # 🔥 훔쳐온 라인업 배열 전송!
+            "awayLineup": game['awayLineup'], 
+            "homeLineup": game['homeLineup'], 
             "lastUpdated": firestore.SERVER_TIMESTAMP
         }
 
@@ -260,7 +267,7 @@ def fetch_todays_games():
         db.collection('lineups').document(str(match_id)).set(payload, merge=True)
         match_id += 1
 
-    print("\n🎉 모든 스크래핑 및 파이어베이스 전송 대성공! 앱에서 라인업을 확인하세요!")
+    print("\n🎉 화면 스크래핑 및 파이어베이스 전송 대성공! 앱에서 라인업을 확인하세요!")
 
 if __name__ == "__main__":
     fetch_todays_games()
