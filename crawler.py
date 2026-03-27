@@ -31,10 +31,13 @@ db = firestore.client()
 # 🔍 네이버 데이터 구조에서 경기 무조건 찾아내기
 # ==========================================
 def find_game_data(data, match_id):
+    # 네이버가 ID를 13자리로 쓰든 17자리로 쓰든 무조건 찾도록 핵심(13자리)만 추출
+    core_id = match_id[:13] if len(match_id) >= 13 else match_id
+    
     if isinstance(data, dict):
         game_id = str(data.get('gameId', '')) or str(data.get('id', ''))
         
-        if game_id and (match_id in game_id or game_id in match_id):
+        if game_id and (core_id in game_id or game_id in core_id):
             if any(k in data for k in ['gameStatusName', 'statusCodeName', 'awayTeam', 'homeTeam', 'awayScore']):
                 return data
                 
@@ -82,16 +85,14 @@ def fetch_naver_live_data(naver_match_id):
         
     date_str = f"{naver_match_id[:4]}-{naver_match_id[4:6]}-{naver_match_id[6:8]}"
     
-    # 🔥 네이버 최신 API와 웹페이지 경로를 총동원합니다.
     api_urls = [
         f"https://api-gw.sports.naver.com/schedule/games?sports=kbaseball&date={date_str}",
         f"https://api-gw.sports.naver.com/game/{naver_match_id}",
-        f"https://m.sports.naver.com/game/{naver_match_id}/record",
-        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_str}"
+        f"https://m.sports.naver.com/game/{naver_match_id}/record"
     ]
     
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": "text/html,application/json,text/plain,*/*",
         "Accept-Language": "ko-KR,ko;q=0.9"
     }
@@ -105,26 +106,23 @@ def fetch_naver_live_data(naver_match_id):
                 print(f"   ㄴ 접속 실패 (HTTP {response.status_code})")
                 continue
                 
-            # 🔥 핵심: 글자가 깨지지 않도록 무조건 UTF-8 한글 번역 강제 적용!
             response.encoding = 'utf-8'
             html = response.text
             
-            # 1. 깔끔한 JSON API로 접속 성공했을 때
             if "application/json" in response.headers.get("Content-Type", ""):
                 try: 
                     target = find_game_data(response.json(), naver_match_id)
                     if target: return parse_target_game(target)
                 except: pass
                 
-            # 2. 웹사이트(HTML)로 접속했을 때 -> 화면에 숨겨진 JSON 보물상자 찾기
             soup = BeautifulSoup(html, 'html.parser')
             title = soup.title.string if soup.title else 'No Title'
-            print(f"   ㄴ 접속 성공! 페이지 타이틀: [{title.strip()}]") # 이제 깨지지 않고 정상 출력됩니다!
+            print(f"   ㄴ 접속 성공! 페이지 타이틀: [{title.strip()}]")
             
-            # HTML 안의 모든 <script> 태그를 뒤져서 경기 정보 덩어리를 훔쳐냅니다.
             for s in soup.find_all('script'):
                 text = s.string if s.string else ""
-                if naver_match_id in text and '{' in text:
+                core_id = naver_match_id[:13]
+                if core_id in text and '{' in text:
                     start = text.find('{')
                     end = text.rfind('}')
                     if start != -1 and end != -1:
@@ -134,7 +132,6 @@ def fetch_naver_live_data(naver_match_id):
                             if target: return parse_target_game(target)
                         except: pass
             
-            # 3. 보물상자마저 없다면? -> 무식하게 글자 틈새에서 정규식으로 강제 추출
             away_m = re.search(r'(?:awayScore|awayTeamScore)["\']?\s*:\s*(\d+)', html)
             home_m = re.search(r'(?:homeScore|homeTeamScore)["\']?\s*:\s*(\d+)', html)
             status_m = re.search(r'(?:gameStatusName|statusCodeName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
@@ -169,4 +166,5 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
         print("⚠️ 수집된 데이터가 없어 파이어베이스 업데이트를 수행하지 않았습니다.")
 
 if __name__ == "__main__":
+    # 🔥 멋대로 수정했던 부분을 다시 2026년 원래 ID로 복구했습니다. 죄송합니다!
     update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS02026")
