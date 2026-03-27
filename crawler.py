@@ -30,13 +30,11 @@ db = firestore.client()
 # 🔍 네이버 데이터 구조에서 경기 무조건 찾아내기
 # ==========================================
 def find_game_data(data, match_id):
-    # 뒤에 오타가 붙어있어도 핵심 13자리만 빼서 검사
-    core_id = match_id[:13] if len(match_id) >= 13 else match_id
-    
     if isinstance(data, dict):
         game_id = str(data.get('gameId', '')) or str(data.get('id', ''))
         
-        if game_id and len(game_id) >= 8 and (core_id in game_id or game_id in core_id):
+        # 💡 강제로 자르지 않고, 주어진 match_id 전체를 기반으로 검색합니다!
+        if game_id and (match_id in game_id or game_id in match_id):
             if any(k in data for k in ['gameStatusName', 'statusCodeName', 'awayTeam', 'homeTeam', 'awayScore']):
                 return data
                 
@@ -58,13 +56,13 @@ def fetch_naver_live_data(naver_match_id):
         return None
         
     date_str = f"{naver_match_id[:4]}-{naver_match_id[4:6]}-{naver_match_id[6:8]}"
-    core_id = naver_match_id[:13]
     
-    # 💡 API가 막혔을 때를 대비해, 사람처럼 '야구 일정 웹페이지'에 직접 접속합니다.
+    # 💡 잘라낸 ID(core_id)를 버리고, 원본 naver_match_id를 그대로 사용합니다.
     api_urls = [
-        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_str}",
-        f"https://m.sports.naver.com/game/{core_id}/record",
-        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}"
+        f"https://api-gw.sports.naver.com/sports/api/game/{naver_match_id}/basic",
+        f"https://m.sports.naver.com/game/{naver_match_id}/record",
+        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}",
+        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_str}"
     ]
     
     headers = {
@@ -87,10 +85,19 @@ def fetch_naver_live_data(naver_match_id):
             # HTML 페이지면 강제로 숨겨진 JSON 데이터를 파싱
             if "text/html" in response.headers.get("Content-Type", "") or "<html" in response.text[:100].lower():
                 soup = BeautifulSoup(response.text, 'html.parser')
+                # 1. 일반적인 NEXT_DATA 찾기
                 script = soup.find('script', id='__NEXT_DATA__')
                 if script and script.string:
                     try: data_list.append(json.loads(script.string))
                     except: pass
+                # 2. NEXT_DATA가 없으면 HTML 내의 다른 JSON 덩어리 탐색
+                for s in soup.find_all('script'):
+                    if s.string and naver_match_id in s.string and '{' in s.string:
+                        import re
+                        match = re.search(r'(\{.*\})', s.string, re.DOTALL)
+                        if match:
+                            try: data_list.append(json.loads(match.group(1)))
+                            except: pass
             else:
                 try: data_list.append(response.json())
                 except: pass
@@ -105,7 +112,7 @@ def fetch_naver_live_data(naver_match_id):
                         for i in d: collect_ids(i)
                 collect_ids(data)
                 
-                target_game = find_game_data(data, core_id)
+                target_game = find_game_data(data, naver_match_id)
                 
                 if target_game:
                     print("✅ 타겟 데이터 블록 발견!")
@@ -141,7 +148,7 @@ def fetch_naver_live_data(naver_match_id):
         print(f"💡 [진단 결과] 이 날짜({date_str})에 네이버에 존재하는 실제 경기 ID들은 다음과 같습니다:")
         print(f"👉 {list(available_ids)}")
     else:
-        print(f"💡 [진단 결과] {date_str} 날짜에는 네이버에 등록된 야구 경기가 하나도 없습니다! (날짜나 연도를 확인해주세요)")
+        print(f"💡 [진단 결과] {date_str} 날짜에는 네이버에 등록된 야구 경기가 하나도 없습니다!")
         
     return None
 
@@ -155,6 +162,5 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
         print("⚠️ 수집된 데이터가 없어 파이어베이스 업데이트를 수행하지 않았습니다.")
 
 if __name__ == "__main__":
-    # 💡 맨 뒷자리 '2026' 지우고 정상적인 13자리 네이버 ID로 수정했습니다.
-    # 만약 2026년에 경기가 없다면, 연도를 2024년(20240324HTSS0)으로 바꿔서 테스트해보세요!
-    update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS0")
+    # 💡 17자리 전체 ID를 자르지 않고 그대로 사용하도록 복구했습니다.
+    update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS02026")
