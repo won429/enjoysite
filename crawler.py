@@ -101,6 +101,7 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
 # ⏱️ 4. 봇 실행부
 # ==========================================
 if __name__ == "__main__":
-    # 💡 1번 경기 (3월 28일 KT vs LG)
-    # 깃허브 봇이 15분마다 이 스크립트를 실행하면서 계속 점수를 업데이트 함!
-    update_live_data_to_firebase(app_match_id=1, naver_match_id="20260328KTLG0")
+    # 💡 3월 24일 시범경기 (KIA vs 삼성, 대구) 12시 테스트용!
+    # 네이버 팀 영문코드 (KIA=HT, 삼성=SS) -> 20260324HTSS0
+    # 앱 경기 ID는 99번으로 매칭!
+    update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS0")
