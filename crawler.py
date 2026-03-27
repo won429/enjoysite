@@ -101,7 +101,7 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
 # ⏱️ 4. 봇 실행부
 # ==========================================
 if __name__ == "__main__":
-    # 💡 3월 24일 시범경기 (KIA vs 삼성, 대구) 12시 10분 테스트용!
+    # 💡 3월 24일 시범경기 (KIA vs 삼성, 대구) 12시 15분 테스트용!
     # 네가 캡처본으로 찾아낸 진짜 경기 코드(20260324HTSS02026)로 완벽하게 수정!!
     # 앱 경기 ID는 99번으로 매칭!
     update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS02026")
