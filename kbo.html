@@ -105,7 +105,7 @@
         </header>
 
         <!-- 1. 달력 화면 -->
-        <main id="calendar-screen" class="flex flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
+        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="px-5 pt-main flex-1 flex flex-col">
                 <div class="flex justify-center items-center mb-4">
                     <div class="flex items-center gap-4">
@@ -159,12 +159,12 @@
         </main>
 
         <!-- 2. 목록 화면 (🔥 여기에 실시간 점수판이 큼지막하게 뜹니다!) -->
-        <main id="list-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
-            <div class="px-5 pt-main space-y-4" id="match-list-container"></div>
+        <main id="list-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
+            <div class="px-5 pt-main flex flex-col gap-4" id="match-list-container"></div>
         </main>
 
         <!-- 3. 순위 화면 -->
-        <main id="ranking-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
+        <main id="ranking-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="w-full pt-main pb-10" id="ranking-container"></div>
         </main>
 
@@ -582,7 +582,7 @@
             if (!container) return; container.innerHTML = '';
             let filteredData = scheduleData.filter(m => selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam);
 
-            const wrapper = document.createElement('div'); wrapper.className = 'space-y-4 w-full';
+            const wrapper = document.createElement('div'); wrapper.className = 'flex flex-col gap-4 w-full';
 
             filteredData.forEach(match => {
                 let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
