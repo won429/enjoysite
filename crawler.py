@@ -28,9 +28,9 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 # ==========================================
-# ⚾ KBO 판독기 및 만능 이름/점수 추출기
+# ⚾ KBO 텍스트 판독기 (축구/농구 필터링)
 # ==========================================
-TEAM_MAP = {'HT': 'KIA', 'SS': '삼성', 'OB': '두산', 'LT': '롯데', 'SK': 'SSG', 'HH': '한화', 'WO': '키움'}
+TEAM_MAP = {'HT': 'KIA', 'SS': '삼성', 'OB': '두산', 'LT': '롯데', 'SK': 'SSG', 'HH': '한화', 'WO': '키움', 'NC': 'NC', 'KT': 'KT', 'LG': 'LG'}
 KBO_TEAMS = ["KIA", "기아", "삼성", "LG", "두산", "SSG", "NC", "롯데", "한화", "KT", "키움", "HT", "SS", "OB", "LT", "SK", "HH", "WO"]
 
 def is_kbo_team(team_name):
@@ -84,41 +84,42 @@ def get_pitcher(game, side):
     return "미정"
 
 # ==========================================
-# 🚀 3. "2008년 절대 방어" KBO 핀셋 크롤러 🚀
+# 🚀 2. "100% 화면 스크래핑" 무식하고 확실한 크롤러 🚀
 # ==========================================
 def fetch_todays_games():
     kst = timezone(timedelta(hours=9))
     today = datetime.now(kst)
     today_dash = today.strftime('%Y-%m-%d')
-    today_prefix = today.strftime('%Y%m%d') # 🔥 무조건 '20260328' 로 시작하는지 검사할 핵심 키!
+    today_prefix = today.strftime('%Y%m%d') # 🔥 2008년 데이터는 이걸로 완벽하게 컷트합니다.
     
-    print(f"\n📅 [자동 실행] 오늘 날짜({today_dash}) KBO 일정을 수집합니다...")
+    print(f"\n📅 [100% 화면 스크래핑 모드] 오늘({today_dash}) 네이버 야구 화면의 글자를 통째로 읽어옵니다...")
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-        "Accept": "application/json,text/html"
+        "Accept-Language": "ko-KR,ko;q=0.9"
     }
 
-    # 💡 네이버가 2008년으로 튕기지 못하도록 파라미터를 뺀 안전한 경로들만 사용합니다.
+    # 💡 2008년으로 튕기는 버그를 막기 위해 '?date=...' 꼬리표를 아예 떼어버렸습니다.
+    # 이렇게 들어가면 네이버가 알아서 '오늘' 화면을 보여줍니다.
     urls = [
-        f"https://sports.news.naver.com/kbaseball/api/schedule/default.json?month={today.strftime('%m')}&year={today.strftime('%Y')}",
-        "https://m.sports.naver.com/kbaseball/schedule/index", 
-        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbo&date={today_dash}"
+        "https://m.sports.naver.com/kbaseball",                 # 1순위: 야구 메인 화면
+        "https://m.sports.naver.com/kbaseball/schedule/index"   # 2순위: 야구 일정 화면
     ]
 
     games_list = []
     seen_ids = set()
 
+    # 화면 구석구석 숨어있는 텍스트 덩어리를 까뒤집는 함수
     def extract_games(obj):
         if isinstance(obj, dict):
             game_id = str(obj.get('gameId', '')) or str(obj.get('id', ''))
             
-            # 🔥 [가장 중요한 핵심] 2008년 데이터는 여기서 얄짤없이 컷트 당합니다!
-            # 오직 '20260328' 처럼 진짜 오늘 날짜로 시작하는 ID만 통과시킵니다.
+            # 🔥 무조건 ID가 '20260328' 로 시작해야만 합격! (2008년 등 옛날 데이터 원천 차단)
             if game_id and game_id.startswith(today_prefix):
                 a_name = get_team_name(obj, "away")
                 h_name = get_team_name(obj, "home")
                 
+                # 🔥 축구/농구 버리고 KBO 야구팀만 합격!
                 if a_name and h_name and (is_kbo_team(a_name) or is_kbo_team(h_name)):
                     if game_id not in seen_ids:
                         seen_ids.add(game_id)
@@ -133,42 +134,40 @@ def fetch_todays_games():
                             "awayPitcher": get_pitcher(obj, "away"),
                             "homePitcher": get_pitcher(obj, "home")
                         })
-                    return # 진짜 오늘 경기를 찾았으니 더 깊게 파고들지 않음
+                    return # 찾았으니 더 깊게 파지 않음
             for v in obj.values(): extract_games(v)
         elif isinstance(obj, list):
             for item in obj: extract_games(item)
 
     for url in urls:
-        print(f"👉 접속 시도: {url[:60]}...")
+        print(f"👉 앞문 접속 시도: {url}")
         try:
             res = requests.get(url, headers=headers, timeout=10)
-            if res.status_code != 200:
-                print(f"   ㄴ 접속 실패 (HTTP {res.status_code})")
-                continue
-
             res.encoding = 'utf-8'
+            
+            # 여기서 네이버 웹페이지(HTML) 화면을 통째로 뜯어옵니다.
+            soup = BeautifulSoup(res.text, 'html.parser')
+            print(f"   ㄴ 화면 접속 성공! [타이틀: {soup.title.string if soup.title else '알 수 없음'}]")
 
-            # 깔끔하게 JSON으로 오면 땡큐!
-            try:
-                extract_games(res.json())
-            except:
-                # JSON이 아니면 화면 안에 숨겨진 데이터 강제 핀셋 추출!
-                soup = BeautifulSoup(res.text, 'html.parser')
-                next_data = soup.find('script', id='__NEXT_DATA__')
-                if next_data and next_data.string:
-                    extract_games(json.loads(next_data.string))
-                else:
-                    for s in soup.find_all('script'):
-                        if s.string and '{' in s.string and today_prefix in s.string:
-                            try:
-                                start = s.string.find('{')
-                                end = s.string.rfind('}')
-                                if start != -1 and end != -1:
-                                    extract_games(json.loads(s.string[start:end+1]))
-                            except: pass
+            # 네이버 최신 화면은 __NEXT_DATA__ 라는 스크립트 상자에 글자를 숨겨둡니다.
+            next_data = soup.find('script', id='__NEXT_DATA__')
+            if next_data and next_data.string:
+                print("   ㄴ 🔥 화면 속 숨겨진 데이터 상자 발견! 텍스트 추출을 시작합니다.")
+                extract_games(json.loads(next_data.string))
+            else:
+                # 혹시 상자가 없으면 화면에 있는 모든 스크립트 글자를 무식하게 다 뒤집니다.
+                for s in soup.find_all('script'):
+                    if s.string and '{' in s.string and today_prefix in s.string:
+                        try:
+                            start = s.string.find('{')
+                            end = s.string.rfind('}')
+                            if start != -1 and end != -1:
+                                extract_games(json.loads(s.string[start:end+1]))
+                        except: pass
 
+            # 오늘 경기를 1개라도 뜯어냈다면 빙빙 돌지 않고 바로 종료!
             if len(games_list) > 0:
-                print(f"   ㄴ ✅ 수집 대성공! 총 {len(games_list)}개의 오늘({today_dash}) 진짜 KBO 경기를 찾았습니다.")
+                print(f"   ㄴ ✅ 스크래핑 대성공! 총 {len(games_list)}개의 오늘 KBO 경기를 화면에서 긁어왔습니다.")
                 break
 
         except Exception as e:
@@ -176,10 +175,10 @@ def fetch_todays_games():
             continue
 
     if not games_list:
-        print(f"\n❌ {today_dash} 오늘은 예정된 KBO 경기가 없거나 아직 데이터가 없습니다.")
+        print(f"\n❌ {today_dash} 오늘은 화면에 예정된 KBO 경기가 없거나 점수판이 없습니다.")
         return
 
-    print("\n🔥 파이어베이스에 오늘 KBO 경기 기록 업데이트를 시작합니다...")
+    print("\n🔥 파이어베이스에 스크래핑한 점수 업데이트를 시작합니다...")
     match_id = 1
     for game in games_list:
         payload = {
@@ -197,7 +196,7 @@ def fetch_todays_games():
         db.collection('lineups').document(str(match_id)).set(payload, merge=True)
         match_id += 1
 
-    print("\n🎉 개막전 데이터 파이어베이스 전송 완료! 앱에서 진짜 야구 점수를 확인하세요!")
+    print("\n🎉 화면 스크래핑 및 파이어베이스 전송 완료! 앱에서 점수를 확인하세요!")
 
 if __name__ == "__main__":
     fetch_todays_games()
