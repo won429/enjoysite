@@ -5,80 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KBO League Schedule</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 폰트 및 아이콘 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- 🔥 파이어베이스 SDK (Firebase v10 Compat) 🔥 -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
     <style>
-        /* 🔥 구단별 다이내믹 테마 색상 변수 🔥 */
+        /* 🔥 구단별 다이내믹 테마 색상 🔥 */
         :root {
             --point-color: #3182F6;
             --point-bg: rgba(49, 130, 246, 0.15);
             --app-bg: #000000;
         }
-        body[data-theme="KIA"] {
-            --point-color: #ea0029; /* 타이거즈 레드 */
-            --point-bg: rgba(234, 0, 41, 0.15);
-            --app-bg: #140003; /* 은은하고 고급스러운 딥 레드 배경 */
-        }
-        body[data-theme="삼성"] {
-            --point-color: #2563eb; /* 라이온즈 블루 */
-            --point-bg: rgba(37, 99, 235, 0.15);
-            --app-bg: #000514; /* 은은하고 고급스러운 딥 블루 배경 */
-        }
-        body[data-theme="all"] {
-            --point-color: #3182F6;
-            --point-bg: rgba(49, 130, 246, 0.15);
-            --app-bg: #000000;
-        }
+        body[data-theme="KIA"] { --point-color: #ea0029; --point-bg: rgba(234, 0, 41, 0.15); --app-bg: #140003; }
+        body[data-theme="삼성"] { --point-color: #2563eb; --point-bg: rgba(37, 99, 235, 0.15); --app-bg: #000514; }
+        body[data-theme="all"] { --point-color: #3182F6; --point-bg: rgba(49, 130, 246, 0.15); --app-bg: #000000; }
 
-        /* 테마 적용 클래스 (부드러운 컬러 전환 애니메이션 포함) */
         .app-bg { background-color: var(--app-bg) !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .text-point { color: var(--point-color) !important; transition: color 0.5s ease; }
         .bg-point { background-color: var(--point-color) !important; transition: background-color 0.5s ease; }
         .bg-point-sub { background-color: var(--point-bg) !important; transition: background-color 0.5s ease; }
 
         body { 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif";
+            font-family: 'Pretendard', sans-serif;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
             touch-action: pan-y;
         }
 
-        /* 유리 재질 공통 클래스 */
+        /* 🔥 바텀 시트 배경 (투명도 완벽 제거 및 깔끔한 솔리드 컬러) 🔥 */
         .toss-card {
-            background: rgba(28, 28, 30, 0.85);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background: #1C1C1E; /* 반투명 rgba 대신 완전한 불투명 컬러 적용 */
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); 
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
-        }
-        
-        .list-card {
-            background: #1C1C1E;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            transition: transform 0.1s;
-        }
-        .list-card:active {
-            transform: scale(0.97);
-            background: #2C2C2E;
+            box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.5); /* 팝업이 위로 올라오니 그림자도 위쪽으로 자연스럽게 수정 */
         }
 
-        .text-main { color: #F2F4F6; }
-        .text-sub { color: #A1A1A6; }
+        .list-card { background: #1C1C1E; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; transition: transform 0.1s; }
+        .list-card:active { transform: scale(0.97); background: #2C2C2E; }
 
-        .fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
-        
-        /* 🔥 잘림 현상 해결: 헤더가 덮지 않도록 콘텐츠 시작점(패딩) 정밀 조정 🔥 */
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px); }
 
         #nav-indicator { will-change: transform, width; }
@@ -87,174 +56,82 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* 🔥 스크린 전환 애니메이션 🔥 */
-        @keyframes fadeScreen {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-screen {
-            animation: fadeScreen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .ctrl-item { transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1), padding 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
+        .ctrl-show { max-width: 200px; opacity: 1; padding-left: 16px; padding-right: 16px; }
+        .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; pointer-events: none; }
 
-        /* 🔥 빈 공간을 스르륵 채우는 컨트롤 애니메이션 🔥 */
-        .ctrl-item {
-            transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
-                        padding 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
-                        opacity 0.4s ease;
-            overflow: hidden;
-            white-space: nowrap;
-            width: max-content;
-            justify-self: end; /* 우측 정렬로 캡슐이 밀려나는 효과 */
-        }
-        .ctrl-show {
-            max-width: 200px; /* 콘텐츠가 충분히 들어갈 크기 */
-            opacity: 1;
-            padding-left: 16px;
-            padding-right: 16px;
-        }
-        .ctrl-hide {
-            max-width: 0px; /* 숨길 때는 너비를 0으로 만들어 남는 공간 반환 */
-            opacity: 0;
-            padding-left: 0px;
-            padding-right: 0px;
-            pointer-events: none;
-        }
+        /* 🔥 촐싹대는 애니메이션 빼고 스르륵(ease-out) 부드럽게 올라오도록 수정 🔥 */
+        #bottom-sheet { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s; transform: translate(-50%, 120%); opacity: 0; }
+        #bottom-sheet.show { transform: translate(-50%, 0); opacity: 1; }
 
-        /* 바텀 시트 (정보 패널) 애니메이션 */
-        #bottom-sheet {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
-            transform: translate(-50%, 120%);
-            opacity: 0;
-        }
-        #bottom-sheet.show {
-            transform: translate(-50%, 0);
-            opacity: 1;
-        }
+        .calendar-day { aspect-ratio: 1 / 1.2; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; border-radius: 12px; transition: all 0.2s; }
+        .calendar-day:active { transform: scale(0.92); }
+        .has-match { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .today { background: var(--point-bg) !important; border: 1px solid var(--point-color) !important; }
 
-        /* 캘린더 그리드 스타일 */
-        .calendar-day {
-            aspect-ratio: 1 / 1.2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 14px;
-            border-radius: 12px;
-            transition: all 0.2s;
+        /* 🔥 실시간 펄스 애니메이션 (진행 중인 경기 표시용) 🔥 */
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(234, 0, 41, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(234, 0, 41, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 0, 41, 0); }
         }
-        .calendar-day:active {
-            transform: scale(0.92);
-        }
-        .has-match {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .today {
-            background: var(--point-bg) !important;
-            border: 1px solid var(--point-color) !important;
-        }
+        .live-badge { animation: pulse-ring 2s infinite; }
     </style>
 </head>
 <body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden" data-theme="all">
 
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
-        <!-- 🔥 글로벌 헤더 (분리감 제거, 배경 완벽 일치) 🔥 -->
+        <!-- 헤더 영역 -->
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20 app-bg">
             <div class="mt-2 flex items-center gap-2 w-full pb-1">
-                
-                <!-- 1. 타이틀 캡슐 (flex-1을 가져서 빈 공간이 생기면 자연스럽게 채움) -->
-                <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg border border-white/5 min-h-[36px] transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
+                <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg border border-white/5 min-h-[36px]">
                     <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
-                        <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight">
-                            KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>
-                        </h1>
+                        <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
                         <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">2026시즌</span>
                     </div>
                 </div>
-
-                <!-- 2. 컨트롤 캡슐 (내부 내용에 따라 너비가 스르륵 변함) -->
-                <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] origin-right">
-                    
-                    <!-- 구단 선택 필터 (기존 달력 화살표 자리) -->
+                <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-500 origin-right">
                     <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all">전체</button>
                         <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all">KIA</button>
                         <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all">삼성</button>
                     </div>
-                    
-                    <!-- 목록/순위 탭 전용 컨트롤 (날짜순, 최신순) -->
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 ml-1"></i>
                     </div>
-
                 </div>
-
             </div>
         </header>
 
-        <!-- 1. 달력 화면 (메인) -->
-        <main id="calendar-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
+        <!-- 1. 달력 화면 -->
+        <main id="calendar-screen" class="flex flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="px-5 pt-main flex-1 flex flex-col">
-                
                 <div class="flex justify-center items-center mb-4">
                     <div class="flex items-center gap-4">
-                        <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 transition-all active:scale-95">
-                            <i class="fa-solid fa-chevron-left text-sm"></i>
-                        </button>
+                        <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
                         <h2 id="calendar-title" class="text-2xl font-bold text-white text-center min-w-[100px]">2026년 3월</h2>
-                        <button onclick="navigateCalendar(1)" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 transition-all active:scale-95">
-                            <i class="fa-solid fa-chevron-right text-sm"></i>
-                        </button>
+                        <button onclick="navigateCalendar(1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-right text-sm"></i></button>
                     </div>
                 </div>
-
-                <!-- 🔥 상단 배너 영역 (가로 스크롤 캐러셀 및 자동 스와이프) 🔥 -->
+                
+                <!-- 상단 배너 영역 -->
                 <div class="relative w-full mb-6 shrink-0">
-                    <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-3 pb-1" style="touch-action: pan-x pan-y;">
-                        
-                        <!-- 배너 1: D-Day (기본 고정 배너) -->
-                        <div class="min-w-full bg-[#1C1C1E] rounded-2xl p-5 border border-white/5 shrink-0 flex justify-between items-center transition-transform active:scale-[0.98] snap-center">
-                            <div class="flex flex-col">
-                                <span class="text-[11px] font-bold text-point mb-1.5 tracking-wide">2026 KBO LEAGUE</span>
-                                <h2 class="text-white/80 text-[13px] font-bold tracking-tight mb-0.5">정규시즌 개막까지</h2>
-                                <div id="d-day-count" class="text-[34px] font-extrabold text-white leading-none tracking-tighter">D-Day</div>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
-                                <i class="fa-solid fa-baseball text-xl text-gray-400"></i>
-                            </div>
-                        </div>
-
-                        <!-- 이후 배너들은 자바스크립트(renderBanners)를 통해 일정에 따라 자동으로 렌더링됩니다 -->
-
-                    </div>
-                    
-                    <!-- 배너 컨트롤 영역 (점 & 일시정지 버튼) -->
+                    <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-3 pb-1" style="touch-action: pan-x pan-y;"></div>
                     <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
-                        <!-- 점을 정중앙에 고정하기 위한 래퍼 -->
                         <div class="relative flex items-center justify-center">
-                            <!-- 인디케이터 (점) -->
-                            <div id="banner-dots-container" class="flex items-center gap-1.5">
-                                <div class="banner-dot w-3 h-1.5 rounded-full bg-white transition-all duration-300"></div>
-                            </div>
-                            <!-- 일시정지/재생 버튼 (점 그룹 정중앙은 유지하면서 바로 우측에 딱 붙임) -->
-                            <button id="banner-pause-btn" class="absolute -right-8 w-6 h-6 flex items-center justify-center text-gray-300 hover:text-white bg-black/60 backdrop-blur-sm rounded-full border border-white/10 transition-all active:scale-95 pointer-events-auto shadow-md">
-                                <i id="banner-pause-icon" class="fa-solid fa-pause text-[9px]"></i>
-                            </button>
+                            <div id="banner-dots-container" class="flex items-center gap-1.5"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 월간/주간 전환 토글 (원래 위치인 달력 바로 위 우측으로 복구) -->
                 <div class="flex justify-end mb-3">
                     <div class="flex gap-1 bg-white/5 p-1 rounded-full border border-white/10 w-fit shrink-0">
-                        <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-point text-white shadow-sm transition-all">월간</button>
+                        <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-point text-white transition-all">월간</button>
                         <button onclick="setViewMode('week')" id="btn-mode-week" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">주간</button>
                     </div>
                 </div>
 
-                <!-- 요일 헤더 -->
                 <div id="week-days-header" class="grid grid-cols-7 gap-2 text-center mb-3">
                     <div class="text-xs font-bold text-red-400">일</div>
                     <div class="text-xs font-bold text-gray-400">월</div>
@@ -265,85 +142,91 @@
                     <div class="text-xs font-bold text-blue-400">토</div>
                 </div>
 
-                <!-- 날짜 그리드 -->
-                <div id="calendar-grid" class="grid grid-cols-7 gap-2">
-                    <!-- JS로 달력 렌더링 -->
-                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
             </div>
 
-            <!-- 선택된 날짜의 일정 바텀 시트 -->
+            <!-- 달력 바텀 시트 (일정 상세 요약) -->
             <div id="bottom-sheet" class="absolute bottom-24 left-1/2 w-[92%] z-30 toss-card p-5 cursor-default flex flex-col max-h-[50vh]">
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2">
-                        <h3 id="sheet-date-title" class="text-lg font-bold text-white">3월 28일 일정</h3>
-                        <span id="sheet-match-count" class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">5경기</span>
+                        <h3 id="sheet-date-title" class="text-lg font-bold text-white">일정</h3>
+                        <span id="sheet-match-count" class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full"></span>
                     </div>
-                    <button onclick="closeBottomSheet()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <button onclick="closeBottomSheet()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                
-                <!-- 해당 일자의 경기 목록 -->
-                <div id="sheet-matches-container" class="flex-1 overflow-y-auto scrollbar-hide space-y-3 pb-2">
-                    <!-- JS로 채워짐 -->
-                </div>
+                <div id="sheet-matches-container" class="flex-1 overflow-y-auto scrollbar-hide space-y-3 pb-2"></div>
             </div>
         </main>
 
-        <!-- 2. 목록 화면 -->
+        <!-- 2. 목록 화면 (🔥 여기에 실시간 점수판이 큼지막하게 뜹니다!) -->
         <main id="list-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
-            <div class="px-5 pt-main space-y-4" id="match-list-container">
-                <!-- JS로 목록 렌더링 -->
-            </div>
+            <div class="px-5 pt-main space-y-4" id="match-list-container"></div>
         </main>
 
         <!-- 3. 순위 화면 -->
         <main id="ranking-screen" class="hidden flex-1 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
-            <div class="w-full pt-main pb-10" id="ranking-container">
-                <!-- JS로 순위표 데이터가 렌더링 됩니다 -->
-            </div>
+            <div class="w-full pt-main pb-10" id="ranking-container"></div>
         </main>
+
+        <!-- 🔥 실시간 매치 센터 (라인업 & 실시간 점수 상세 팝업) 🔥 -->
+        <div id="lineup-popup" class="fixed inset-0 z-[60] hidden flex-col justify-end pointer-events-none">
+            <div id="lineup-popup-bg" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeLineupPopup()"></div>
+            
+            <!-- 🔥 여기도 스르륵 부드럽게 올라오도록 (ease-out) 속도 조절 🔥 -->
+            <div id="lineup-popup-sheet" class="w-full max-w-[430px] mx-auto bg-[#1C1C1E] rounded-t-3xl border-t border-x border-white/10 flex flex-col relative translate-y-full transition-transform duration-300 ease-out h-[85vh] pointer-events-auto">
+                <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onclick="closeLineupPopup()"><div class="w-12 h-1.5 bg-gray-600 rounded-full"></div></div>
+                <div class="flex justify-between items-center px-6 pb-4 border-b border-white/10">
+                    <h3 id="lineup-popup-title" class="text-lg font-bold text-white tracking-tight">매치 센터</h3>
+                    <button onclick="closeLineupPopup()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <!-- JS 로직으로 파이어베이스의 실시간 데이터가 이곳에 렌더링 됩니다 -->
+                <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide p-6 relative pb-10"></div>
+            </div>
+        </div>
 
         <!-- 하단 플로팅 메뉴 -->
         <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[88%] max-w-[340px] px-2 touch-pan-x select-none">
-            <div class="flex items-center justify-between bg-[#1C1C1E] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1 gap-0.5 ring-1 ring-white/30 relative transition-all duration-300">
+            <div class="flex items-center justify-between bg-[#1C1C1E] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] border border-white/20 rounded-full p-1 ring-1 ring-white/30 relative">
                 <div id="nav-indicator" class="absolute top-1 bottom-1 bg-point shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-full border border-white/20 z-0 nav-transition" style="left: 4px; width: 66px;"></div>
                 
                 <a href="https://won429.github.io/enjoysite/" class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" style="text-decoration: none;">
-                    <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                        <i class="fa-solid fa-house text-base text-gray-300 group-hover:text-white transition-colors"></i>
-                        <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">홈</span>
-                    </div>
+                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-house text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">홈</span></div>
                 </a>
-
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)">
-                    <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                        <i class="fa-solid fa-calendar-days text-base text-white transition-colors"></i>
-                        <span class="text-[10px] font-bold text-white whitespace-nowrap transition-colors">야구</span>
-                    </div>
+                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-calendar-days text-base text-white"></i><span class="text-[10px] font-bold text-white">야구</span></div>
                 </button>
-
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)">
-                    <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                        <i class="fa-solid fa-list-ul text-base text-gray-300 group-hover:text-white transition-colors"></i>
-                        <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">목록</span>
-                    </div>
+                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-list-ul text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">목록</span></div>
                 </button>
-                
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)">
-                    <div class="flex flex-col items-center gap-0.5 pointer-events-none">
-                        <i class="fa-solid fa-trophy text-base text-gray-300 group-hover:text-white transition-colors"></i>
-                        <span class="text-[10px] font-medium text-gray-300 group-hover:text-white whitespace-nowrap transition-colors">순위</span>
-                    </div>
+                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">순위</span></div>
                 </button>
             </div>
         </nav>
     </div>
 
     <script>
-        // --- 데이터 관리 ---
-        // 3월 및 4월 정규리그 일정
-        const scheduleData = [
+        // --- 🔥 파이어베이스 (Firebase) 초기화 및 연결 🔥 ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTGun1KsU2Cepx0oSFF7yki2uu2NT2mfk",
+            authDomain: "kbo-app-98418.firebaseapp.com",
+            projectId: "kbo-app-98418",
+            storageBucket: "kbo-app-98418.firebasestorage.app",
+            messagingSenderId: "1046094812627",
+            appId: "1:1046094812627:web:2c07ec94c7e8028daa4b26"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 전역 데이터 저장소
+        let scheduleData = [];
+        let rankingData = [];
+        let liveDataStore = {}; // 🔥 파이썬 봇이 올려주는 실시간 점수/라인업 보관소
+        let currentPopupMatchId = null;
+        let currentTabIndex = 0;
+
+        // 서버 비어있을 때 넣는 임시 데이터
+        const initialScheduleData = [
             { id: 1, date: '2026-03-28', time: '14:00', team1: 'KT', team2: 'LG', stadium: '잠실' },
             { id: 2, date: '2026-03-28', time: '14:00', team1: 'KIA', team2: 'SSG', stadium: '문학' },
             { id: 3, date: '2026-03-28', time: '14:00', team1: '롯데', team2: '삼성', stadium: '대구' },
@@ -353,174 +236,20 @@
             { id: 7, date: '2026-03-29', time: '14:00', team1: 'KIA', team2: 'SSG', stadium: '문학' },
             { id: 8, date: '2026-03-29', time: '14:00', team1: '롯데', team2: '삼성', stadium: '대구' },
             { id: 9, date: '2026-03-29', time: '14:00', team1: '두산', team2: 'NC', stadium: '창원' },
-            { id: 10, date: '2026-03-29', time: '14:00', team1: '키움', team2: '한화', stadium: '대전' },
-            { id: 11, date: '2026-03-31', time: '18:30', team1: 'KIA', team2: 'LG', stadium: '잠실' },
-            { id: 12, date: '2026-03-31', time: '18:30', team1: '키움', team2: 'SSG', stadium: '문학' },
-            { id: 13, date: '2026-03-31', time: '18:30', team1: '두산', team2: '삼성', stadium: '대구' },
-            { id: 14, date: '2026-03-31', time: '18:30', team1: '롯데', team2: 'NC', stadium: '창원' },
-            { id: 15, date: '2026-03-31', time: '18:30', team1: 'KT', team2: '한화', stadium: '대전' },
-            { id: 16, date: '2026-04-01', time: '18:30', team1: 'KIA', team2: 'LG', stadium: '잠실' },
-            { id: 17, date: '2026-04-01', time: '18:30', team1: '키움', team2: 'SSG', stadium: '문학' },
-            { id: 18, date: '2026-04-01', time: '18:30', team1: '두산', team2: '삼성', stadium: '대구' },
-            { id: 19, date: '2026-04-01', time: '18:30', team1: '롯데', team2: 'NC', stadium: '창원' },
-            { id: 20, date: '2026-04-01', time: '18:30', team1: 'KT', team2: '한화', stadium: '대전' },
-            { id: 21, date: '2026-04-02', time: '18:30', team1: 'KIA', team2: 'LG', stadium: '잠실' },
-            { id: 22, date: '2026-04-02', time: '18:30', team1: '키움', team2: 'SSG', stadium: '문학' },
-            { id: 23, date: '2026-04-02', time: '18:30', team1: '두산', team2: '삼성', stadium: '대구' },
-            { id: 24, date: '2026-04-02', time: '18:30', team1: '롯데', team2: 'NC', stadium: '창원' },
-            { id: 25, date: '2026-04-02', time: '18:30', team1: 'KT', team2: '한화', stadium: '대전' },
-            { id: 26, date: '2026-04-03', time: '18:30', team1: '한화', team2: '두산', stadium: '잠실' },
-            { id: 27, date: '2026-04-03', time: '18:30', team1: 'SSG', team2: '롯데', stadium: '사직' },
-            { id: 28, date: '2026-04-03', time: '18:30', team1: '삼성', team2: 'KT', stadium: '수원' },
-            { id: 29, date: '2026-04-03', time: '18:30', team1: 'NC', team2: 'KIA', stadium: '광주' },
-            { id: 30, date: '2026-04-03', time: '18:30', team1: 'LG', team2: '키움', stadium: '고척' },
-            { id: 31, date: '2026-04-04', time: '14:00', team1: '한화', team2: '두산', stadium: '잠실' },
-            { id: 32, date: '2026-04-04', time: '17:00', team1: 'SSG', team2: '롯데', stadium: '사직' },
-            { id: 33, date: '2026-04-04', time: '17:00', team1: '삼성', team2: 'KT', stadium: '수원' },
-            { id: 34, date: '2026-04-04', time: '17:00', team1: 'NC', team2: 'KIA', stadium: '광주' },
-            { id: 35, date: '2026-04-04', time: '17:00', team1: 'LG', team2: '키움', stadium: '고척' },
-            { id: 36, date: '2026-04-05', time: '14:00', team1: '한화', team2: '두산', stadium: '잠실' },
-            { id: 37, date: '2026-04-05', time: '14:00', team1: 'SSG', team2: '롯데', stadium: '사직' },
-            { id: 38, date: '2026-04-05', time: '14:00', team1: '삼성', team2: 'KT', stadium: '수원' },
-            { id: 39, date: '2026-04-05', time: '14:00', team1: 'NC', team2: 'KIA', stadium: '광주' },
-            { id: 40, date: '2026-04-05', time: '14:00', team1: 'LG', team2: '키움', stadium: '고척' },
-            { id: 41, date: '2026-04-07', time: '18:30', team1: '키움', team2: '두산', stadium: '잠실' },
-            { id: 42, date: '2026-04-07', time: '18:30', team1: '한화', team2: 'SSG', stadium: '문학' },
-            { id: 43, date: '2026-04-07', time: '18:30', team1: 'KT', team2: '롯데', stadium: '사직' },
-            { id: 44, date: '2026-04-07', time: '18:30', team1: 'LG', team2: 'NC', stadium: '창원' },
-            { id: 45, date: '2026-04-07', time: '18:30', team1: '삼성', team2: 'KIA', stadium: '광주' },
-            { id: 46, date: '2026-04-08', time: '18:30', team1: '키움', team2: '두산', stadium: '잠실' },
-            { id: 47, date: '2026-04-08', time: '18:30', team1: '한화', team2: 'SSG', stadium: '문학' },
-            { id: 48, date: '2026-04-08', time: '18:30', team1: 'KT', team2: '롯데', stadium: '사직' },
-            { id: 49, date: '2026-04-08', time: '18:30', team1: 'LG', team2: 'NC', stadium: '창원' },
-            { id: 50, date: '2026-04-08', time: '18:30', team1: '삼성', team2: 'KIA', stadium: '광주' },
-            { id: 51, date: '2026-04-09', time: '18:30', team1: '키움', team2: '두산', stadium: '잠실' },
-            { id: 52, date: '2026-04-09', time: '18:30', team1: '한화', team2: 'SSG', stadium: '문학' },
-            { id: 53, date: '2026-04-09', time: '18:30', team1: 'KT', team2: '롯데', stadium: '사직' },
-            { id: 54, date: '2026-04-09', time: '18:30', team1: 'LG', team2: 'NC', stadium: '창원' },
-            { id: 55, date: '2026-04-09', time: '18:30', team1: '삼성', team2: 'KIA', stadium: '광주' },
-            { id: 56, date: '2026-04-10', time: '18:30', team1: 'SSG', team2: 'LG', stadium: '잠실' },
-            { id: 57, date: '2026-04-10', time: '18:30', team1: 'NC', team2: '삼성', stadium: '대구' },
-            { id: 58, date: '2026-04-10', time: '18:30', team1: '두산', team2: 'KT', stadium: '수원' },
-            { id: 59, date: '2026-04-10', time: '18:30', team1: '롯데', team2: '키움', stadium: '고척' },
-            { id: 60, date: '2026-04-10', time: '18:30', team1: 'KIA', team2: '한화', stadium: '대전' },
-            { id: 61, date: '2026-04-11', time: '17:00', team1: 'SSG', team2: 'LG', stadium: '잠실' },
-            { id: 62, date: '2026-04-11', time: '17:00', team1: 'NC', team2: '삼성', stadium: '대구' },
-            { id: 63, date: '2026-04-11', time: '17:00', team1: '두산', team2: 'KT', stadium: '수원' },
-            { id: 64, date: '2026-04-11', time: '17:00', team1: '롯데', team2: '키움', stadium: '고척' },
-            { id: 65, date: '2026-04-11', time: '17:00', team1: 'KIA', team2: '한화', stadium: '대전' },
-            { id: 66, date: '2026-04-12', time: '14:00', team1: 'SSG', team2: 'LG', stadium: '잠실' },
-            { id: 67, date: '2026-04-12', time: '14:00', team1: 'NC', team2: '삼성', stadium: '대구' },
-            { id: 68, date: '2026-04-12', time: '14:00', team1: '두산', team2: 'KT', stadium: '수원' },
-            { id: 69, date: '2026-04-12', time: '14:00', team1: '롯데', team2: '키움', stadium: '고척' },
-            { id: 70, date: '2026-04-12', time: '14:00', team1: 'KIA', team2: '한화', stadium: '대전' },
-            { id: 71, date: '2026-04-14', time: '18:30', team1: '롯데', team2: 'LG', stadium: '잠실' },
-            { id: 72, date: '2026-04-14', time: '18:30', team1: '두산', team2: 'SSG', stadium: '문학' },
-            { id: 73, date: '2026-04-14', time: '18:30', team1: 'KT', team2: 'NC', stadium: '창원' },
-            { id: 74, date: '2026-04-14', time: '18:30', team1: '키움', team2: 'KIA', stadium: '광주' },
-            { id: 75, date: '2026-04-14', time: '18:30', team1: '삼성', team2: '한화', stadium: '대전' },
-            { id: 76, date: '2026-04-15', time: '18:30', team1: '롯데', team2: 'LG', stadium: '잠실' },
-            { id: 77, date: '2026-04-15', time: '18:30', team1: '두산', team2: 'SSG', stadium: '문학' },
-            { id: 78, date: '2026-04-15', time: '18:30', team1: 'KT', team2: 'NC', stadium: '창원' },
-            { id: 79, date: '2026-04-15', time: '18:30', team1: '키움', team2: 'KIA', stadium: '광주' },
-            { id: 80, date: '2026-04-15', time: '18:30', team1: '삼성', team2: '한화', stadium: '대전' },
-            { id: 81, date: '2026-04-16', time: '18:30', team1: '롯데', team2: 'LG', stadium: '잠실' },
-            { id: 82, date: '2026-04-16', time: '18:30', team1: '두산', team2: 'SSG', stadium: '문학' },
-            { id: 83, date: '2026-04-16', time: '18:30', team1: 'KT', team2: 'NC', stadium: '창원' },
-            { id: 84, date: '2026-04-16', time: '18:30', team1: '키움', team2: 'KIA', stadium: '광주' },
-            { id: 85, date: '2026-04-16', time: '18:30', team1: '삼성', team2: '한화', stadium: '대전' },
-            { id: 86, date: '2026-04-17', time: '18:30', team1: 'KIA', team2: '두산', stadium: '잠실' },
-            { id: 87, date: '2026-04-17', time: '18:30', team1: '한화', team2: '롯데', stadium: '사직' },
-            { id: 88, date: '2026-04-17', time: '18:30', team1: 'LG', team2: '삼성', stadium: '대구' },
-            { id: 89, date: '2026-04-17', time: '18:30', team1: 'SSG', team2: 'NC', stadium: '창원' },
-            { id: 90, date: '2026-04-17', time: '18:30', team1: '키움', team2: 'KT', stadium: '수원' },
-            { id: 91, date: '2026-04-18', time: '17:00', team1: 'KIA', team2: '두산', stadium: '잠실' },
-            { id: 92, date: '2026-04-18', time: '17:00', team1: '한화', team2: '롯데', stadium: '사직' },
-            { id: 93, date: '2026-04-18', time: '17:00', team1: 'LG', team2: '삼성', stadium: '대구' },
-            { id: 94, date: '2026-04-18', time: '17:00', team1: 'SSG', team2: 'NC', stadium: '창원' },
-            { id: 95, date: '2026-04-18', time: '17:00', team1: '키움', team2: 'KT', stadium: '수원' },
-            { id: 96, date: '2026-04-19', time: '14:00', team1: 'KIA', team2: '두산', stadium: '잠실' },
-            { id: 97, date: '2026-04-19', time: '14:00', team1: '한화', team2: '롯데', stadium: '사직' },
-            { id: 98, date: '2026-04-19', time: '14:00', team1: 'LG', team2: '삼성', stadium: '대구' },
-            { id: 99, date: '2026-04-19', time: '14:00', team1: 'SSG', team2: 'NC', stadium: '창원' },
-            { id: 100, date: '2026-04-19', time: '14:00', team1: '키움', team2: 'KT', stadium: '수원' },
-            { id: 101, date: '2026-04-21', time: '18:30', team1: '한화', team2: 'LG', stadium: '잠실' },
-            { id: 102, date: '2026-04-21', time: '18:30', team1: '두산', team2: '롯데', stadium: '사직' },
-            { id: 103, date: '2026-04-21', time: '18:30', team1: 'SSG', team2: '삼성', stadium: '대구' },
-            { id: 104, date: '2026-04-21', time: '18:30', team1: 'KIA', team2: 'KT', stadium: '수원' },
-            { id: 105, date: '2026-04-21', time: '18:30', team1: 'NC', team2: '키움', stadium: '고척' },
-            { id: 106, date: '2026-04-22', time: '18:30', team1: '한화', team2: 'LG', stadium: '잠실' },
-            { id: 107, date: '2026-04-22', time: '18:30', team1: '두산', team2: '롯데', stadium: '사직' },
-            { id: 108, date: '2026-04-22', time: '18:30', team1: 'SSG', team2: '삼성', stadium: '대구' },
-            { id: 109, date: '2026-04-22', time: '18:30', team1: 'KIA', team2: 'KT', stadium: '수원' },
-            { id: 110, date: '2026-04-22', time: '18:30', team1: 'NC', team2: '키움', stadium: '고척' },
-            { id: 111, date: '2026-04-23', time: '18:30', team1: '한화', team2: 'LG', stadium: '잠실' },
-            { id: 112, date: '2026-04-23', time: '18:30', team1: '두산', team2: '롯데', stadium: '사직' },
-            { id: 113, date: '2026-04-23', time: '18:30', team1: 'SSG', team2: '삼성', stadium: '대구' },
-            { id: 114, date: '2026-04-23', time: '18:30', team1: 'KIA', team2: 'KT', stadium: '수원' },
-            { id: 115, date: '2026-04-23', time: '18:30', team1: 'NC', team2: '키움', stadium: '고척' },
-            { id: 116, date: '2026-04-24', time: '18:30', team1: 'LG', team2: '두산', stadium: '잠실' },
-            { id: 117, date: '2026-04-24', time: '18:30', team1: 'KT', team2: 'SSG', stadium: '문학' },
-            { id: 118, date: '2026-04-24', time: '18:30', team1: '롯데', team2: 'KIA', stadium: '광주' },
-            { id: 119, date: '2026-04-24', time: '18:30', team1: '삼성', team2: '키움', stadium: '고척' },
-            { id: 120, date: '2026-04-24', time: '18:30', team1: 'NC', team2: '한화', stadium: '대전' },
-            { id: 121, date: '2026-04-25', time: '17:00', team1: 'LG', team2: '두산', stadium: '잠실' },
-            { id: 122, date: '2026-04-25', time: '17:00', team1: 'KT', team2: 'SSG', stadium: '문학' },
-            { id: 123, date: '2026-04-25', time: '17:00', team1: '롯데', team2: 'KIA', stadium: '광주' },
-            { id: 124, date: '2026-04-25', time: '17:00', team1: '삼성', team2: '키움', stadium: '고척' },
-            { id: 125, date: '2026-04-25', time: '17:00', team1: 'NC', team2: '한화', stadium: '대전' },
-            { id: 126, date: '2026-04-26', time: '14:00', team1: 'LG', team2: '두산', stadium: '잠실' },
-            { id: 127, date: '2026-04-26', time: '14:00', team1: 'KT', team2: 'SSG', stadium: '문학' },
-            { id: 128, date: '2026-04-26', time: '14:00', team1: '롯데', team2: 'KIA', stadium: '광주' },
-            { id: 129, date: '2026-04-26', time: '14:00', team1: '삼성', team2: '키움', stadium: '고척' },
-            { id: 130, date: '2026-04-26', time: '14:00', team1: 'NC', team2: '한화', stadium: '대전' },
-            { id: 131, date: '2026-04-28', time: '18:30', team1: '삼성', team2: '두산', stadium: '잠실' },
-            { id: 132, date: '2026-04-28', time: '18:30', team1: '키움', team2: '롯데', stadium: '사직' },
-            { id: 133, date: '2026-04-28', time: '18:30', team1: 'KIA', team2: 'NC', stadium: '창원' },
-            { id: 134, date: '2026-04-28', time: '18:30', team1: 'LG', team2: 'KT', stadium: '수원' },
-            { id: 135, date: '2026-04-28', time: '18:30', team1: 'SSG', team2: '한화', stadium: '대전' },
-            { id: 136, date: '2026-04-29', time: '18:30', team1: '삼성', team2: '두산', stadium: '잠실' },
-            { id: 137, date: '2026-04-29', time: '18:30', team1: '키움', team2: '롯데', stadium: '사직' },
-            { id: 138, date: '2026-04-29', time: '18:30', team1: 'KIA', team2: 'NC', stadium: '창원' },
-            { id: 139, date: '2026-04-29', time: '18:30', team1: 'LG', team2: 'KT', stadium: '수원' },
-            { id: 140, date: '2026-04-29', time: '18:30', team1: 'SSG', team2: '한화', stadium: '대전' },
-            { id: 141, date: '2026-04-30', time: '18:30', team1: '삼성', team2: '두산', stadium: '잠실' },
-            { id: 142, date: '2026-04-30', time: '18:30', team1: '키움', team2: '롯데', stadium: '사직' },
-            { id: 143, date: '2026-04-30', time: '18:30', team1: 'KIA', team2: 'NC', stadium: '창원' },
-            { id: 144, date: '2026-04-30', time: '18:30', team1: 'LG', team2: 'KT', stadium: '수원' },
-            { id: 145, date: '2026-04-30', time: '18:30', team1: 'SSG', team2: '한화', stadium: '대전' }
+            { id: 10, date: '2026-03-29', time: '14:00', team1: '키움', team2: '한화', stadium: '대전' }
         ];
 
-        // 가상 순위 데이터 (개막 전 초기화 상태)
-        const rankingData = [
+        const initialRankingData = [
             { rank: '-', team: 'KIA', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
             { rank: '-', team: '삼성', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
             { rank: '-', team: 'LG', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
             { rank: '-', team: '두산', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
-            { rank: '-', team: 'KT', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
-            { rank: '-', team: 'SSG', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
-            { rank: '-', team: '롯데', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
-            { rank: '-', team: '한화', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
-            { rank: '-', team: 'NC', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
-            { rank: '-', team: '키움', w: 0, d: 0, l: 0, winRate: '-', gb: '-' }
+            { rank: '-', team: 'KT', w: 0, d: 0, l: 0, winRate: '-', gb: '-' }
         ];
 
-        scheduleData.sort((a, b) => a.date.localeCompare(b.date));
-
-        const teamColors = {
-            'LG': 'bg-pink-600', '두산': 'bg-blue-800', 'KIA': 'bg-red-600', 
-            '삼성': 'bg-blue-600', 'SSG': 'bg-red-500', '롯데': 'bg-orange-600', 
-            '한화': 'bg-orange-500', 'KT': 'bg-black', 'NC': 'bg-teal-600', '키움': 'bg-red-800'
-        };
-
-        // 배너 그라데이션용 구단별 헥스(HEX) 컬러 (진하고 쨍하게)
-        const teamHex = {
-            'LG': '#C30452', '두산': '#131230', 'KIA': '#EA0029', 
-            '삼성': '#2563eb', 'SSG': '#CE0E2D', '롯데': '#041e42', 
-            '한화': '#FF6600', 'KT': '#333333', 'NC': '#315288', '키움': '#820024'
-        };
-
-        // 구단별 로고 이미지
+        // 팀 메타 정보
+        const teamColors = { 'LG': 'bg-pink-600', '두산': 'bg-blue-800', 'KIA': 'bg-red-600', '삼성': 'bg-blue-600', 'SSG': 'bg-red-500', '롯데': 'bg-orange-600', '한화': 'bg-orange-500', 'KT': 'bg-black', 'NC': 'bg-teal-600', '키움': 'bg-red-800' };
+        const teamHex = { 'LG': '#C30452', '두산': '#131230', 'KIA': '#EA0029', '삼성': '#2563eb', 'SSG': '#CE0E2D', '롯데': '#041e42', '한화': '#FF6600', 'KT': '#333333', 'NC': '#315288', '키움': '#820024' };
         const teamLogos = {
             '삼성': 'https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg',
             'KIA': 'https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg',
@@ -534,25 +263,55 @@
             '키움': 'https://i.namu.wiki/i/qNJ-4pGmvhJmKVoGIAR9uce83_Mayu1vsHyd37yK6raEmYcHSiW3MGgFqkihanigvyFK3LVoAwIgZvGr5ymW4ksC5bB643HgAHTkEGoLyrqiL1TRzXrzrNhN1PJPi7I8pGTDfLbyUyNEDj65MsNedw.svg'
         };
 
-        // --- 캘린더 상태 ---
         let currentDate = new Date();
         const todayStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
         let viewMode = 'month';
         let selectedTeam = localStorage.getItem('kbo_selected_team') || 'all';
 
-        // --- 탭 전환 로직 (스르륵 채워지는 모션 포함) ---
-        function switchTab(index) {
-            if (navigator.vibrate) navigator.vibrate(10);
+        // 🔥 서버 통신 및 실시간 점수 리스너 등록 🔥
+        async function syncWithFirestore() {
+            try {
+                // 1. 앱 켜질 때 기본 일정/순위 데이터 로드
+                const [matchesSnap, rankingsSnap] = await Promise.all([
+                    db.collection("matches").get(),
+                    db.collection("rankings").get()
+                ]);
 
-            const screens = [
-                document.getElementById('calendar-screen'),
-                document.getElementById('list-screen'),
-                document.getElementById('ranking-screen')
-            ];
-            
+                if (matchesSnap.empty) scheduleData = [...initialScheduleData];
+                else scheduleData = matchesSnap.docs.map(doc => doc.data()).sort((a, b) => a.date.localeCompare(b.date));
+
+                if (rankingsSnap.empty) rankingData = [...initialRankingData];
+                else rankingData = rankingsSnap.docs.map(doc => doc.data()).sort((a, b) => a.team.localeCompare(b.team));
+
+                // 2. 🚀 파이어베이스 핵심 기능: onSnapshot (실시간 데이터 변경 감지) 🚀
+                // 깃허브 봇이 15분마다 파이어베이스에 점수를 올리면, 이 코드가 그걸 자동으로 캐치함!
+                db.collection("lineups").onSnapshot((snapshot) => {
+                    snapshot.forEach(doc => {
+                        liveDataStore[doc.id] = doc.data(); // 최신 실시간 데이터 저장
+                    });
+                    
+                    // 데이터가 바뀌었으니 현재 보고 있는 화면을 '새로고침 없이' 즉시 다시 그림
+                    if (currentTabIndex === 0) renderCalendar();
+                    else if (currentTabIndex === 1) renderList();
+                    
+                    // 매치 팝업이 열려있는 상태라면 팝업 안의 점수도 즉시 갱신!
+                    if (currentPopupMatchId) {
+                        renderPopupContent(currentPopupMatchId);
+                    }
+                });
+
+            } catch (error) {
+                console.error("파이어베이스 통신 에러:", error);
+                scheduleData = [...initialScheduleData]; rankingData = [...initialRankingData];
+            }
+        }
+
+        function switchTab(index) {
+            currentTabIndex = index;
+            if (navigator.vibrate) navigator.vibrate(10);
+            const screens = [document.getElementById('calendar-screen'), document.getElementById('list-screen'), document.getElementById('ranking-screen')];
             closeBottomSheet();
 
-            // 하단 네비게이션 시각적 업데이트
             const navButtons = document.querySelectorAll('#bottom-nav button');
             const indicator = document.getElementById('nav-indicator');
 
@@ -562,239 +321,166 @@
             }
 
             navButtons.forEach((btn, i) => {
-                const icon = btn.querySelector('i');
-                const label = btn.querySelector('span');
-                
+                const icon = btn.querySelector('i'); const label = btn.querySelector('span');
                 if (icon && label) {
-                    icon.classList.remove('text-white', 'text-gray-300', 'text-black', 'text-gray-600');
-                    label.classList.remove('text-white', 'text-gray-300', 'text-black', 'text-gray-600', 'font-medium', 'font-bold');
-
-                    if (i === index) {
-                        icon.classList.add('text-white');
-                        label.classList.add('text-white', 'font-bold');
-                    } else {
-                        icon.classList.add('text-gray-300');
-                        label.classList.add('text-gray-300', 'font-medium');
-                    }
+                    icon.className = `fa-solid ${i===0?'fa-calendar-days':(i===1?'fa-list-ul':'fa-trophy')} text-base ${i===index?'text-white':'text-gray-300 transition-colors'}`;
+                    label.className = `text-[10px] whitespace-nowrap transition-colors ${i===index?'text-white font-bold':'text-gray-300 font-medium'}`;
                 }
             });
 
-            const homeLink = document.querySelector('#bottom-nav a');
-            if (homeLink) {
-                const homeIcon = homeLink.querySelector('i');
-                const homeLabel = homeLink.querySelector('span');
-                if (homeIcon && homeLabel) {
-                    homeIcon.classList.remove('text-white', 'text-gray-300', 'text-black', 'text-gray-600');
-                    homeLabel.classList.remove('text-white', 'text-gray-300', 'text-black', 'text-gray-600', 'font-medium', 'font-bold');
-                    homeIcon.classList.add('text-gray-300');
-                    homeLabel.classList.add('text-gray-300', 'font-medium');
-                }
-            }
+            const ctrlTeam = document.getElementById('ctrl-team'); const ctrlSort = document.getElementById('ctrl-sort');
+            const ctrlWrapper = document.getElementById('ctrl-wrapper'); const mainText = document.getElementById('di-main-text');
 
-            // 🔥 오른쪽 캡슐 너비 조절 (글자 깜빡임 제거 및 유령 껍데기 제거) 🔥
-            const ctrlTeam = document.getElementById('ctrl-team');
-            const ctrlSort = document.getElementById('ctrl-sort');
-            const ctrlWrapper = document.getElementById('ctrl-wrapper');
-            const sortText = document.getElementById('sort-text');
-            const mainText = document.getElementById('di-main-text');
-
-            // 1. 텍스트는 딜레이나 깜빡임(투명도) 없이 즉시 변경
             if (index === 0) mainText.innerHTML = `KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
 
-            if (index === 1 && sortText) {
-                sortText.innerText = '날짜순';
-            }
+            if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+            else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+            else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
 
-            // 2. 가로 폭 스르륵 애니메이션 시작 (강제 속성을 빼고 자연스럽게 갭까지 채움)
-            if (index === 0) {
-                ctrlTeam.classList.remove('ctrl-hide');
-                ctrlTeam.classList.add('ctrl-show');
-                ctrlSort.classList.remove('ctrl-show');
-                ctrlSort.classList.add('ctrl-hide');
-                ctrlWrapper.classList.remove('max-w-0', 'opacity-0', '!border-transparent', '!-ml-2');
-            } else if (index === 1) {
-                ctrlTeam.classList.remove('ctrl-show');
-                ctrlTeam.classList.add('ctrl-hide');
-                ctrlSort.classList.remove('ctrl-hide');
-                ctrlSort.classList.add('ctrl-show');
-                ctrlWrapper.classList.remove('max-w-0', 'opacity-0', '!border-transparent', '!-ml-2');
-            } else if (index === 2) {
-                ctrlTeam.classList.remove('ctrl-show');
-                ctrlTeam.classList.add('ctrl-hide');
-                ctrlSort.classList.remove('ctrl-show');
-                ctrlSort.classList.add('ctrl-hide');
-                ctrlWrapper.classList.remove('max-w-0');
-                ctrlWrapper.classList.add('opacity-0', '!border-transparent', '!-ml-2');
-            }
+            screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
 
-            // 3. 메인 콘텐츠 화면 즉시 노출 (애니메이션 제거)
-            screens.forEach((screen, i) => {
-                if (i === index) {
-                    screen.classList.remove('hidden');
-                    screen.classList.add('flex');
-                } else {
-                    screen.classList.add('hidden');
-                    screen.classList.remove('flex');
-                }
-            });
-
-            if (index === 0) renderCalendar();
-            else if (index === 1) renderList();
-            else if (index === 2) renderRanking();
+            if (index === 0) renderCalendar(); else if (index === 1) renderList(); else if (index === 2) renderRanking();
         }
 
-        // --- 캘린더 로직 ---
-        function setViewMode(mode) {
-            if (navigator.vibrate) navigator.vibrate(5);
-            viewMode = mode;
-            
+        // 🔥 삭제했던 월간/주간 버튼 불빛 스위치 로직 완벽 복구 🔥
+        function setViewMode(mode) { 
+            viewMode = mode; 
             const btnMonth = document.getElementById('btn-mode-month');
             const btnWeek = document.getElementById('btn-mode-week');
             
             if (mode === 'month') {
-                btnMonth.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-white shadow-sm transition-all';
+                btnMonth.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-white transition-all';
                 btnWeek.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all';
             } else {
-                btnWeek.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-white shadow-sm transition-all';
+                btnWeek.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-white transition-all';
                 btnMonth.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all';
             }
             
-            renderCalendar();
-            closeBottomSheet();
+            renderCalendar(); 
+            closeBottomSheet(); 
+        }
+        
+        function setTeamFilter(team) {
+            selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
+            const btns = ['all', 'KIA', '삼성'].map(id => document.getElementById(`btn-team-${id}`));
+            btns.forEach(btn => btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all');
+            document.getElementById(`btn-team-${team}`).className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
+            renderCalendar(); if(currentTabIndex === 1) renderList(); closeBottomSheet();
         }
 
-        function setTeamFilter(team) {
-            if (navigator.vibrate) navigator.vibrate(5);
-            selectedTeam = team;
-            localStorage.setItem('kbo_selected_team', team);
-            
-            // 🔥 테마 색상 적용 🔥
-            document.body.setAttribute('data-theme', team);
-            
-            const btnAll = document.getElementById('btn-team-all');
-            const btnKia = document.getElementById('btn-team-KIA');
-            const btnSamsung = document.getElementById('btn-team-삼성');
-            
-            [btnAll, btnKia, btnSamsung].forEach(btn => {
-                btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all';
-            });
-            
-            if (team === 'all') {
-                btnAll.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
-            } else if (team === 'KIA') {
-                btnKia.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
-            } else if (team === '삼성') {
-                btnSamsung.className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
-            }
-            
-            renderCalendar();
-            renderList();
-            renderBanners(); // 팀 필터링 시 배너도 실시간으로 맞춰서 재렌더링
-            closeBottomSheet();
-        }
+        // --- UI 렌더링 함수들 ---
 
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
-            const weekDaysHeader = document.getElementById('week-days-header');
-            if (!grid) return;
-            grid.innerHTML = '';
+            if(!grid) return; grid.innerHTML = '';
             
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
+            const year = currentDate.getFullYear(); const month = currentDate.getMonth();
             if (viewMode === 'month') {
-                if(weekDaysHeader) weekDaysHeader.classList.remove('hidden');
+                document.getElementById('week-days-header').classList.remove('hidden');
                 grid.className = 'grid grid-cols-7 gap-2';
                 document.getElementById('calendar-title').innerText = `${year}년 ${month + 1}월`;
+                const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
                 
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                let delayIndex = 0;
-                for (let i = 0; i < firstDay; i++) {
-                    grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
-                }
-
-                // 월간 달력 렌더링 시 순차적 등장(Staggered Fade-in) 효과 적용
                 for (let i = 1; i <= daysInMonth; i++) {
-                    const d = new Date(year, month, i);
-                    grid.innerHTML += generateDayHtml(d, delayIndex++);
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    let matchesToday = scheduleData.filter(m => m.date === dateStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
+                    let isToday = (dateStr === todayStr);
+                    
+                    // 🔥 날려먹었던 디테일 완벽 복구: +N 배지 & 상대팀 로고 & HOME 아이콘 🔥
+                    let dotsHtml = '';
+                    let topIconHtml = '';
+                    
+                    if (matchesToday.length > 0) {
+                        if (selectedTeam === 'all') {
+                            // 전체 보기 모드: +5 경기 갯수 배지
+                            dotsHtml = `
+                                <div class="flex justify-center items-center gap-1 mt-auto mb-1.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 shadow-sm">
+                                    <i class="fa-solid fa-baseball text-gray-300 text-[9px]"></i>
+                                    <span class="text-[10px] font-bold text-white">+${matchesToday.length}</span>
+                                </div>`;
+                        } else {
+                            // 특정 팀 보기 모드: 상대팀 로고 및 홈/어웨이 표시
+                            let dots = matchesToday.map(match => {
+                                let displayTeam = match.team1 === selectedTeam ? match.team2 : match.team1;
+                                let isHome = match.team2 === selectedTeam;
+                                let logo = teamLogos[displayTeam];
+                                let logoHtml = logo ? `<img src="${logo}" class="w-5 h-5 object-contain">` : `<div class="w-1.5 h-1.5 rounded-full ${teamColors[displayTeam] || 'bg-gray-500'}"></div>`;
+                                if (isHome) topIconHtml = `<i class="fa-solid fa-house text-point text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2"></i>`;
+                                return logoHtml;
+                            }).join('');
+                            dotsHtml = `<div class="flex justify-center gap-0.5 items-center mt-auto mb-1.5">${dots}</div>`;
+                        }
+                    }
+
+                    grid.innerHTML += `
+                        <div class="calendar-day cursor-pointer relative ${matchesToday.length ? 'has-match' : ''} ${isToday ? 'today' : ''}" onclick="openDateSheet('${dateStr}')">
+                            ${topIconHtml}
+                            <span class="text-[13px] relative z-10 ${isToday?'text-point font-extrabold':(matchesToday.length?'text-white font-bold':'text-gray-400')}">${i}</span>
+                            ${dotsHtml}
+                        </div>`;
                 }
             } else {
-                if(weekDaysHeader) weekDaysHeader.classList.add('hidden');
-                grid.className = 'flex flex-col gap-6 pb-4';
-                
+                // 🔥 삭제했던 주간(Week) 달력 뷰 완벽하게 원상복구 및 실시간 점수 연동 🔥
+                document.getElementById('week-days-header').classList.add('hidden');
+                grid.className = 'flex flex-col gap-6 pb-4 w-full col-span-7';
+
                 let startOfWeek = new Date(currentDate);
                 startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-                
+
                 let thursday = new Date(startOfWeek);
                 thursday.setDate(thursday.getDate() + 4);
-                
+
                 let firstDayOfMonth = new Date(thursday.getFullYear(), thursday.getMonth(), 1).getDay();
                 let weekNum = Math.ceil((thursday.getDate() + firstDayOfMonth) / 7);
-                
+
                 document.getElementById('calendar-title').innerText = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
 
-                // 🔥 1. 주간 7일치 데이터를 먼저 배열로 수집 🔥
                 let weekDays = [];
                 for (let i = 0; i < 7; i++) {
                     let d = new Date(startOfWeek);
                     d.setDate(d.getDate() + i);
-                    
                     const y = d.getFullYear();
                     const m = String(d.getMonth() + 1).padStart(2, '0');
                     const dayStr = String(d.getDate()).padStart(2, '0');
                     const dateStr = `${y}-${m}-${dayStr}`;
-                    
-                    let matchesToday = scheduleData.filter(match => match.date === dateStr);
-                    if (selectedTeam !== 'all') {
-                        matchesToday = matchesToday.filter(match => match.team1 === selectedTeam || match.team2 === selectedTeam);
-                    }
+
+                    let matchesToday = scheduleData.filter(match => match.date === dateStr && (selectedTeam === 'all' || match.team1 === selectedTeam || match.team2 === selectedTeam));
                     weekDays.push({ d, dateStr, matches: matchesToday });
                 }
 
-                // 🔥 2. 연속으로 일정이 없는 날을 묶어서 병합 렌더링 🔥
                 let idx = 0;
                 while (idx < 7) {
                     let currentDay = weekDays[idx];
-                    
                     if (currentDay.matches.length > 0) {
-                        // 일정이 있는 날은 기존처럼 개별 렌더링
                         let matchesHtml = `<div class="space-y-3">` + currentDay.matches.map(match => {
-                            let c1 = teamColors[match.team1] || 'bg-gray-500';
-                            let c2 = teamColors[match.team2] || 'bg-gray-500';
-                            let logo1 = teamLogos[match.team1];
-                            let logo2 = teamLogos[match.team2];
-                            
                             let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                            let iconColor = 'text-point';
-                            
-                            let icon1 = logo1 ? `<img src="${logo1}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c1}"></div>`;
-                            let icon2 = logo2 ? `<img src="${logo2}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c2}"></div>`;
+                            let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${teamColors[match.team1] || 'bg-gray-500'}"></div>`;
+                            let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${teamColors[match.team2] || 'bg-gray-500'}"></div>`;
+
+                            const live = liveDataStore[match.id];
+                            let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
+                            let scoreHtml = `<span class="text-xs text-gray-500">vs</span>`;
+
+                            if (live && live.gameStatus !== '경기전') {
+                                let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                                statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-1.5 py-0.5 rounded-sm">${live.gameStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                                scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
+                            }
 
                             return `
-                                <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center transition-transform active:scale-95">
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house ${iconColor} mx-0.5"></i>` : ''}${match.stadium}</span>
-                                        <div class="flex items-center gap-2">
-                                            <div class="flex items-center gap-1.5">
-                                                ${icon1}
-                                                <span class="text-sm font-bold text-white">${match.team1}</span>
-                                            </div>
-                                            <span class="text-xs text-gray-500">vs</span>
-                                            <div class="flex items-center gap-1.5">
-                                                <span class="text-sm font-bold text-white">${match.team2}</span>
-                                                ${icon2}
-                                            </div>
+                                <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup(${match.id})">
+                                    <div class="flex flex-col gap-1 w-full">
+                                        ${statusHtml}
+                                        <div class="flex items-center justify-between mt-1">
+                                            <div class="flex items-center gap-1.5 w-[40%]">${logo1}<span class="text-sm font-bold text-white truncate">${match.team1}</span></div>
+                                            <div class="flex items-center justify-center w-[20%]">${scoreHtml}</div>
+                                            <div class="flex items-center justify-end gap-1.5 w-[40%]"><span class="text-sm font-bold text-white truncate">${match.team2}</span>${logo2}</div>
                                         </div>
                                     </div>
-                                    <button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs">
-                                        <i class="fa-solid fa-chevron-right"></i>
-                                    </button>
-                                </div>
-                            `;
+                                </div>`;
                         }).join('') + `</div>`;
 
                         grid.innerHTML += `
@@ -804,35 +490,22 @@
                                     <span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${currentDay.matches.length}경기</span>
                                 </div>
                                 ${matchesHtml}
-                            </div>
-                        `;
+                            </div>`;
                         idx++;
                     } else {
-                        // 일정이 없는 날 연속 병합 로직
                         let startIdx = idx;
-                        while (idx < 7 && weekDays[idx].matches.length === 0) {
-                            idx++;
-                        }
+                        while (idx < 7 && weekDays[idx].matches.length === 0) idx++;
                         let endIdx = idx - 1;
-
                         let startDay = weekDays[startIdx];
                         let endDay = weekDays[endIdx];
-
-                        // 기간 내에 오늘이 포함되어 있는지 체크
                         let isTodayInRange = false;
                         for (let k = startIdx; k <= endIdx; k++) {
                             if (weekDays[k].dateStr === todayStr) isTodayInRange = true;
                         }
                         let titleColor = isTodayInRange ? 'text-point' : 'text-white';
-
-                        let titleHtml = '';
-                        if (startIdx === endIdx) {
-                            // 하루만 없을 때
-                            titleHtml = `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일</h3>`;
-                        } else {
-                            // 여러 날 없을 때 (물결표로 묶음)
-                            titleHtml = `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일 ~ ${endDay.d.getMonth() + 1}월 ${endDay.d.getDate()}일</h3>`;
-                        }
+                        let titleHtml = startIdx === endIdx
+                            ? `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일</h3>`
+                            : `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일 ~ ${endDay.d.getMonth() + 1}월 ${endDay.d.getDate()}일</h3>`;
 
                         grid.innerHTML += `
                             <div class="flex flex-col gap-3">
@@ -844,216 +517,114 @@
                                     <i class="fa-solid fa-bed text-2xl text-gray-600 mb-1"></i>
                                     이 기간에는 예정된 경기가 없습니다.
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     }
                 }
             }
         }
 
-        // 날짜 렌더링용 공통 함수 (index 파라미터 추가)
-        function generateDayHtml(d, index = 0) {
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const dayStr = String(d.getDate()).padStart(2, '0');
-            const dateStr = `${y}-${m}-${dayStr}`;
-            
-            let matchesToday = scheduleData.filter(match => match.date === dateStr);
-            if (selectedTeam !== 'all') {
-                matchesToday = matchesToday.filter(match => match.team1 === selectedTeam || match.team2 === selectedTeam);
-            }
-            
-            let isToday = (dateStr === todayStr);
-            let hasMatchClass = matchesToday.length > 0 ? 'has-match' : '';
-            let todayClass = isToday ? 'today' : '';
-            let textClass = matchesToday.length > 0 ? 'text-white font-bold' : 'text-gray-400 font-medium';
-            if (isToday) textClass = 'text-point font-extrabold';
-
-            let dotsHtml = '';
-            let topIconHtml = '';
-            if (matchesToday.length > 0) {
-                if (selectedTeam === 'all') {
-                    dotsHtml = `
-                        <div class="flex justify-center items-center gap-1 mt-auto mb-1.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 shadow-sm">
-                            <i class="fa-solid fa-baseball text-gray-200 text-[10px]"></i>
-                            <span class="text-[10px] font-bold text-gray-300">+${matchesToday.length}</span>
-                        </div>
-                    `;
-                } else {
-                    let dots = matchesToday.map(match => {
-                        let displayTeam = match.team1 === selectedTeam ? match.team2 : match.team1;
-                        let isHome = match.team2 === selectedTeam;
-                        let logo = teamLogos[displayTeam];
-                        
-                        let logoHtml = logo ? `<img src="${logo}" class="w-5 h-5 object-contain">` : `<div class="w-1.5 h-1.5 rounded-full ${teamColors[displayTeam] || 'bg-gray-500'}"></div>`;
-                        
-                        if (isHome) {
-                            let iconColor = 'text-point';
-                            topIconHtml = `<i class="fa-solid fa-house ${iconColor} text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2"></i>`;
-                        }
-                        return logoHtml;
-                    }).join('');
-                    
-                    dotsHtml = `<div class="flex justify-center gap-0.5 items-center mt-auto mb-1.5">${dots}</div>`;
-                }
-            }
-
-            // 월간 뷰일 경우 날짜마다 약간의 시차를 두고 부드럽게 등장하게 설정 (애니메이션 제거)
-            let delayStyle = '';
-            let animClass = '';
-
-            return `
-                <div class="calendar-day cursor-pointer relative ${hasMatchClass} ${todayClass} ${animClass}" ${delayStyle} onclick="openDateSheet('${dateStr}')">
-                    ${topIconHtml}
-                    <span class="text-[13px] relative z-10 ${textClass}">${d.getDate()}</span>
-                    ${dotsHtml}
-                </div>
-            `;
-        }
-
-        function navigateCalendar(offset) {
-            if (navigator.vibrate) navigator.vibrate(5);
-            if (viewMode === 'month') {
-                currentDate.setMonth(currentDate.getMonth() + offset);
-            } else {
-                currentDate.setDate(currentDate.getDate() + (offset * 7));
-            }
-            renderCalendar();
-            closeBottomSheet();
-        }
-
-        function goToToday() {
-            if (navigator.vibrate) navigator.vibrate(5);
-            currentDate = new Date();
-            renderCalendar();
-            closeBottomSheet();
-        }
-
         function openDateSheet(dateStr) {
-            if (navigator.vibrate) navigator.vibrate(5);
-            let matches = scheduleData.filter(m => m.date === dateStr);
-            if (selectedTeam !== 'all') {
-                matches = matches.filter(match => match.team1 === selectedTeam || match.team2 === selectedTeam);
-            }
-            
-            const sheet = document.getElementById('bottom-sheet');
-            const container = document.getElementById('sheet-matches-container');
-            
+            let matches = scheduleData.filter(m => m.date === dateStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
+            const sheet = document.getElementById('bottom-sheet'); const container = document.getElementById('sheet-matches-container');
             const [y, m, d] = dateStr.split('-');
             document.getElementById('sheet-date-title').innerText = `${parseInt(m)}월 ${parseInt(d)}일 일정`;
             document.getElementById('sheet-match-count').innerText = matches.length > 0 ? `${matches.length}경기` : '일정 없음';
-
             container.innerHTML = '';
 
             if (matches.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-6 text-gray-500">
-                        <i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i>
-                        <p class="text-sm">이 날은 예정된 경기가 없습니다.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-6 text-gray-500"><i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i><p class="text-sm">이 날은 예정된 경기가 없습니다.</p></div>`;
             } else {
                 matches.forEach(match => {
-                    let c1 = teamColors[match.team1] || 'bg-gray-500';
-                    let c2 = teamColors[match.team2] || 'bg-gray-500';
-                    let logo1 = teamLogos[match.team1];
-                    let logo2 = teamLogos[match.team2];
+                    const live = liveDataStore[match.id]; // 🔥 실시간 데이터 매칭
+                    let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time}</span>`;
                     
-                    let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                    let iconColor = 'text-point';
-                    
-                    let icon1 = logo1 ? `<img src="${logo1}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c1}"></div>`;
-                    let icon2 = logo2 ? `<img src="${logo2}" class="w-6 h-6 object-contain">` : `<div class="w-3 h-3 rounded-full ${c2}"></div>`;
+                    // 경기 중이거나 종료된 경우 실시간 점수로 덮어쓰기!
+                    if (live && live.gameStatus !== '경기전') {
+                        let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                        statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-1.5 py-0.5 rounded-sm">${live.gameStatus}</span><span class="text-[10px] text-gray-400 font-bold">${live.awayScore}:${live.homeScore}</span></div>`;
+                    }
+
+                    // 🔥 명령하신 대로 바텀 시트 일정 목록에 구단 로고 추가! (다른 건 일절 안 건드림!) 🔥
+                    let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team1] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team1.substring(0,1)}</div>`;
+                    let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team2] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team2.substring(0,1)}</div>`;
 
                     container.innerHTML += `
-                        <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center">
+                        <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup(${match.id})">
                             <div class="flex flex-col gap-1">
-                                <span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house ${iconColor} mx-0.5"></i>` : ''}${match.stadium}</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex items-center gap-1.5">
-                                        ${icon1}
-                                        <span class="text-sm font-bold text-white">${match.team1}</span>
-                                    </div>
-                                    <span class="text-xs text-gray-500">vs</span>
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="text-sm font-bold text-white">${match.team2}</span>
-                                        ${icon2}
-                                    </div>
+                                ${statusHtml}
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <div class="flex items-center gap-1.5">${logo1}<span class="text-sm font-bold text-white">${match.team1}</span></div>
+                                    <span class="text-[11px] text-gray-500 font-bold">vs</span>
+                                    <div class="flex items-center gap-1.5"><span class="text-sm font-bold text-white">${match.team2}</span>${logo2}</div>
                                 </div>
                             </div>
-                            <button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    `;
+                            <button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>`;
                 });
             }
-
             sheet.classList.add('show');
         }
 
-        function closeBottomSheet() {
-            const sheet = document.getElementById('bottom-sheet');
-            if (sheet) sheet.classList.remove('show');
-        }
+        function closeBottomSheet() { const sheet = document.getElementById('bottom-sheet'); if (sheet) sheet.classList.remove('show'); }
 
-        // --- 목록 로직 ---
+        // 🔥 2번 탭: 목록 화면 (실시간 점수판 크게 적용) 🔥
         function renderList() {
             const container = document.getElementById('match-list-container');
-            if (!container) return;
-            container.innerHTML = '';
+            if (!container) return; container.innerHTML = '';
+            let filteredData = scheduleData.filter(m => selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam);
 
-            let filteredData = scheduleData;
-            if (selectedTeam !== 'all') {
-                filteredData = filteredData.filter(match => match.team1 === selectedTeam || match.team2 === selectedTeam);
-            }
+            const wrapper = document.createElement('div'); wrapper.className = 'space-y-4 w-full';
 
-            const wrapper = document.createElement('div');
-            wrapper.className = 'space-y-4 w-full';
-
-            filteredData.forEach((match, i) => {
+            filteredData.forEach(match => {
                 let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                let iconColor = 'text-point';
-                
-                let c1 = teamColors[match.team1] || 'bg-gray-500';
-                let c2 = teamColors[match.team2] || 'bg-gray-500';
-                let logo1 = teamLogos[match.team1];
-                let logo2 = teamLogos[match.team2];
-                
-                let icon1 = logo1 ? `<img src="${logo1}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full ${c1} flex items-center justify-center text-white text-sm font-bold">${match.team1.substring(0,1)}</div>`;
-                let icon2 = logo2 ? `<img src="${logo2}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full ${c2} flex items-center justify-center text-white text-sm font-bold">${match.team2.substring(0,1)}</div>`;
+                let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">${match.team1.substring(0,1)}</div>`;
+                let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">${match.team2.substring(0,1)}</div>`;
                 
                 const card = document.createElement('div');
-                card.className = `list-card p-4`;
+                card.className = `list-card p-4 cursor-pointer relative overflow-hidden`;
+                card.setAttribute('onclick', `openLineupPopup(${match.id})`);
+
+                const live = liveDataStore[match.id];
+                
+                // 기본 화면 (경기 전)
+                let headerHtml = `<span class="text-[12px] text-gray-400 font-bold flex items-center"><i class="fa-solid fa-clock mr-1.5"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
+                let scoreBoardHtml = `
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="flex items-center gap-2">${logo1}<span class="text-[17px] font-bold text-white tracking-wide">${match.team1}</span></div>
+                        <span class="text-sm text-gray-500 font-bold mx-1">vs</span>
+                        <div class="flex items-center gap-2"><span class="text-[17px] font-bold text-white tracking-wide">${match.team2}</span>${logo2}</div>
+                    </div>`;
+
+                // 🔥 경기 중 / 종료 상태일 경우 실시간 점수판으로 완전히 교체! 🔥
+                if (live && live.gameStatus !== '경기전') {
+                    let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                    headerHtml = `<div class="flex items-center gap-2"><span class="text-[10px] font-bold text-white ${badgeClass} px-2 py-0.5 rounded-sm tracking-widest">${live.gameStatus}</span><span class="text-[12px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                    
+                    scoreBoardHtml = `
+                    <div class="flex items-center justify-between mt-1 bg-white/5 rounded-xl p-2.5 border border-white/5 shadow-inner">
+                        <div class="flex items-center gap-2 w-[35%]">${logo1}<span class="text-[15px] font-bold text-white truncate">${match.team1}</span></div>
+                        <div class="flex items-center justify-center gap-2 w-[30%]">
+                            <span class="text-2xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span>
+                            <span class="text-sm text-gray-500">:</span>
+                            <span class="text-2xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>
+                        </div>
+                        <div class="flex items-center justify-end gap-2 w-[35%]"><span class="text-[15px] font-bold text-white truncate">${match.team2}</span>${logo2}</div>
+                    </div>`;
+                }
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
                         <span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${match.date}</span>
-                        <button class="text-gray-500 hover:text-white transition-colors p-1">
-                            <i class="fa-regular fa-bell"></i>
-                        </button>
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <span class="text-[12px] text-gray-400 font-bold flex items-center"><i class="fa-solid fa-clock mr-1.5"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house ${iconColor} mx-0.5"></i>` : ''}${match.stadium}</span>
-                        <div class="flex items-center gap-2 mt-1">
-                            <div class="flex items-center gap-2">
-                                ${icon1}
-                                <span class="text-[17px] font-bold text-white tracking-wide">${match.team1}</span>
-                            </div>
-                            <span class="text-sm text-gray-500 font-bold mx-1">vs</span>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[17px] font-bold text-white tracking-wide">${match.team2}</span>
-                                ${icon2}
-                            </div>
-                        </div>
-                    </div>
-                `;
+                        ${headerHtml}
+                        ${scoreBoardHtml}
+                    </div>`;
                 wrapper.appendChild(card);
             });
             container.appendChild(wrapper);
         }
 
-        // --- 순위 로직 ---
         function renderRanking() {
             const container = document.getElementById('ranking-container');
             if (!container) return;
@@ -1061,7 +632,6 @@
             let html = `
                 <div class="px-5">
                     <div>
-                        <!-- 테이블 헤더 -->
                         <div class="flex justify-between items-center p-3 border-b border-white/20">
                             <div class="w-10 text-center text-xs font-bold text-gray-400">순위</div>
                             <div class="flex-1 text-left text-xs font-bold text-gray-400 pl-2">팀명</div>
@@ -1069,107 +639,110 @@
                             <div class="w-8 text-center text-xs font-bold text-gray-400">패</div>
                             <div class="w-12 text-center text-xs font-bold text-gray-400">승률</div>
                             <div class="w-10 text-center text-xs font-bold text-gray-400">승차</div>
-                        </div>
-            `;
+                        </div>`;
 
             rankingData.forEach((team, i) => {
                 let rClass = team.rank === '-' ? 'text-gray-400' : (i === 0 ? 'text-yellow-400' : (i <= 4 ? 'text-white' : 'text-gray-400'));
                 let logo = teamLogos[team.team];
-                let teamIconHtml = logo
-                    ? `<img src="${logo}" class="w-6 h-6 object-contain shrink-0">`
-                    : `<div class="w-3 h-3 rounded-full ${teamColors[team.team] || 'bg-gray-500'} shrink-0"></div>`;
+                let teamIconHtml = logo ? `<img src="${logo}" class="w-6 h-6 object-contain shrink-0">` : `<div class="w-3 h-3 rounded-full ${teamColors[team.team] || 'bg-gray-500'} shrink-0"></div>`;
 
                 html += `
                         <div class="flex justify-between items-center p-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
                             <div class="w-10 text-center text-sm font-bold ${rClass}">${team.rank}</div>
-                            <div class="flex-1 flex items-center gap-2 pl-2">
-                                ${teamIconHtml}
-                                <span class="text-sm font-bold text-white">${team.team}</span>
-                            </div>
+                            <div class="flex-1 flex items-center gap-2 pl-2">${teamIconHtml}<span class="text-sm font-bold text-white">${team.team}</span></div>
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.w}</div>
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.l}</div>
                             <div class="w-12 text-center text-sm font-medium text-point">${team.winRate}</div>
                             <div class="w-10 text-center text-[11px] font-medium text-gray-500">${team.gb}</div>
-                        </div>
-                `;
+                        </div>`;
             });
-
-            html += `
-                    </div>
-                </div>
-            `;
+            html += `</div></div>`;
             container.innerHTML = html;
         }
 
-        // --- 배너 동적 렌더링 및 자동 스크롤 전역 상태 ---
+        // 🔥 날려먹었던 배너 로직 완벽 복구 🔥
         let currentBanner = 0;
         let totalBanners = 1;
         let bannerInterval;
         let isPlaying = true;
 
         function updateBannerDots(index) {
-            const bannerDots = document.querySelectorAll('.banner-dot');
-            bannerDots.forEach((dot, i) => {
+            const dots = document.querySelectorAll('.banner-dot');
+            dots.forEach((dot, i) => {
                 if (i === index) {
-                    dot.classList.add('w-3', 'bg-white');
                     dot.classList.remove('w-1.5', 'bg-gray-500');
+                    dot.classList.add('w-3', 'bg-white');
                 } else {
-                    dot.classList.add('w-1.5', 'bg-gray-500');
                     dot.classList.remove('w-3', 'bg-white');
+                    dot.classList.add('w-1.5', 'bg-gray-500');
                 }
             });
+        }
+
+        function startBannerAutoScroll() {
+            clearInterval(bannerInterval);
+            if (!isPlaying || totalBanners <= 1) return;
+            const carousel = document.getElementById('banner-carousel');
+            bannerInterval = setInterval(() => {
+                if(!carousel) return;
+                currentBanner = (currentBanner + 1) % totalBanners;
+                carousel.scrollTo({ left: currentBanner * carousel.clientWidth, behavior: 'smooth' });
+                updateBannerDots(currentBanner);
+            }, 3000);
         }
 
         function renderBanners() {
             const carousel = document.getElementById('banner-carousel');
             if(!carousel) return;
-            
-            // 기본 D-Day 배너만 남기고 동적 배너 초기화
-            while (carousel.children.length > 1) {
-                carousel.removeChild(carousel.lastChild);
-            }
+            carousel.innerHTML = '';
 
             const now = new Date();
-            
-            // 🔥 자동 일정 관리 로직: 경기 시작 후 5시간 전인 매치만 필터링 🔥
             let validMatches = scheduleData.filter(match => {
-                // 특정 팀 필터 적용
                 if (selectedTeam !== 'all' && match.team1 !== selectedTeam && match.team2 !== selectedTeam) return false;
-                
                 const matchStart = new Date(`${match.date}T${match.time}:00`);
-                // 시작 후 5시간 더한 만료 시간 계산
-                const matchEnd = new Date(matchStart.getTime() + 5 * 60 * 60 * 1000); 
-                return now < matchEnd; // 만료 시간이 지나지 않은 매치만 표시
+                const matchEnd = new Date(matchStart.getTime() + 5 * 60 * 60 * 1000);
+                return now < matchEnd;
             });
 
-            // 🔥 가장 가까운 매치 추출 (전체 탭이면 해당 일자 전 구단 경기 모두 표시) 🔥
             let topMatches = [];
             if (validMatches.length > 0) {
                 if (selectedTeam === 'all') {
-                    // 가장 가까운 날짜를 찾아서 그날 열리는 모든 경기 가져오기
                     const firstDate = validMatches[0].date;
                     topMatches = validMatches.filter(m => m.date === firstDate);
                 } else {
-                    // 특정 구단 선택 시 해당 구단의 다가오는 경기 최대 3개 표시
                     topMatches = validMatches.slice(0, 3);
                 }
             }
 
+            // D-Day 배너 강제 추가
+            const opening = new Date(2026, 2, 28);
+            const diff = opening.getTime() - now.getTime();
+            const dDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            let dDayText = dDay > 0 ? `D-${dDay}` : (dDay === 0 ? 'D-Day' : `D+${Math.abs(dDay)}`);
+
+            carousel.innerHTML += `
+                <div class="min-w-full bg-[#1C1C1E] rounded-2xl p-5 border border-white/5 shrink-0 flex justify-between items-center transition-transform active:scale-[0.98] snap-center">
+                    <div class="flex flex-col">
+                        <span class="text-[11px] font-bold text-point mb-1.5 tracking-wide">2026 KBO LEAGUE</span>
+                        <h2 class="text-white/80 text-[13px] font-bold tracking-tight mb-0.5">정규시즌 개막까지</h2>
+                        <div id="d-day-count" class="text-[34px] font-extrabold text-white leading-none tracking-tighter">${dDayText}</div>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
+                        <i class="fa-solid fa-baseball text-xl text-gray-400"></i>
+                    </div>
+                </div>`;
+
             topMatches.forEach(match => {
                 const hex1 = teamHex[match.team1] || '#888888';
                 const hex2 = teamHex[match.team2] || '#888888';
-                
                 const d = new Date(match.date);
                 const days = ['일', '월', '화', '수', '목', '금', '토'];
                 const dateStr = `${d.getMonth()+1}. ${d.getDate()} (${days[d.getDay()]}) ${match.time}`;
 
                 const div = document.createElement('div');
                 div.className = 'min-w-full bg-[#18181b] rounded-2xl border border-white/5 shrink-0 p-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg';
-                
                 div.innerHTML = `
-                    <!-- 적당히 깊이감 있는 대각선 직접 블렌딩 그라데이션 (알파값 80 = 50% 수준으로 밸런스 조절) -->
                     <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}80 0%, ${hex2}80 100%); opacity: 0.85;"></div>
-                    
                     <div class="flex justify-between items-center mb-5 relative z-10">
                         <div class="flex items-center gap-1.5">
                             <div class="w-1 h-3 rounded-sm" style="background-color: ${hex2}"></div>
@@ -1177,7 +750,6 @@
                         </div>
                         <span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span>
                     </div>
-
                     <div class="flex justify-between items-center relative z-10">
                         <div class="flex items-center gap-3 w-[42%]">
                             <img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md">
@@ -1186,11 +758,9 @@
                                 <span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span>
                             </div>
                         </div>
-
                         <div class="flex justify-center w-[16%]">
                             <span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>
                         </div>
-
                         <div class="flex items-center justify-end gap-3 w-[42%] text-right">
                             <div class="flex flex-col">
                                 <span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span>
@@ -1198,83 +768,141 @@
                             </div>
                             <img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md">
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 carousel.appendChild(div);
             });
 
-            // 점 인디케이터 동기화
             totalBanners = carousel.children.length;
             const dotsContainer = document.getElementById('banner-dots-container');
             if(dotsContainer) {
                 dotsContainer.innerHTML = '';
                 for(let i=0; i<totalBanners; i++) {
                     const dot = document.createElement('div');
-                    dot.className = `banner-dot w-${i===currentBanner?'3':'1.5'} h-1.5 rounded-full bg-${i===currentBanner?'white':'gray-500'} transition-all duration-300`;
+                    dot.className = `banner-dot w-${i===currentBanner?'3':'1.5'} h-1.5 rounded-full ${i===currentBanner?'bg-white':'bg-gray-500'} transition-all duration-300`;
                     dotsContainer.appendChild(dot);
                 }
             }
             if (currentBanner >= totalBanners) currentBanner = 0;
             updateBannerDots(currentBanner);
+            startBannerAutoScroll();
         }
 
-        // 초기 실행
-        window.onload = () => {
+        function navigateCalendar(offset) { currentDate.setMonth(currentDate.getMonth() + offset); renderCalendar(); closeBottomSheet(); }
+
+        // 🔥 매치 센터 (라인업 & 실시간 점수 상세 팝업) 🔥
+        function openLineupPopup(matchId) {
+            currentPopupMatchId = matchId; // 팝업 열 때 현재 열려있는 경기 ID를 기억함 (실시간 업데이트 용)
+            if (navigator.vibrate) navigator.vibrate(5);
+            const popup = document.getElementById('lineup-popup');
+            const bg = document.getElementById('lineup-popup-bg');
+            const sheet = document.getElementById('lineup-popup-sheet');
+            
+            popup.classList.remove('hidden'); popup.classList.add('flex');
+            setTimeout(() => { bg.classList.remove('opacity-0', 'pointer-events-none'); bg.classList.add('opacity-100', 'pointer-events-auto'); sheet.classList.remove('translate-y-full'); }, 10);
+
+            renderPopupContent(matchId);
+        }
+
+        // 팝업 내부 콘텐츠를 그리는 함수 (onSnapshot 감지로 인해 실시간으로 여러 번 불릴 수 있음)
+        function renderPopupContent(matchId) {
+            const content = document.getElementById('lineup-content');
+            const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId);
+            if (!match) return;
+
+            const live = liveDataStore[matchId];
+
+            const logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team1]} flex items-center justify-center text-white font-bold mb-2">${match.team1}</div>`;
+            const logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team2]} flex items-center justify-center text-white font-bold mb-2">${match.team2}</div>`;
+
+            // 1. 파이어베이스에 데이터가 아예 없는 경우 (경기 시작 전)
+            if (!live) {
+                content.innerHTML = `
+                    <div class="flex justify-between items-center mb-8 px-2 mt-2">
+                        <div class="flex flex-col items-center w-[40%]">${logo1}<span class="text-[15px] font-black text-white">${match.team1}</span></div>
+                        <span class="text-2xl font-black text-gray-700">VS</span>
+                        <div class="flex flex-col items-center w-[40%]">${logo2}<span class="text-[15px] font-black text-white">${match.team2}</span></div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-4 gap-3 bg-white/5 rounded-2xl border border-white/5">
+                        <i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i>
+                        <span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span>
+                        <span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span>
+                    </div>`;
+                return;
+            }
+
+            // 2. 점수판 영역 (경기 중이면 중앙에 큼지막한 실시간 점수 표시)
+            let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
+            if (live.gameStatus !== '경기전') {
+                scoreCenterHtml = `
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${live.gameStatus}</span>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span>
+                            <span class="text-xl text-gray-500">:</span>
+                            <span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>
+                        </div>
+                    </div>`;
+            }
+
+            // 3. 전체 팝업 레이아웃 렌더링
+            content.innerHTML = `
+                <!-- 매치업 & 점수 -->
+                <div class="flex justify-between items-center mb-8 px-2 mt-2">
+                    <div class="flex flex-col items-center w-[30%]">
+                        ${logo1}
+                        <span class="text-[15px] font-black text-white tracking-wider">${match.team1}</span>
+                        <span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center w-[40%]">
+                        ${scoreCenterHtml}
+                    </div>
+                    <div class="flex flex-col items-center w-[30%]">
+                        ${logo2}
+                        <span class="text-[15px] font-black text-white tracking-wider">${match.team2}</span>
+                        <span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span>
+                    </div>
+                </div>
+                
+                <!-- 선발 투수 -->
+                <div class="bg-white/5 rounded-2xl p-4 mb-8 border border-white/5 shadow-inner">
+                    <div class="flex justify-center mb-3"><span class="text-[10px] font-bold text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 tracking-widest">선발 투수</span></div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1 text-center font-bold text-white text-sm">${live.awayPitcher}</div>
+                        <div class="w-px h-6 bg-white/10 mx-4"></div>
+                        <div class="flex-1 text-center font-bold text-white text-sm">${live.homePitcher}</div>
+                    </div>
+                </div>
+                
+                <!-- 선발 타자 라인업 -->
+                <div class="flex justify-center mb-4"><span class="text-[10px] font-bold text-gray-400 tracking-widest">선발 타자 라인업</span></div>
+                <div class="flex gap-4">
+                    <div class="flex-1 flex flex-col gap-2">
+                        ${(live.awayLineup && live.awayLineup.length > 0) ? live.awayLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}
+                    </div>
+                    <div class="flex-1 flex flex-col gap-2">
+                        ${(live.homeLineup && live.homeLineup.length > 0) ? live.homeLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeLineupPopup() {
+            currentPopupMatchId = null; // 팝업 닫을 때 ID를 초기화해서 백그라운드 렌더링을 막음
+            const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet');
+            bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full');
+            setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300);
+        }
+
+        // 앱 구동 시작점!
+        window.onload = async () => {
+            await syncWithFirestore(); // 서버 데이터 연동부터 시작
             setTeamFilter(selectedTeam);
             switchTab(0);
-            renderBanners();
+            renderBanners(); // 배너 초기화
 
-            // D-Day 계산
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const opening = new Date(2026, 2, 28); // 2026년 3월 28일
-            const diff = opening.getTime() - today.getTime();
-            const dDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            
-            const countEl = document.getElementById('d-day-count');
-            if(countEl) {
-                if(dDay > 0) countEl.innerText = `D-${dDay}`;
-                else if(dDay === 0) countEl.innerText = `D-Day`;
-                else countEl.innerText = `D+${Math.abs(dDay)}`;
-            }
-
-            // --- 배너 자동 롤링 및 인디케이터 로직 ---
+            // 스와이프로 넘길 때 점이랑 싱크 맞추는 리스너 추가
             const bannerCarousel = document.getElementById('banner-carousel');
-            const pauseBtn = document.getElementById('banner-pause-btn');
-            const pauseIcon = document.getElementById('banner-pause-icon');
-
-            function startBannerAutoScroll() {
-                clearInterval(bannerInterval);
-                if (!isPlaying) return; // 정지 상태면 실행 안함
-                bannerInterval = setInterval(() => {
-                    if(!bannerCarousel || totalBanners <= 1) return;
-                    currentBanner = (currentBanner + 1) % totalBanners;
-                    bannerCarousel.scrollTo({
-                        left: currentBanner * bannerCarousel.clientWidth,
-                        behavior: 'smooth'
-                    });
-                    updateBannerDots(currentBanner);
-                }, 3000); // 3초 주기
-            }
-
             if (bannerCarousel) {
-                // 일시정지 버튼 토글 이벤트
-                if (pauseBtn) {
-                    pauseBtn.addEventListener('click', () => {
-                        isPlaying = !isPlaying;
-                        if (isPlaying) {
-                            pauseIcon.classList.remove('fa-play');
-                            pauseIcon.classList.add('fa-pause');
-                            startBannerAutoScroll();
-                        } else {
-                            pauseIcon.classList.remove('fa-pause');
-                            pauseIcon.classList.add('fa-play');
-                            clearInterval(bannerInterval);
-                        }
-                    });
-                }
-
-                // 사용자가 수동으로 스와이프할 때 인디케이터 점 동기화
                 bannerCarousel.addEventListener('scroll', () => {
                     const scrollPos = bannerCarousel.scrollLeft;
                     const width = bannerCarousel.clientWidth;
@@ -1285,14 +913,8 @@
                         updateBannerDots(currentBanner);
                     }
                 });
-
-                // 터치 중에는 자동 스크롤을 멈춰서 사용자 경험(UX) 개선
                 bannerCarousel.addEventListener('touchstart', () => clearInterval(bannerInterval), {passive: true});
-                bannerCarousel.addEventListener('touchend', () => {
-                    if (isPlaying) startBannerAutoScroll();
-                }, {passive: true});
-                
-                startBannerAutoScroll();
+                bannerCarousel.addEventListener('touchend', () => { if (isPlaying) startBannerAutoScroll(); }, {passive: true});
             }
         };
     </script>
