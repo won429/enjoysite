@@ -3,7 +3,6 @@ import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests
-import re
 from bs4 import BeautifulSoup
 
 # ==========================================
@@ -28,16 +27,16 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 # ==========================================
-# 🔍 네이버 데이터 구조에서 경기 무조건 찾아내기 (부분 일치 허용)
+# 🔍 네이버 데이터 구조에서 경기 무조건 찾아내기
 # ==========================================
 def find_game_data(data, match_id):
+    # 뒤에 오타가 붙어있어도 핵심 13자리만 빼서 검사
+    core_id = match_id[:13] if len(match_id) >= 13 else match_id
+    
     if isinstance(data, dict):
-        game_id = str(data.get('gameId', ''))
-        if not game_id:
-            game_id = str(data.get('id', ''))
-            
-        # 💡 핵심: 네이버가 20260324HTSS0 까지만 쓰더라도 알아서 매칭되게 처리!
-        if game_id and len(game_id) >= 8 and (match_id in game_id or game_id in match_id):
+        game_id = str(data.get('gameId', '')) or str(data.get('id', ''))
+        
+        if game_id and len(game_id) >= 8 and (core_id in game_id or game_id in core_id):
             if any(k in data for k in ['gameStatusName', 'statusCodeName', 'awayTeam', 'homeTeam', 'awayScore']):
                 return data
                 
@@ -51,7 +50,7 @@ def find_game_data(data, match_id):
     return None
 
 # ==========================================
-# 🚀 2. 탐지 레이더 크롤링 🚀
+# 🚀 2. 웹페이지 강제 뜯어보기 크롤링 🚀
 # ==========================================
 def fetch_naver_live_data(naver_match_id):
     print(f"[{naver_match_id}] 경기 데이터 수집 중...")
@@ -59,21 +58,22 @@ def fetch_naver_live_data(naver_match_id):
         return None
         
     date_str = f"{naver_match_id[:4]}-{naver_match_id[4:6]}-{naver_match_id[6:8]}"
+    core_id = naver_match_id[:13]
     
-    # KBO 목록부터 단일 경기 페이지까지 전부 찌름
+    # 💡 API가 막혔을 때를 대비해, 사람처럼 '야구 일정 웹페이지'에 직접 접속합니다.
     api_urls = [
-        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbo&date={date_str}",
-        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}",
-        f"https://api-gw.sports.naver.com/sports/api/game/{naver_match_id}/basic",
-        f"https://m.sports.naver.com/game/{naver_match_id}/record"
+        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_str}",
+        f"https://m.sports.naver.com/game/{core_id}/record",
+        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}"
     ]
     
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Accept": "application/json, text/plain, */*"
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+        "Accept": "text/html,application/json,text/plain,*/*",
+        "Accept-Language": "ko-KR,ko;q=0.9"
     }
     
-    available_ids = set() # 훔쳐올 실제 ID 보관함
+    available_ids = set()
     
     for url in api_urls:
         try:
@@ -83,23 +83,19 @@ def fetch_naver_live_data(naver_match_id):
             if response.status_code != 200: continue
                 
             data_list = []
-            content_type = response.headers.get("Content-Type", "")
             
-            if "application/json" in content_type:
+            # HTML 페이지면 강제로 숨겨진 JSON 데이터를 파싱
+            if "text/html" in response.headers.get("Content-Type", "") or "<html" in response.text[:100].lower():
+                soup = BeautifulSoup(response.text, 'html.parser')
+                script = soup.find('script', id='__NEXT_DATA__')
+                if script and script.string:
+                    try: data_list.append(json.loads(script.string))
+                    except: pass
+            else:
                 try: data_list.append(response.json())
                 except: pass
-            else:
-                # API가 안되면 HTML 안에 숨겨진 JSON 덩어리들을 정규식으로 뜯어냄
-                soup = BeautifulSoup(response.text, 'html.parser')
-                for script in soup.find_all('script'):
-                    if script.string and '{' in script.string:
-                        match = re.search(r'(\{.*\})', script.string, re.DOTALL)
-                        if match:
-                            try: data_list.append(json.loads(match.group(1)))
-                            except: pass
             
             for data in data_list:
-                # (스파이 기능) 이 날짜에 존재하는 모든 경기 ID를 수집해둠
                 def collect_ids(d):
                     if isinstance(d, dict):
                         gid = str(d.get('gameId', '')) or str(d.get('id', ''))
@@ -109,12 +105,11 @@ def fetch_naver_live_data(naver_match_id):
                         for i in d: collect_ids(i)
                 collect_ids(data)
                 
-                target_game = find_game_data(data, naver_match_id)
+                target_game = find_game_data(data, core_id)
                 
                 if target_game:
                     print("✅ 타겟 데이터 블록 발견!")
                     
-                    # 데이터 파싱 (이름이 어떻게 바뀌든 추출)
                     game_status = target_game.get('gameStatusName') or target_game.get('statusCodeName') or target_game.get('statusInfo', {}).get('statusName', '경기전')
                     
                     away_score = target_game.get('awayScore')
@@ -145,7 +140,9 @@ def fetch_naver_live_data(naver_match_id):
     if available_ids:
         print(f"💡 [진단 결과] 이 날짜({date_str})에 네이버에 존재하는 실제 경기 ID들은 다음과 같습니다:")
         print(f"👉 {list(available_ids)}")
-        print("만약 위 목록에 있다면, 맨 아랫줄의 naver_match_id 값을 위 목록에 있는 걸로 복사해서 바꿔주세요!")
+    else:
+        print(f"💡 [진단 결과] {date_str} 날짜에는 네이버에 등록된 야구 경기가 하나도 없습니다! (날짜나 연도를 확인해주세요)")
+        
     return None
 
 def update_live_data_to_firebase(app_match_id, naver_match_id):
@@ -158,5 +155,6 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
         print("⚠️ 수집된 데이터가 없어 파이어베이스 업데이트를 수행하지 않았습니다.")
 
 if __name__ == "__main__":
-    # 3월 24일 KIA vs 삼성 (시범경기 테스트)
-    update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS02026")
+    # 💡 맨 뒷자리 '2026' 지우고 정상적인 13자리 네이버 ID로 수정했습니다.
+    # 만약 2026년에 경기가 없다면, 연도를 2024년(20240324HTSS0)으로 바꿔서 테스트해보세요!
+    update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS0")
