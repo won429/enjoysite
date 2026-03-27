@@ -3,8 +3,6 @@ import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests
-import re
-from bs4 import BeautifulSoup
 
 # ==========================================
 # 🔥 1. 파이어베이스 접속 🔥
@@ -28,125 +26,88 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 # ==========================================
-# 🔍 JSON에서 무조건 첫 번째 점수 데이터 찾기 (ID 검사 완전 삭제)
+# 🚀 2. 다음(카카오) 스포츠 전용 크롤러 🚀
 # ==========================================
-def find_any_score(obj):
-    if isinstance(obj, dict):
-        # 점수 데이터 형식을 갖추고 있다면, 아이디 따지지 않고 무조건 합격!
-        if ('awayScore' in obj or 'awayTeamScore' in obj) and ('gameStatusName' in obj or 'statusCodeName' in obj):
-            return obj
-            
-        # 네이버 내부 팀 객체 안에 점수가 숨어있는 경우
-        if 'awayTeam' in obj and isinstance(obj['awayTeam'], dict) and 'score' in obj['awayTeam']:
-             if 'gameStatusName' in obj or 'statusCodeName' in obj:
-                 return {
-                     'gameStatusName': obj.get('gameStatusName') or obj.get('statusCodeName'),
-                     'awayScore': obj['awayTeam'].get('score', 0),
-                     'homeScore': obj.get('homeTeam', {}).get('score', 0),
-                     'awayStarterName': obj['awayTeam'].get('starter', '미정'),
-                     'homeStarterName': obj.get('homeTeam', {}).get('starter', '미정')
-                 }
-                 
-        for v in obj.values():
-            res = find_any_score(v)
-            if res: return res
-            
-    elif isinstance(obj, list):
-        for item in obj:
-            res = find_any_score(item)
-            if res: return res
-    return None
+def fetch_daum_live_data(match_id):
+    print(f"[{match_id}] 다음(카카오) 스포츠에서 데이터 수집 시작...")
+    
+    # 회원님이 사용하는 ID(17자리든 뭐든)에서 앞부분 날짜와 팀 코드만 빼옵니다.
+    if len(match_id) < 12:
+        print("❌ 매치 ID 길이가 너무 짧습니다.")
+        return None
+        
+    date_str = match_id[:8]
+    away_code = match_id[8:10]
+    home_code = match_id[10:12]
 
-def parse_target_game(target):
-    game_status = target.get('gameStatusName') or target.get('statusCodeName') or '경기전'
-    away_score = target.get('awayScore', target.get('awayTeamScore', 0))
-    home_score = target.get('homeScore', target.get('homeTeamScore', 0))
-    away_pitcher = target.get('awayStarterName', target.get('awayPitcherName', '미정'))
-    home_pitcher = target.get('homeStarterName', target.get('homePitcherName', '미정'))
-    
-    print(f"🎉 파싱 성공!: [{game_status}] AWAY {away_score} : {home_score} HOME")
-    return {
-        "gameStatus": game_status,
-        "awayScore": int(away_score) if away_score else 0,
-        "homeScore": int(home_score) if home_score else 0,
-        "awayPitcher": away_pitcher,
-        "homePitcher": home_pitcher,
-        "lastUpdated": firestore.SERVER_TIMESTAMP
+    # 네이버 알파벳 코드를 다음(카카오) 한글 팀명으로 번역
+    TEAM_CODES = {
+        'HT': 'KIA', 'SS': '삼성', 'LG': 'LG', 'OB': '두산', 'LT': '롯데',
+        'SK': 'SSG', 'HH': '한화', 'KT': 'KT', 'NC': 'NC', 'WO': '키움'
     }
-
-# ==========================================
-# 🚀 2. 주신 링크 그대로 직행하는 무식하고 확실한 크롤러 🚀
-# ==========================================
-def fetch_naver_live_data(naver_match_id):
-    print(f"[{naver_match_id}] 해당 링크로 바로 돌진합니다...")
     
-    # 회원님이 보시는 그 링크 똑같이 들어갑니다.
-    url = f"https://m.sports.naver.com/game/{naver_match_id}/record"
+    away_name = TEAM_CODES.get(away_code, '')
+    home_name = TEAM_CODES.get(home_code, '')
     
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Accept-Language": "ko-KR,ko;q=0.9"
-    }
+    # 깔끔한 다음(카카오) KBO 일정 API 타격
+    url = f"https://sports.daum.net/prx/castbox/api/sports/games.json?league=kbo&date={date_str}"
+    print(f"👉 접속 경로: {url}")
     
     try:
-        print(f"👉 접속 중: {url}")
-        response = requests.get(url, headers=headers, timeout=10)
-        response.encoding = 'utf-8'
-        html = response.text
+        res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
         
-        soup = BeautifulSoup(html, 'html.parser')
-        title = soup.title.string if soup.title else 'No Title'
-        print(f"   ㄴ 접속 성공! 페이지 타이틀: [{title.strip()}]")
-        
-        # 1. 화면에 숨겨진 JSON 보물상자에서 무조건 첫 번째 점수를 뽑아냅니다.
-        for s in soup.find_all('script'):
-            text = s.string if s.string else ""
-            if '{' in text and '"away' in text:
-                start = text.find('{')
-                end = text.rfind('}')
-                if start != -1 and end != -1:
-                    try:
-                        data = json.loads(text[start:end+1])
-                        target = find_any_score(data)
-                        if target: 
-                            print("   ㄴ 🔥 데이터 박스에서 점수 발견!")
-                            return parse_target_game(target)
-                    except: pass
-        
-        # 2. 보물상자가 없으면? 화면 글자 틈새에서 점수만 정규식으로 싹둑 잘라냅니다.
-        status_m = re.search(r'(?:gameStatusName|statusCodeName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
-        away_m = re.search(r'(?:awayScore|awayTeamScore)["\']?\s*:\s*(\d+)', html)
-        home_m = re.search(r'(?:homeScore|homeTeamScore)["\']?\s*:\s*(\d+)', html)
-        
-        if status_m and away_m and home_m:
-            print("   ㄴ 🔥 화면 텍스트에서 점수 강제 추출 성공!")
-            away_p = re.search(r'(?:awayStarterName|awayPitcherName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
-            home_p = re.search(r'(?:homeStarterName|homePitcherName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
+        if res.status_code == 200:
+            data = res.json()
+            games = data.get('data', [])
             
-            status = status_m.group(1)
-            away_score = away_m.group(1)
-            home_score = home_m.group(1)
+            if not games:
+                print(f"❌ {date_str} 날짜에 다음(카카오)에 등록된 경기가 없습니다.")
+                return None
+                
+            for game in games:
+                g_away = game.get('awayTeamName', '')
+                g_home = game.get('homeTeamName', '')
+                
+                # 어웨이와 홈 팀 이름이 일치하면 바로 데이터 뽑기
+                if (away_name and away_name in g_away) and (home_name and home_name in g_home):
+                    game_status = game.get('gameResult', '경기전')
+                    
+                    # 상태값 통일 (다음은 '종료'로 오기 때문에 앱에 맞게 '경기종료'로 변환)
+                    if game_status == "종료": 
+                        game_status = "경기종료"
+                        
+                    a_score = game.get('awayScore', 0)
+                    h_score = game.get('homeScore', 0)
+                    
+                    # 투수 정보 (다음 API에 있으면 넣고 없으면 미정 처리)
+                    a_pitcher = game.get('awayStarterName', '미정')
+                    if not a_pitcher: a_pitcher = '미정'
+                    
+                    h_pitcher = game.get('homeStarterName', '미정')
+                    if not h_pitcher: h_pitcher = '미정'
+                    
+                    print(f"🎉 다음(카카오) 파싱 성공!: [{game_status}] AWAY {a_score} : {h_score} HOME")
+                    
+                    return {
+                        "gameStatus": game_status,
+                        "awayScore": int(a_score) if a_score else 0,
+                        "homeScore": int(h_score) if h_score else 0,
+                        "awayPitcher": a_pitcher,
+                        "homePitcher": h_pitcher,
+                        "lastUpdated": firestore.SERVER_TIMESTAMP
+                    }
+                    
+            print(f"❌ '{away_name} vs {home_name}' 경기를 목록에서 찾지 못했습니다.")
+        else:
+            print(f"❌ 다음 서버 접속 실패 (HTTP {res.status_code})")
             
-            print(f"🎉 파싱 성공!: [{status}] AWAY {away_score} : {home_score} HOME")
-            
-            return {
-                "gameStatus": status,
-                "awayScore": int(away_score),
-                "homeScore": int(home_score),
-                "awayPitcher": away_p.group(1) if away_p else "미정",
-                "homePitcher": home_p.group(1) if home_p else "미정",
-                "lastUpdated": firestore.SERVER_TIMESTAMP
-            }
-            
-        print("❌ 페이지 접속은 성공했으나 화면에서 점수 데이터를 찾지 못했습니다.")
-        
     except Exception as e:
         print(f"❌ 크롤링 에러 발생: {e}")
-
+        
     return None
 
-def update_live_data_to_firebase(app_match_id, naver_match_id):
-    live_data = fetch_naver_live_data(naver_match_id)
+def update_live_data_to_firebase(app_match_id, match_id):
+    live_data = fetch_daum_live_data(match_id)
     if live_data:
         doc_ref = db.collection('lineups').document(str(app_match_id))
         doc_ref.set(live_data, merge=True)
@@ -155,5 +116,5 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
         print("⚠️ 수집된 데이터가 없어 파이어베이스 업데이트를 수행하지 않았습니다.")
 
 if __name__ == "__main__":
-    # 회원님이 쓰시던 17자리 그대로! 아이디 검사 안 하니까 무조건 가져옵니다.
-    update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS02026")
+    # 💡 오늘 개막전 테스트용입니다. (원하시는 오늘 경기 ID로 바꿔서 테스트하셔도 됩니다!)
+    update_live_data_to_firebase(app_match_id=99, match_id="20260324HTSS02026")
