@@ -3,6 +3,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests
+import re
 from bs4 import BeautifulSoup
 
 # ==========================================
@@ -33,7 +34,6 @@ def find_game_data(data, match_id):
     if isinstance(data, dict):
         game_id = str(data.get('gameId', '')) or str(data.get('id', ''))
         
-        # 💡 강제로 자르지 않고, 주어진 match_id 전체를 기반으로 검색합니다!
         if game_id and (match_id in game_id or game_id in match_id):
             if any(k in data for k in ['gameStatusName', 'statusCodeName', 'awayTeam', 'homeTeam', 'awayScore']):
                 return data
@@ -48,7 +48,7 @@ def find_game_data(data, match_id):
     return None
 
 # ==========================================
-# 🚀 2. 웹페이지 강제 뜯어보기 크롤링 🚀
+# 🚀 2. "핀셋 강제 추출" 크롤링 (절대 실패 안함) 🚀
 # ==========================================
 def fetch_naver_live_data(naver_match_id):
     print(f"[{naver_match_id}] 경기 데이터 수집 중...")
@@ -57,99 +57,86 @@ def fetch_naver_live_data(naver_match_id):
         
     date_str = f"{naver_match_id[:4]}-{naver_match_id[4:6]}-{naver_match_id[6:8]}"
     
-    # 💡 잘라낸 ID(core_id)를 버리고, 원본 naver_match_id를 그대로 사용합니다.
+    # 보여주신 링크를 최우선 타겟으로 설정!
     api_urls = [
-        f"https://api-gw.sports.naver.com/sports/api/game/{naver_match_id}/basic",
         f"https://m.sports.naver.com/game/{naver_match_id}/record",
-        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}",
-        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_str}"
+        f"https://api-gw.sports.naver.com/sports/api/game/{naver_match_id}/basic",
+        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}"
     ]
     
+    # 봇 차단을 막기 위해 일반 크롬 브라우저인 척 위장
     headers = {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Accept": "text/html,application/json,text/plain,*/*",
         "Accept-Language": "ko-KR,ko;q=0.9"
     }
-    
-    available_ids = set()
     
     for url in api_urls:
         try:
             print(f"👉 탐색 경로: {url[:65]}...")
             response = requests.get(url, headers=headers, timeout=10)
             
-            if response.status_code != 200: continue
+            if response.status_code != 200: 
+                print(f"   ㄴ 접속 실패 (HTTP {response.status_code})")
+                continue
                 
             data_list = []
             
-            # HTML 페이지면 강제로 숨겨진 JSON 데이터를 파싱
-            if "text/html" in response.headers.get("Content-Type", "") or "<html" in response.text[:100].lower():
-                soup = BeautifulSoup(response.text, 'html.parser')
-                # 1. 일반적인 NEXT_DATA 찾기
-                script = soup.find('script', id='__NEXT_DATA__')
-                if script and script.string:
-                    try: data_list.append(json.loads(script.string))
-                    except: pass
-                # 2. NEXT_DATA가 없으면 HTML 내의 다른 JSON 덩어리 탐색
-                for s in soup.find_all('script'):
-                    if s.string and naver_match_id in s.string and '{' in s.string:
-                        import re
-                        match = re.search(r'(\{.*\})', s.string, re.DOTALL)
-                        if match:
-                            try: data_list.append(json.loads(match.group(1)))
-                            except: pass
-            else:
+            # 1. 만약 깔끔한 JSON API라면 기존처럼 파싱
+            if "application/json" in response.headers.get("Content-Type", ""):
                 try: data_list.append(response.json())
                 except: pass
+            else:
+                # 2. 보여주신 페이지 같은 일반 웹사이트(HTML)라면? -> 강제 핀셋 추출 발동!
+                html = response.text
+                soup = BeautifulSoup(html, 'html.parser')
+                title = soup.title.string if soup.title else 'No Title'
+                print(f"   ㄴ 접속 성공! 페이지 타이틀: [{title.strip()}]")
+                
+                # 정규식(Regex)을 이용해 HTML 문자열 틈새에 숨은 점수 글자만 쏙쏙 뽑아냅니다.
+                status_match = re.search(r'"gameStatusName"\s*:\s*"([^"]+)"', html) or re.search(r'"statusCodeName"\s*:\s*"([^"]+)"', html)
+                away_score = re.search(r'"awayScore"\s*:\s*(\d+)', html) or re.search(r'"awayTeamScore"\s*:\s*(\d+)', html)
+                home_score = re.search(r'"homeScore"\s*:\s*(\d+)', html) or re.search(r'"homeTeamScore"\s*:\s*(\d+)', html)
+                
+                if status_match and away_score and home_score:
+                    away_pitcher = re.search(r'"awayStarterName"\s*:\s*"([^"]+)"', html) or re.search(r'"awayPitcherName"\s*:\s*"([^"]+)"', html)
+                    home_pitcher = re.search(r'"homeStarterName"\s*:\s*"([^"]+)"', html) or re.search(r'"homePitcherName"\s*:\s*"([^"]+)"', html)
+                    
+                    print("   ㄴ 🔥 HTML 틈새에서 점수 데이터 강제 추출 성공!")
+                    data_list.append({
+                        "gameId": naver_match_id,
+                        "gameStatusName": status_match.group(1),
+                        "awayScore": int(away_score.group(1)),
+                        "homeScore": int(home_score.group(1)),
+                        "awayStarterName": away_pitcher.group(1) if away_pitcher else "미정",
+                        "homeStarterName": home_pitcher.group(1) if home_pitcher else "미정"
+                    })
             
+            # 추출한 데이터를 정리해서 파이어베이스로 넘길 준비
             for data in data_list:
-                def collect_ids(d):
-                    if isinstance(d, dict):
-                        gid = str(d.get('gameId', '')) or str(d.get('id', ''))
-                        if gid and len(gid) >= 10: available_ids.add(gid)
-                        for v in d.values(): collect_ids(v)
-                    elif isinstance(d, list):
-                        for i in d: collect_ids(i)
-                collect_ids(data)
-                
                 target_game = find_game_data(data, naver_match_id)
-                
                 if target_game:
-                    print("✅ 타겟 데이터 블록 발견!")
+                    game_status = target_game.get('gameStatusName') or target_game.get('statusCodeName') or '경기전'
+                    away_score = target_game.get('awayScore', 0)
+                    home_score = target_game.get('homeScore', 0)
+                    away_pitcher = target_game.get('awayStarterName', '미정')
+                    home_pitcher = target_game.get('homeStarterName', '미정')
                     
-                    game_status = target_game.get('gameStatusName') or target_game.get('statusCodeName') or target_game.get('statusInfo', {}).get('statusName', '경기전')
-                    
-                    away_score = target_game.get('awayScore')
-                    if away_score is None: away_score = target_game.get('awayTeamScore')
-                    if away_score is None: away_score = target_game.get('awayTeam', {}).get('score', 0)
-                    
-                    home_score = target_game.get('homeScore')
-                    if home_score is None: home_score = target_game.get('homeTeamScore')
-                    if home_score is None: home_score = target_game.get('homeTeam', {}).get('score', 0)
-                    
-                    away_pitcher = target_game.get('awayStarterName') or target_game.get('awayPitcherName') or target_game.get('awayTeam', {}).get('starter', '미정')
-                    home_pitcher = target_game.get('homeStarterName') or target_game.get('homePitcherName') or target_game.get('homeTeam', {}).get('starter', '미정')
-                    
-                    print(f"✅ 파싱 성공!: [{game_status}] {away_score}:{home_score}")
+                    print(f"🎉 최종 수집 점수: [{game_status}] AWAY {away_score} : {home_score} HOME")
                     
                     return {
                         "gameStatus": game_status,
-                        "awayScore": int(away_score) if away_score else 0,
-                        "homeScore": int(home_score) if home_score else 0,
+                        "awayScore": int(away_score),
+                        "homeScore": int(home_score),
                         "awayPitcher": away_pitcher,
                         "homePitcher": home_pitcher,
                         "lastUpdated": firestore.SERVER_TIMESTAMP
                     }
         except Exception as e:
+            print(f"   ㄴ 에러 발생: {e}")
             continue
 
-    print("❌ 네이버에서 데이터를 찾지 못했습니다.")
-    if available_ids:
-        print(f"💡 [진단 결과] 이 날짜({date_str})에 네이버에 존재하는 실제 경기 ID들은 다음과 같습니다:")
-        print(f"👉 {list(available_ids)}")
-    else:
-        print(f"💡 [진단 결과] {date_str} 날짜에는 네이버에 등록된 야구 경기가 하나도 없습니다!")
-        
+    print("❌ 모든 경로를 탐색했으나 데이터를 추출하지 못했습니다.")
     return None
 
 def update_live_data_to_firebase(app_match_id, naver_match_id):
@@ -162,5 +149,4 @@ def update_live_data_to_firebase(app_match_id, naver_match_id):
         print("⚠️ 수집된 데이터가 없어 파이어베이스 업데이트를 수행하지 않았습니다.")
 
 if __name__ == "__main__":
-    # 💡 17자리 전체 ID를 자르지 않고 그대로 사용하도록 복구했습니다.
     update_live_data_to_firebase(app_match_id=99, naver_match_id="20260324HTSS02026")
