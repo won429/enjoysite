@@ -47,24 +47,49 @@ def find_game_data(data, match_id):
             if result: return result
     return None
 
+def parse_target_game(target_game):
+    """추출해낸 데이터 조각에서 안전하게 점수를 뽑아냅니다."""
+    game_status = target_game.get('gameStatusName') or target_game.get('statusCodeName') or target_game.get('statusInfo', {}).get('statusName', '경기전')
+    
+    away_score = target_game.get('awayScore')
+    if away_score is None: away_score = target_game.get('awayTeamScore')
+    if away_score is None: away_score = target_game.get('awayTeam', {}).get('score', 0)
+    
+    home_score = target_game.get('homeScore')
+    if home_score is None: home_score = target_game.get('homeTeamScore')
+    if home_score is None: home_score = target_game.get('homeTeam', {}).get('score', 0)
+    
+    away_pitcher = target_game.get('awayStarterName') or target_game.get('awayPitcherName') or target_game.get('awayTeam', {}).get('starter', '미정')
+    home_pitcher = target_game.get('homeStarterName') or target_game.get('homePitcherName') or target_game.get('homeTeam', {}).get('starter', '미정')
+    
+    print(f"🎉 최종 수집 점수: [{game_status}] AWAY {away_score} : {home_score} HOME")
+    
+    return {
+        "gameStatus": game_status,
+        "awayScore": int(away_score) if away_score else 0,
+        "homeScore": int(home_score) if home_score else 0,
+        "awayPitcher": away_pitcher,
+        "homePitcher": home_pitcher,
+        "lastUpdated": firestore.SERVER_TIMESTAMP
+    }
+
 # ==========================================
-# 🚀 2. "핀셋 강제 추출" 크롤링 (절대 실패 안함) 🚀
+# 🚀 2. "한글 인코딩 + 궁극의 강제 추출" 크롤링 🚀
 # ==========================================
 def fetch_naver_live_data(naver_match_id):
     print(f"[{naver_match_id}] 경기 데이터 수집 중...")
-    if len(naver_match_id) < 8:
-        return None
+    if len(naver_match_id) < 8: return None
         
     date_str = f"{naver_match_id[:4]}-{naver_match_id[4:6]}-{naver_match_id[6:8]}"
     
-    # 보여주신 링크를 최우선 타겟으로 설정!
+    # 🔥 네이버 최신 API와 웹페이지 경로를 총동원합니다.
     api_urls = [
+        f"https://api-gw.sports.naver.com/schedule/games?sports=kbaseball&date={date_str}",
+        f"https://api-gw.sports.naver.com/game/{naver_match_id}",
         f"https://m.sports.naver.com/game/{naver_match_id}/record",
-        f"https://api-gw.sports.naver.com/sports/api/game/{naver_match_id}/basic",
-        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_str}"
+        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_str}"
     ]
     
-    # 봇 차단을 막기 위해 일반 크롬 브라우저인 척 위장
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Accept": "text/html,application/json,text/plain,*/*",
@@ -80,58 +105,53 @@ def fetch_naver_live_data(naver_match_id):
                 print(f"   ㄴ 접속 실패 (HTTP {response.status_code})")
                 continue
                 
-            data_list = []
+            # 🔥 핵심: 글자가 깨지지 않도록 무조건 UTF-8 한글 번역 강제 적용!
+            response.encoding = 'utf-8'
+            html = response.text
             
-            # 1. 만약 깔끔한 JSON API라면 기존처럼 파싱
+            # 1. 깔끔한 JSON API로 접속 성공했을 때
             if "application/json" in response.headers.get("Content-Type", ""):
-                try: data_list.append(response.json())
+                try: 
+                    target = find_game_data(response.json(), naver_match_id)
+                    if target: return parse_target_game(target)
                 except: pass
-            else:
-                # 2. 보여주신 페이지 같은 일반 웹사이트(HTML)라면? -> 강제 핀셋 추출 발동!
-                html = response.text
-                soup = BeautifulSoup(html, 'html.parser')
-                title = soup.title.string if soup.title else 'No Title'
-                print(f"   ㄴ 접속 성공! 페이지 타이틀: [{title.strip()}]")
                 
-                # 정규식(Regex)을 이용해 HTML 문자열 틈새에 숨은 점수 글자만 쏙쏙 뽑아냅니다.
-                status_match = re.search(r'"gameStatusName"\s*:\s*"([^"]+)"', html) or re.search(r'"statusCodeName"\s*:\s*"([^"]+)"', html)
-                away_score = re.search(r'"awayScore"\s*:\s*(\d+)', html) or re.search(r'"awayTeamScore"\s*:\s*(\d+)', html)
-                home_score = re.search(r'"homeScore"\s*:\s*(\d+)', html) or re.search(r'"homeTeamScore"\s*:\s*(\d+)', html)
-                
-                if status_match and away_score and home_score:
-                    away_pitcher = re.search(r'"awayStarterName"\s*:\s*"([^"]+)"', html) or re.search(r'"awayPitcherName"\s*:\s*"([^"]+)"', html)
-                    home_pitcher = re.search(r'"homeStarterName"\s*:\s*"([^"]+)"', html) or re.search(r'"homePitcherName"\s*:\s*"([^"]+)"', html)
-                    
-                    print("   ㄴ 🔥 HTML 틈새에서 점수 데이터 강제 추출 성공!")
-                    data_list.append({
-                        "gameId": naver_match_id,
-                        "gameStatusName": status_match.group(1),
-                        "awayScore": int(away_score.group(1)),
-                        "homeScore": int(home_score.group(1)),
-                        "awayStarterName": away_pitcher.group(1) if away_pitcher else "미정",
-                        "homeStarterName": home_pitcher.group(1) if home_pitcher else "미정"
-                    })
+            # 2. 웹사이트(HTML)로 접속했을 때 -> 화면에 숨겨진 JSON 보물상자 찾기
+            soup = BeautifulSoup(html, 'html.parser')
+            title = soup.title.string if soup.title else 'No Title'
+            print(f"   ㄴ 접속 성공! 페이지 타이틀: [{title.strip()}]") # 이제 깨지지 않고 정상 출력됩니다!
             
-            # 추출한 데이터를 정리해서 파이어베이스로 넘길 준비
-            for data in data_list:
-                target_game = find_game_data(data, naver_match_id)
-                if target_game:
-                    game_status = target_game.get('gameStatusName') or target_game.get('statusCodeName') or '경기전'
-                    away_score = target_game.get('awayScore', 0)
-                    home_score = target_game.get('homeScore', 0)
-                    away_pitcher = target_game.get('awayStarterName', '미정')
-                    home_pitcher = target_game.get('homeStarterName', '미정')
-                    
-                    print(f"🎉 최종 수집 점수: [{game_status}] AWAY {away_score} : {home_score} HOME")
-                    
-                    return {
-                        "gameStatus": game_status,
-                        "awayScore": int(away_score),
-                        "homeScore": int(home_score),
-                        "awayPitcher": away_pitcher,
-                        "homePitcher": home_pitcher,
-                        "lastUpdated": firestore.SERVER_TIMESTAMP
-                    }
+            # HTML 안의 모든 <script> 태그를 뒤져서 경기 정보 덩어리를 훔쳐냅니다.
+            for s in soup.find_all('script'):
+                text = s.string if s.string else ""
+                if naver_match_id in text and '{' in text:
+                    start = text.find('{')
+                    end = text.rfind('}')
+                    if start != -1 and end != -1:
+                        try:
+                            data = json.loads(text[start:end+1])
+                            target = find_game_data(data, naver_match_id)
+                            if target: return parse_target_game(target)
+                        except: pass
+            
+            # 3. 보물상자마저 없다면? -> 무식하게 글자 틈새에서 정규식으로 강제 추출
+            away_m = re.search(r'(?:awayScore|awayTeamScore)["\']?\s*:\s*(\d+)', html)
+            home_m = re.search(r'(?:homeScore|homeTeamScore)["\']?\s*:\s*(\d+)', html)
+            status_m = re.search(r'(?:gameStatusName|statusCodeName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
+            
+            if away_m and home_m and status_m:
+                print("   ㄴ 🔥 HTML 글자 틈새에서 강제 추출 성공!")
+                away_p = re.search(r'(?:awayStarterName|awayPitcherName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
+                home_p = re.search(r'(?:homeStarterName|homePitcherName)["\']?\s*:\s*["\']([^"\']+)["\']', html)
+                return {
+                    "gameStatus": status_m.group(1),
+                    "awayScore": int(away_m.group(1)),
+                    "homeScore": int(home_m.group(1)),
+                    "awayPitcher": away_p.group(1) if away_p else "미정",
+                    "homePitcher": home_p.group(1) if home_p else "미정",
+                    "lastUpdated": firestore.SERVER_TIMESTAMP
+                }
+                
         except Exception as e:
             print(f"   ㄴ 에러 발생: {e}")
             continue
