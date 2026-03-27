@@ -3,6 +3,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 import requests
+from bs4 import BeautifulSoup
 from datetime import datetime, timezone, timedelta
 
 # ==========================================
@@ -27,78 +28,131 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 # ==========================================
-# 🚀 2. "오늘 날짜 자동 탐색" 인공지능 크롤러 (다음/카카오 전용) 🚀
+# 🚀 2. "네이버 3중 우회 + 오늘 날짜 자동" 크롤러 🚀
 # ==========================================
 def fetch_todays_games():
-    # 💡 1. 한국 시간 기준으로 '오늘'이 며칠인지 스스로 알아냅니다! (다음은 YYYYMMDD 형식 사용)
+    # 💡 1. 한국 시간 기준으로 오늘 날짜 가져오기 (YYYY-MM-DD 형식)
     kst = timezone(timedelta(hours=9))
-    today_str = datetime.now(kst).strftime('%Y%m%d')
-    print(f"\n📅 [자동 실행] 오늘 날짜({today_str}) KBO 일정을 다음(카카오)에서 수집합니다...")
+    today = datetime.now(kst)
+    date_dash = today.strftime('%Y-%m-%d')
+    print(f"\n📅 [자동 실행] 오늘 날짜({date_dash}) KBO 일정을 수집합니다...")
 
-    # 깔끔한 다음(카카오) KBO 일정 API 타격
-    url = f"https://sports.daum.net/prx/castbox/api/sports/games.json?league=kbo&date={today_str}"
+    # 💡 2. 봇 차단을 막기 위한 철저한 위장 + 3개의 예비 경로 준비
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Accept": "application/json"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/json,text/plain,*/*",
+        "Referer": "https://m.sports.naver.com/"
     }
-    
-    try:
-        res = requests.get(url, headers=headers, timeout=10)
-        if res.status_code == 200:
-            data = res.json()
-            
-            # API에서 오늘 열리는 모든 경기 데이터를 바로 빼옵니다.
-            games_list = data.get('data', [])
-            
-            if not games_list:
-                print(f"❌ {today_str} 오늘은 예정된 KBO 경기가 없습니다 (월요일 휴식 등).")
-                return
-            
-            print(f"✅ 총 {len(games_list)}개의 경기를 찾았습니다! 파이어베이스에 입력을 시작합니다.\n")
-            
-            # 💡 2. 찾아낸 경기들을 1번부터 순서대로 파이어베이스에 밀어 넣습니다!
-            match_id = 1
-            for game in games_list:
-                a_name = game.get('awayTeamName', '원정')
-                h_name = game.get('homeTeamName', '홈')
-                
-                status = game.get('gameResult', '경기전')
-                if status == "종료": 
-                    status = "경기종료"  # 앱에 맞게 상태명 변경
-                    
-                a_score = game.get('awayScore', 0)
-                h_score = game.get('homeScore', 0)
-                
-                a_pitcher = game.get('awayStarterName', '미정')
-                if not a_pitcher: a_pitcher = '미정'
-                
-                h_pitcher = game.get('homeStarterName', '미정')
-                if not h_pitcher: h_pitcher = '미정'
-                
-                # 파이어베이스 전송용 데이터 포장
-                payload = {
-                    "awayTeam": a_name,
-                    "homeTeam": h_name,
-                    "gameStatus": status,
-                    "awayScore": int(a_score) if a_score else 0,
-                    "homeScore": int(h_score) if h_score else 0,
-                    "awayPitcher": a_pitcher,
-                    "homePitcher": h_pitcher,
-                    "lastUpdated": firestore.SERVER_TIMESTAMP
-                }
-                
-                print(f"🚀 [매치 {match_id}] {a_name} vs {h_name} -> {status} ({a_score}:{h_score}) 업데이트 중...")
-                db.collection('lineups').document(str(match_id)).set(payload, merge=True)
-                
-                match_id += 1
-                
-            print("\n🎉 오늘의 모든 경기 업데이트가 완벽하게 끝났습니다!")
-            
-        else:
-            print(f"❌ 다음(카카오) API 접속 실패 (HTTP {res.status_code})")
-    except Exception as e:
-        print(f"❌ 에러 발생: {e}")
+
+    urls = [
+        f"https://api-gw.sports.naver.com/schedule/games/list?categoryId=kbaseball&date={date_dash}",
+        f"https://api-gw.sports.naver.com/schedule/games?sports=kbaseball&date={date_dash}",
+        f"https://m.sports.naver.com/kbaseball/schedule/index?date={date_dash}" # 최후의 보루 (HTML 강제 스크래핑)
+    ]
+
+    games_list = []
+
+    # 복잡한 데이터 속에서 '야구 경기' 덩어리만 쏙쏙 골라내는 함수
+    def extract_games(obj):
+        if isinstance(obj, dict):
+            game_id = obj.get('gameId') or obj.get('id')
+            # 'awayTeam' 이라는 글자가 포함된 블록은 무조건 야구 경기 데이터임!
+            if game_id and ('awayTeam' in obj or 'awayTeamName' in obj) and ('homeTeam' in obj or 'homeTeamName' in obj):
+                # 중복 저장 방지
+                if not any(g.get('gameId') == game_id for g in games_list):
+                    obj['gameId'] = game_id
+                    games_list.append(obj)
+                return 
+            for v in obj.values():
+                extract_games(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                extract_games(item)
+
+    # 💡 3. 경로를 하나씩 찌르면서 뚫리는 곳에서 데이터를 탈취합니다.
+    for url in urls:
+        print(f"👉 접속 시도: {url[:60]}...")
+        try:
+            res = requests.get(url, headers=headers, timeout=10)
+            if res.status_code != 200:
+                print(f"   ㄴ 접속 차단됨 (HTTP {res.status_code}) - 다음 경로로 이동합니다.")
+                continue
+
+            res.encoding = 'utf-8'
+
+            # 깔끔한 API로 응답이 왔을 때
+            if "application/json" in res.headers.get("Content-Type", ""):
+                extract_games(res.json())
+            # HTML 웹사이트로 응답이 왔을 때 (최후의 보루)
+            else:
+                soup = BeautifulSoup(res.text, 'html.parser')
+                for s in soup.find_all('script'):
+                    if s.string and '{' in s.string and 'awayTeam' in s.string:
+                        try:
+                            start = s.string.find('{')
+                            end = s.string.rfind('}')
+                            if start != -1 and end != -1:
+                                json_data = json.loads(s.string[start:end+1])
+                                extract_games(json_data)
+                        except:
+                            pass
+
+            # 경기를 하나라도 찾았다면 더 이상 다른 경로를 찌를 필요 없음!
+            if len(games_list) > 0:
+                print(f"   ㄴ ✅ 데이터 수집 대성공! 총 {len(games_list)}개의 경기를 발견했습니다.")
+                break
+
+        except Exception as e:
+            print(f"   ㄴ 에러 발생: {e} - 다음 경로로 이동합니다.")
+            continue
+
+    # 💡 4. 파이어베이스에 1번 방부터 순서대로 밀어 넣기
+    if not games_list:
+        print(f"\n❌ {date_dash} 오늘은 예정된 경기가 없거나 데이터를 찾지 못했습니다.")
+        return
+
+    print("\n🔥 파이어베이스에 경기 기록 업데이트를 시작합니다...")
+    match_id = 1
+    for game in games_list:
+        # 안전하게 이름 추출
+        a_name = game.get('awayTeamName')
+        if not a_name and isinstance(game.get('awayTeam'), dict): a_name = game['awayTeam'].get('name', '원정')
+        h_name = game.get('homeTeamName')
+        if not h_name and isinstance(game.get('homeTeam'), dict): h_name = game['homeTeam'].get('name', '홈')
+
+        # 상태 및 점수 추출
+        status = game.get('gameStatusName') or game.get('statusCodeName') or '경기전'
+        
+        a_score = game.get('awayTeamScore')
+        if a_score is None and isinstance(game.get('awayTeam'), dict): a_score = game['awayTeam'].get('score', 0)
+        
+        h_score = game.get('homeTeamScore')
+        if h_score is None and isinstance(game.get('homeTeam'), dict): h_score = game['homeTeam'].get('score', 0)
+
+        # 투수 추출
+        a_pitcher = game.get('awayStarterName')
+        if not a_pitcher and isinstance(game.get('awayTeam'), dict): a_pitcher = game['awayTeam'].get('starterName', '미정')
+        
+        h_pitcher = game.get('homeStarterName')
+        if not h_pitcher and isinstance(game.get('homeTeam'), dict): h_pitcher = game['homeTeam'].get('starterName', '미정')
+
+        # 파이어베이스 전송
+        payload = {
+            "awayTeam": a_name,
+            "homeTeam": h_name,
+            "gameStatus": status,
+            "awayScore": int(a_score) if a_score else 0,
+            "homeScore": int(h_score) if h_score else 0,
+            "awayPitcher": a_pitcher if a_pitcher else "미정",
+            "homePitcher": h_pitcher if h_pitcher else "미정",
+            "lastUpdated": firestore.SERVER_TIMESTAMP
+        }
+
+        print(f"🚀 [방번호 {match_id}] {a_name} vs {h_name} -> {status} ({a_score}:{h_score})")
+        db.collection('lineups').document(str(match_id)).set(payload, merge=True)
+        match_id += 1
+
+    print("\n🎉 개막전 데이터 파이어베이스 전송 완료! 앱에서 점수를 확인하세요!")
 
 if __name__ == "__main__":
-    # 아무것도 입력할 필요 없습니다. 봇이 알아서 날짜와 팀을 찾습니다!
     fetch_todays_games()
