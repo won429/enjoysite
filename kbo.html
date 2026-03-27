@@ -278,8 +278,16 @@
                     db.collection("rankings").get()
                 ]);
 
-                if (matchesSnap.empty) scheduleData = [...initialScheduleData];
-                else scheduleData = matchesSnap.docs.map(doc => doc.data()).sort((a, b) => a.date.localeCompare(b.date));
+                if (matchesSnap.empty) {
+                    scheduleData = [...initialScheduleData];
+                } else {
+                    scheduleData = matchesSnap.docs.map(doc => doc.data());
+                    // 🔥 24일 테스트 경기 강제 주입 (파이어베이스에 없어도 무조건 달력에 뜨게 함!) 🔥
+                    if (!scheduleData.find(m => m.id === 99)) {
+                        scheduleData.push({ id: 99, date: '2026-03-24', time: '14:00', team1: 'KIA', team2: '삼성', stadium: '대구' });
+                    }
+                    scheduleData.sort((a, b) => a.date.localeCompare(b.date));
+                }
 
                 if (rankingsSnap.empty) rankingData = [...initialRankingData];
                 else rankingData = rankingsSnap.docs.map(doc => doc.data()).sort((a, b) => a.team.localeCompare(b.team));
