@@ -17,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest # 깃허브가 빌려주는 공짜 리눅스 컴퓨터
 
     steps:
-      # 1. 내 깃허브 저장소의 코드(crawler.py)를 복사해 옴
+      # 노란색 경고 해결을 위해 v3 -> v4로 업그레이드
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. 파이썬 설치
+      # 노란색 경고 해결을 위해 v4 -> v5로 업그레이드
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
