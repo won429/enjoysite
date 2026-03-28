@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timedelta
 import time
+import json # 🔥 네이버의 실제 응답을 해독하기 위한 도구 추가 🔥
 
 # 파이어베이스 관리자 권한 연결 (serviceAccountKey.json 필요)
 cred = credentials.Certificate('serviceAccountKey.json')
@@ -40,6 +41,8 @@ def fetch_and_update_kbo_scores():
         result_data = data.get('result', {})
         if not result_data or 'games' not in result_data or len(result_data['games']) == 0:
             print(f"⚠️ {target_date} 네이버 데이터를 불러올 수 없습니다. (이유: 네이버 서버에 해당 날짜 경기 데이터가 비어있음)")
+            # 🔥 로사님이 직접 두 눈으로 네이버의 빈 상자를 확인할 수 있도록 증거 출력! 🔥
+            print(f"👉 네이버가 봇에게 보낸 실제 응답 데이터: {json.dumps(data, ensure_ascii=False)}")
             continue
 
         # 파이어베이스(우리 앱)에서 해당 날짜 일정을 가져옴
