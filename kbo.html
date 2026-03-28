@@ -119,8 +119,11 @@
                 <div class="relative w-full mb-6 shrink-0">
                     <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-3 pb-1" style="touch-action: pan-x pan-y;"></div>
                     <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
-                        <div class="relative flex items-center justify-center">
+                        <div class="relative flex items-center justify-center gap-2 pointer-events-auto">
                             <div id="banner-dots-container" class="flex items-center gap-1.5"></div>
+                            <button onclick="toggleBannerPlay()" id="btn-banner-play" class="flex items-center justify-center text-gray-500 hover:text-white transition-colors w-4 h-4 hidden">
+                                <i class="fa-solid fa-pause text-[10px]"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -235,7 +238,6 @@
 
         // 서버 비어있을 때 넣는 임시 데이터
         const initialScheduleData = [
-            { id: 99, date: '2026-03-24', time: '14:00', team1: 'KIA', team2: '삼성', stadium: '대구' },
             { id: 1, date: '2026-03-28', time: '14:00', team1: 'KT', team2: 'LG', stadium: '잠실' },
             { id: 2, date: '2026-03-28', time: '14:00', team1: 'KIA', team2: 'SSG', stadium: '문학' },
             { id: 3, date: '2026-03-28', time: '14:00', team1: '롯데', team2: '삼성', stadium: '대구' },
@@ -312,9 +314,6 @@
                     scheduleData = [...initialScheduleData];
                 } else {
                     scheduleData = matchesSnap.docs.map(doc => doc.data());
-                    if (!scheduleData.find(m => m.id === 99)) {
-                        scheduleData.push({ id: 99, date: '2026-03-24', time: '14:00', team1: 'KIA', team2: '삼성', stadium: '대구' });
-                    }
                     scheduleData.sort((a, b) => a.date.localeCompare(b.date));
                 }
 
@@ -345,6 +344,9 @@
                     if (currentPopupMatchId) {
                         renderPopupContent(currentPopupMatchId);
                     }
+                    
+                    // 🔥 실시간 점수/상태가 바뀌면 배너도 즉시 새로고침하여 종료된 경기 지우고 다음 경기 띄우기 🔥
+                    renderBanners(); 
                 });
 
             } catch (error) {
@@ -444,7 +446,8 @@
                 document.getElementById('week-days-header').classList.remove('hidden');
                 grid.className = 'grid grid-cols-7 gap-2';
                 document.getElementById('calendar-title').innerText = `${year}년 ${month + 1}월`;
-                const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const firstDay = new Date(year, month, 1).getDay(); 
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
                 for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
                 
                 for (let i = 1; i <= daysInMonth; i++) {
@@ -629,53 +632,101 @@
             if (!container) return; container.innerHTML = '';
             let filteredData = scheduleData.filter(m => selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam);
 
-            const wrapper = document.createElement('div'); wrapper.className = 'flex flex-col gap-4 w-full';
+            if (filteredData.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-gray-500"><p class="text-sm">예정된 경기가 없습니다.</p></div>`;
+                return;
+            }
 
+            const groupedMatches = {};
             filteredData.forEach(match => {
-                let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
-                let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">${match.team1.substring(0,1)}</div>`;
-                let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">${match.team2.substring(0,1)}</div>`;
+                const d = new Date(match.date);
+                const dayOfWeek = (d.getDay() + 6) % 7;
+                const startOfWeek = new Date(d);
+                startOfWeek.setDate(d.getDate() - dayOfWeek);
                 
-                const card = document.createElement('div');
-                card.className = `list-card p-4 cursor-pointer relative overflow-hidden`;
-                card.setAttribute('onclick', `openLineupPopup(${match.id})`);
-
-                const live = liveDataStore[match.id];
+                const thursday = new Date(startOfWeek);
+                thursday.setDate(thursday.getDate() + 3);
                 
-                let headerHtml = `<span class="text-[12px] text-gray-400 font-bold flex items-center"><i class="fa-solid fa-clock mr-1.5"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
-                let scoreBoardHtml = `
-                    <div class="flex items-center gap-2 mt-1">
-                        <div class="flex items-center gap-2">${logo1}<span class="text-[17px] font-bold text-white tracking-wide">${match.team1}</span></div>
-                        <span class="text-sm text-gray-500 font-bold mx-1">vs</span>
-                        <div class="flex items-center gap-2"><span class="text-[17px] font-bold text-white tracking-wide">${match.team2}</span>${logo2}</div>
-                    </div>`;
-
-                if (live && live.gameStatus !== '경기전') {
-                    let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
-                    headerHtml = `<div class="flex items-center gap-2"><span class="text-[10px] font-bold text-white ${badgeClass} px-2 py-0.5 rounded-sm tracking-widest">${live.gameStatus}</span><span class="text-[12px] text-gray-400 font-bold">${match.stadium}</span></div>`;
-                    
-                    scoreBoardHtml = `
-                    <div class="flex items-center justify-between mt-1 bg-white/5 rounded-xl p-2.5 border border-white/5 shadow-inner">
-                        <div class="flex items-center gap-2 w-[35%]">${logo1}<span class="text-[15px] font-bold text-white truncate">${match.team1}</span></div>
-                        <div class="flex items-center justify-center gap-2 w-[30%]">
-                            <span class="text-2xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span>
-                            <span class="text-sm text-gray-500">:</span>
-                            <span class="text-2xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>
-                        </div>
-                        <div class="flex items-center justify-end gap-2 w-[35%]"><span class="text-[15px] font-bold text-white truncate">${match.team2}</span>${logo2}</div>
-                    </div>`;
-                }
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${match.date}</span>
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        ${headerHtml}
-                        ${scoreBoardHtml}
-                    </div>`;
-                wrapper.appendChild(card);
+                const firstDayOfMonthRaw = new Date(thursday.getFullYear(), thursday.getMonth(), 1).getDay();
+                const firstDayOfMonth = (firstDayOfMonthRaw + 6) % 7;
+                const weekNum = Math.ceil((thursday.getDate() + firstDayOfMonth) / 7);
+                const weekKey = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
+                
+                if (!groupedMatches[weekKey]) groupedMatches[weekKey] = [];
+                groupedMatches[weekKey].push(match);
             });
+
+            const wrapper = document.createElement('div'); wrapper.className = 'flex flex-col gap-6 w-full pb-6';
+
+            for (const [weekKey, matches] of Object.entries(groupedMatches)) {
+                // 🔥 경기 종료된 일정은 해당 주차 내에서 맨 아래로 내리기 🔥
+                matches.sort((a, b) => {
+                    const statusA = liveDataStore[a.id] ? liveDataStore[a.id].gameStatus : '경기전';
+                    const statusB = liveDataStore[b.id] ? liveDataStore[b.id].gameStatus : '경기전';
+                    if (statusA === '종료' && statusB !== '종료') return 1;
+                    if (statusA !== '종료' && statusB === '종료') return -1;
+                    return 0; // 둘 다 종료거나 둘 다 종료가 아니면 원래 날짜 순서 유지
+                });
+
+                const weekGroup = document.createElement('div');
+                weekGroup.className = 'flex flex-col gap-3';
+                weekGroup.innerHTML = `<div class="flex items-center gap-2 px-1"><h3 class="text-lg font-bold text-white">${weekKey}</h3><span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${matches.length}경기</span></div>`;
+                
+                const cardsContainer = document.createElement('div');
+                cardsContainer.className = 'flex flex-col gap-4';
+
+                matches.forEach(match => {
+                    let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
+                    let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">${match.team1.substring(0,1)}</div>`;
+                    let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-8 h-8 object-contain">` : `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold">${match.team2.substring(0,1)}</div>`;
+                    
+                    const card = document.createElement('div');
+                    card.className = `list-card p-4 cursor-pointer relative overflow-hidden`;
+                    card.setAttribute('onclick', `openLineupPopup(${match.id})`);
+
+                    const live = liveDataStore[match.id];
+                    
+                    let headerHtml = `<span class="text-[12px] text-gray-400 font-bold flex items-center"><i class="fa-solid fa-clock mr-1.5"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
+                    let scoreBoardHtml = `
+                        <div class="flex items-center gap-2 mt-1">
+                            <div class="flex items-center gap-2">${logo1}<span class="text-[17px] font-bold text-white tracking-wide">${match.team1}</span></div>
+                            <span class="text-sm text-gray-500 font-bold mx-1">vs</span>
+                            <div class="flex items-center gap-2"><span class="text-[17px] font-bold text-white tracking-wide">${match.team2}</span>${logo2}</div>
+                        </div>`;
+
+                    if (live && live.gameStatus !== '경기전') {
+                        let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                        headerHtml = `<div class="flex items-center gap-2"><span class="text-[10px] font-bold text-white ${badgeClass} px-2 py-0.5 rounded-sm tracking-widest">${live.gameStatus}</span><span class="text-[12px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                        
+                        scoreBoardHtml = `
+                        <div class="flex items-center justify-between mt-1 bg-white/5 rounded-xl p-2.5 border border-white/5 shadow-inner">
+                            <div class="flex items-center gap-2 w-[35%]">${logo1}<span class="text-[15px] font-bold text-white truncate">${match.team1}</span></div>
+                            <div class="flex items-center justify-center gap-2 w-[30%]">
+                                <span class="text-2xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span>
+                                <span class="text-sm text-gray-500">:</span>
+                                <span class="text-2xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>
+                            </div>
+                            <div class="flex items-center justify-end gap-2 w-[35%]"><span class="text-[15px] font-bold text-white truncate">${match.team2}</span>${logo2}</div>
+                        </div>`;
+                    }
+
+                    const days = ['일', '월', '화', '수', '목', '금', '토'];
+                    const matchDateObj = new Date(match.date);
+                    const dateStrWithDay = `${match.date} (${days[matchDateObj.getDay()]})`;
+
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${dateStrWithDay}</span>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            ${headerHtml}
+                            ${scoreBoardHtml}
+                        </div>`;
+                    cardsContainer.appendChild(card);
+                });
+                weekGroup.appendChild(cardsContainer);
+                wrapper.appendChild(weekGroup);
+            }
             container.appendChild(wrapper);
         }
 
@@ -689,7 +740,9 @@
                         <div class="flex justify-between items-center p-3 border-b border-white/20">
                             <div class="w-10 text-center text-xs font-bold text-gray-400">순위</div>
                             <div class="flex-1 text-left text-xs font-bold text-gray-400 pl-2">팀명</div>
+                            <div class="w-8 text-center text-xs font-bold text-gray-400">경기</div>
                             <div class="w-8 text-center text-xs font-bold text-gray-400">승</div>
+                            <div class="w-8 text-center text-xs font-bold text-gray-400">무</div>
                             <div class="w-8 text-center text-xs font-bold text-gray-400">패</div>
                             <div class="w-12 text-center text-xs font-bold text-gray-400">승률</div>
                             <div class="w-10 text-center text-xs font-bold text-gray-400">승차</div>
@@ -699,12 +752,15 @@
                 let rClass = team.rank === '-' ? 'text-gray-400' : (i === 0 ? 'text-yellow-400' : (i <= 4 ? 'text-white' : 'text-gray-400'));
                 let logo = teamLogos[team.team];
                 let teamIconHtml = logo ? `<img src="${logo}" class="w-6 h-6 object-contain shrink-0">` : `<div class="w-3 h-3 rounded-full ${teamColors[team.team] || 'bg-gray-500'} shrink-0"></div>`;
+                let gamesPlayed = team.w + (team.d || 0) + team.l;
 
                 html += `
                         <div class="flex justify-between items-center p-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
                             <div class="w-10 text-center text-sm font-bold ${rClass}">${team.rank}</div>
                             <div class="flex-1 flex items-center gap-2 pl-2">${teamIconHtml}<span class="text-sm font-bold text-white">${team.team}</span></div>
+                            <div class="w-8 text-center text-sm font-medium text-gray-300">${gamesPlayed}</div>
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.w}</div>
+                            <div class="w-8 text-center text-sm font-medium text-gray-300">${team.d || 0}</div>
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.l}</div>
                             <div class="w-12 text-center text-sm font-medium text-point">${team.winRate}</div>
                             <div class="w-10 text-center text-[11px] font-medium text-gray-500">${team.gb}</div>
@@ -1024,6 +1080,21 @@
             }, 3000);
         }
 
+        // 🔥 배너 일시정지/재생 토글 함수 추가 🔥
+        function toggleBannerPlay() {
+            isPlaying = !isPlaying;
+            const icon = document.querySelector('#btn-banner-play i');
+            if (icon) {
+                if (isPlaying) {
+                    icon.className = 'fa-solid fa-pause text-[10px]';
+                    startBannerAutoScroll();
+                } else {
+                    icon.className = 'fa-solid fa-play text-[10px] ml-[1px]';
+                    clearInterval(bannerInterval);
+                }
+            }
+        }
+
         function renderBanners() {
             const carousel = document.getElementById('banner-carousel');
             if(!carousel) return;
@@ -1032,38 +1103,42 @@
             const now = new Date();
             let validMatches = scheduleData.filter(match => {
                 if (selectedTeam !== 'all' && match.team1 !== selectedTeam && match.team2 !== selectedTeam) return false;
+                
+                // 🔥 1. 관리자가 '종료'로 설정한 경기는 배너에서 즉시 제외 (다음 경기로 자동 전환) 🔥
+                const live = liveDataStore[match.id];
+                if (live && live.gameStatus === '종료') return false;
+
                 const matchStart = new Date(`${match.date}T${match.time}:00`);
+                
+                // 🔥 2. '경기중' 상태라면 5시간이 넘어가도 배너에서 사라지지 않게 유지 🔥
+                if (live && live.gameStatus === '경기중') return true;
+                
                 const matchEnd = new Date(matchStart.getTime() + 5 * 60 * 60 * 1000);
                 return now < matchEnd;
             });
 
             let topMatches = [];
-            if (validMatches.length > 0) {
+            let seenTeams = new Set();
+
+            for (let match of validMatches) {
                 if (selectedTeam === 'all') {
-                    const firstDate = validMatches[0].date;
-                    topMatches = validMatches.filter(m => m.date === firstDate);
+                    // 🔥 중복된 팀이 배너를 도배하는 것을 막고, 누락된 팀의 다음 경기를 우선적으로 채움 🔥
+                    if (!seenTeams.has(match.team1) && !seenTeams.has(match.team2)) {
+                        topMatches.push(match);
+                        seenTeams.add(match.team1);
+                        seenTeams.add(match.team2);
+                    }
+                    if (topMatches.length >= 5) break; // 최대 5경기(10구단)를 꽉 채우기
                 } else {
-                    topMatches = validMatches.slice(0, 3);
+                    // 🔥 특정 팀 보기: 첫 번째 경기가 '경기중'이면 다음 일정을 중복으로 보여주지 않음 🔥
+                    if (topMatches.length > 0) {
+                        let firstLive = liveDataStore[topMatches[0].id];
+                        if (firstLive && firstLive.gameStatus === '경기중') break;
+                    }
+                    topMatches.push(match);
+                    if (topMatches.length >= 3) break;
                 }
             }
-
-            // D-Day 배너 강제 추가
-            const opening = new Date(2026, 2, 28);
-            const diff = opening.getTime() - now.getTime();
-            const dDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            let dDayText = dDay > 0 ? `D-${dDay}` : (dDay === 0 ? 'D-Day' : `D+${Math.abs(dDay)}`);
-
-            carousel.innerHTML += `
-                <div class="min-w-full bg-[#1C1C1E] rounded-2xl p-5 border border-white/5 shrink-0 flex justify-between items-center transition-transform active:scale-[0.98] snap-center">
-                    <div class="flex flex-col">
-                        <span class="text-[11px] font-bold text-point mb-1.5 tracking-wide">2026 KBO LEAGUE</span>
-                        <h2 class="text-white/80 text-[13px] font-bold tracking-tight mb-0.5">정규시즌 개막까지</h2>
-                        <div id="d-day-count" class="text-[34px] font-extrabold text-white leading-none tracking-tighter">${dDayText}</div>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
-                        <i class="fa-solid fa-baseball text-xl text-gray-400"></i>
-                    </div>
-                </div>`;
 
             topMatches.forEach(match => {
                 const hex1 = teamHex[match.team1] || '#888888';
@@ -1071,6 +1146,23 @@
                 const d = new Date(match.date);
                 const days = ['일', '월', '화', '수', '목', '금', '토'];
                 const dateStr = `${d.getMonth()+1}. ${d.getDate()} (${days[d.getDay()]}) ${match.time}`;
+
+                const live = liveDataStore[match.id];
+                
+                // 🔥 경기 중이면 배너 중앙에 실시간 점수와 깜빡이는 라이브 배지 표시 🔥
+                let centerHtml = `<span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>`;
+                if (live && live.gameStatus === '경기중') {
+                    centerHtml = `
+                        <div class="flex flex-col items-center">
+                            <span class="text-[9px] font-bold text-white bg-red-600 px-1.5 py-0.5 rounded-sm live-badge mb-1">경기중</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span>
+                                <span class="text-xs text-gray-500">:</span>
+                                <span class="text-xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>
+                            </div>
+                        </div>
+                    `;
+                }
 
                 const div = document.createElement('div');
                 div.className = 'min-w-full bg-[#18181b] rounded-2xl border border-white/5 shrink-0 p-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg';
@@ -1084,17 +1176,17 @@
                         <span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span>
                     </div>
                     <div class="flex justify-between items-center relative z-10">
-                        <div class="flex items-center gap-3 w-[42%]">
+                        <div class="flex items-center gap-3 w-[40%]">
                             <img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md">
                             <div class="flex flex-col">
                                 <span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span>
                                 <span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span>
                             </div>
                         </div>
-                        <div class="flex justify-center w-[16%]">
-                            <span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>
+                        <div class="flex justify-center w-[20%]">
+                            ${centerHtml}
                         </div>
-                        <div class="flex items-center justify-end gap-3 w-[42%] text-right">
+                        <div class="flex items-center justify-end gap-3 w-[40%] text-right">
                             <div class="flex flex-col">
                                 <span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span>
                                 <span class="text-[15px] font-bold text-white tracking-wide">${match.team2}</span>
@@ -1107,6 +1199,8 @@
 
             totalBanners = carousel.children.length;
             const dotsContainer = document.getElementById('banner-dots-container');
+            const playBtn = document.getElementById('btn-banner-play'); // 🔥 플레이 버튼 엘리먼트 가져오기
+
             if(dotsContainer) {
                 dotsContainer.innerHTML = '';
                 for(let i=0; i<totalBanners; i++) {
@@ -1115,6 +1209,16 @@
                     dotsContainer.appendChild(dot);
                 }
             }
+
+            // 🔥 배너가 2개 이상일 때만 일시정지 버튼 표시 🔥
+            if (playBtn) {
+                if (totalBanners > 1) {
+                    playBtn.classList.remove('hidden');
+                } else {
+                    playBtn.classList.add('hidden');
+                }
+            }
+            
             if (currentBanner >= totalBanners) currentBanner = 0;
             updateBannerDots(currentBanner);
             startBannerAutoScroll();
