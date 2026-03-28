@@ -255,154 +255,8 @@
         let isSettingsUnlocked = false; // 🔥 설정 탭 잠금 상태 변수 추가
 
         // 서버 비어있을 때 넣는 임시 데이터
-        // 🔥 로사님이 원래 꽉 채워두셨던 전체 일정 데이터를 이 아래 배열(initialScheduleData) 안에 다시 붙여넣어주세요! 🔥
-        const initialScheduleData = [
-            { id: 1, date: '2026-03-28', time: '14:00', team1: 'KT', team2: 'LG', stadium: '잠실' },
-            { id: 2, date: '2026-03-28', time: '14:00', team1: 'KIA', team2: 'SSG', stadium: '문학' },
-            { id: 3, date: '2026-03-28', time: '14:00', team1: '롯데', team2: '삼성', stadium: '대구' },
-            { id: 4, date: '2026-03-28', time: '14:00', team1: '두산', team2: 'NC', stadium: '창원' },
-            { id: 5, date: '2026-03-28', time: '14:00', team1: '키움', team2: '한화', stadium: '대전' },
-            { id: 6, date: '2026-03-29', time: '14:00', team1: 'KT', team2: 'LG', stadium: '잠실' },
-            { id: 7, date: '2026-03-29', time: '14:00', team1: 'KIA', team2: 'SSG', stadium: '문학' },
-            { id: 8, date: '2026-03-29', time: '14:00', team1: '롯데', team2: '삼성', stadium: '대구' },
-            { id: 9, date: '2026-03-29', time: '14:00', team1: '두산', team2: 'NC', stadium: '창원' },
-            { id: 10, date: '2026-03-29', time: '14:00', team1: '키움', team2: '한화', stadium: '대전' },
-            { id: 11, date: '2026-03-31', time: '18:30', team1: 'KIA', team2: 'LG', stadium: '잠실' },
-            { id: 12, date: '2026-03-31', time: '18:30', team1: '키움', team2: 'SSG', stadium: '문학' },
-            { id: 13, date: '2026-03-31', time: '18:30', team1: '두산', team2: '삼성', stadium: '대구' },
-            { id: 14, date: '2026-03-31', time: '18:30', team1: '롯데', team2: 'NC', stadium: '창원' },
-            { id: 15, date: '2026-03-31', time: '18:30', team1: 'KT', team2: '한화', stadium: '대전' },
-            { id: 16, date: '2026-04-01', time: '18:30', team1: 'KIA', team2: 'LG', stadium: '잠실' },
-            { id: 17, date: '2026-04-01', time: '18:30', team1: '키움', team2: 'SSG', stadium: '문학' },
-            { id: 18, date: '2026-04-01', time: '18:30', team1: '두산', team2: '삼성', stadium: '대구' },
-            { id: 19, date: '2026-04-01', time: '18:30', team1: '롯데', team2: 'NC', stadium: '창원' },
-            { id: 20, date: '2026-04-01', time: '18:30', team1: 'KT', team2: '한화', stadium: '대전' },
-            { id: 21, date: '2026-04-02', time: '18:30', team1: 'KIA', team2: 'LG', stadium: '잠실' },
-            { id: 22, date: '2026-04-02', time: '18:30', team1: '키움', team2: 'SSG', stadium: '문학' },
-            { id: 23, date: '2026-04-02', time: '18:30', team1: '두산', team2: '삼성', stadium: '대구' },
-            { id: 24, date: '2026-04-02', time: '18:30', team1: '롯데', team2: 'NC', stadium: '창원' },
-            { id: 25, date: '2026-04-02', time: '18:30', team1: 'KT', team2: '한화', stadium: '대전' },
-            { id: 26, date: '2026-04-03', time: '18:30', team1: '한화', team2: '두산', stadium: '잠실' },
-            { id: 27, date: '2026-04-03', time: '18:30', team1: 'SSG', team2: '롯데', stadium: '사직' },
-            { id: 28, date: '2026-04-03', time: '18:30', team1: '삼성', team2: 'KT', stadium: '수원' },
-            { id: 29, date: '2026-04-03', time: '18:30', team1: 'NC', team2: 'KIA', stadium: '광주' },
-            { id: 30, date: '2026-04-03', time: '18:30', team1: 'LG', team2: '키움', stadium: '고척' },
-            { id: 31, date: '2026-04-04', time: '14:00', team1: '한화', team2: '두산', stadium: '잠실' },
-            { id: 32, date: '2026-04-04', time: '17:00', team1: 'SSG', team2: '롯데', stadium: '사직' },
-            { id: 33, date: '2026-04-04', time: '17:00', team1: '삼성', team2: 'KT', stadium: '수원' },
-            { id: 34, date: '2026-04-04', time: '17:00', team1: 'NC', team2: 'KIA', stadium: '광주' },
-            { id: 35, date: '2026-04-04', time: '17:00', team1: 'LG', team2: '키움', stadium: '고척' },
-            { id: 36, date: '2026-04-05', time: '14:00', team1: '한화', team2: '두산', stadium: '잠실' },
-            { id: 37, date: '2026-04-05', time: '14:00', team1: 'SSG', team2: '롯데', stadium: '사직' },
-            { id: 38, date: '2026-04-05', time: '14:00', team1: '삼성', team2: 'KT', stadium: '수원' },
-            { id: 39, date: '2026-04-05', time: '14:00', team1: 'NC', team2: 'KIA', stadium: '광주' },
-            { id: 40, date: '2026-04-05', time: '14:00', team1: 'LG', team2: '키움', stadium: '고척' },
-            { id: 41, date: '2026-04-07', time: '18:30', team1: '키움', team2: '두산', stadium: '잠실' },
-            { id: 42, date: '2026-04-07', time: '18:30', team1: '한화', team2: 'SSG', stadium: '문학' },
-            { id: 43, date: '2026-04-07', time: '18:30', team1: 'KT', team2: '롯데', stadium: '사직' },
-            { id: 44, date: '2026-04-07', time: '18:30', team1: 'LG', team2: 'NC', stadium: '창원' },
-            { id: 45, date: '2026-04-07', time: '18:30', team1: '삼성', team2: 'KIA', stadium: '광주' },
-            { id: 46, date: '2026-04-08', time: '18:30', team1: '키움', team2: '두산', stadium: '잠실' },
-            { id: 47, date: '2026-04-08', time: '18:30', team1: '한화', team2: 'SSG', stadium: '문학' },
-            { id: 48, date: '2026-04-08', time: '18:30', team1: 'KT', team2: '롯데', stadium: '사직' },
-            { id: 49, date: '2026-04-08', time: '18:30', team1: 'LG', team2: 'NC', stadium: '창원' },
-            { id: 50, date: '2026-04-08', time: '18:30', team1: '삼성', team2: 'KIA', stadium: '광주' },
-            { id: 51, date: '2026-04-09', time: '18:30', team1: '키움', team2: '두산', stadium: '잠실' },
-            { id: 52, date: '2026-04-09', time: '18:30', team1: '한화', team2: 'SSG', stadium: '문학' },
-            { id: 53, date: '2026-04-09', time: '18:30', team1: 'KT', team2: '롯데', stadium: '사직' },
-            { id: 54, date: '2026-04-09', time: '18:30', team1: 'LG', team2: 'NC', stadium: '창원' },
-            { id: 55, date: '2026-04-09', time: '18:30', team1: '삼성', team2: 'KIA', stadium: '광주' },
-            { id: 56, date: '2026-04-10', time: '18:30', team1: 'SSG', team2: 'LG', stadium: '잠실' },
-            { id: 57, date: '2026-04-10', time: '18:30', team1: 'NC', team2: '삼성', stadium: '대구' },
-            { id: 58, date: '2026-04-10', time: '18:30', team1: '두산', team2: 'KT', stadium: '수원' },
-            { id: 59, date: '2026-04-10', time: '18:30', team1: '롯데', team2: '키움', stadium: '고척' },
-            { id: 60, date: '2026-04-10', time: '18:30', team1: 'KIA', team2: '한화', stadium: '대전' },
-            { id: 61, date: '2026-04-11', time: '17:00', team1: 'SSG', team2: 'LG', stadium: '잠실' },
-            { id: 62, date: '2026-04-11', time: '17:00', team1: 'NC', team2: '삼성', stadium: '대구' },
-            { id: 63, date: '2026-04-11', time: '17:00', team1: '두산', team2: 'KT', stadium: '수원' },
-            { id: 64, date: '2026-04-11', time: '17:00', team1: '롯데', team2: '키움', stadium: '고척' },
-            { id: 65, date: '2026-04-11', time: '17:00', team1: 'KIA', team2: '한화', stadium: '대전' },
-            { id: 66, date: '2026-04-12', time: '14:00', team1: 'SSG', team2: 'LG', stadium: '잠실' },
-            { id: 67, date: '2026-04-12', time: '14:00', team1: 'NC', team2: '삼성', stadium: '대구' },
-            { id: 68, date: '2026-04-12', time: '14:00', team1: '두산', team2: 'KT', stadium: '수원' },
-            { id: 69, date: '2026-04-12', time: '14:00', team1: '롯데', team2: '키움', stadium: '고척' },
-            { id: 70, date: '2026-04-12', time: '14:00', team1: 'KIA', team2: '한화', stadium: '대전' },
-            { id: 71, date: '2026-04-14', time: '18:30', team1: '롯데', team2: 'LG', stadium: '잠실' },
-            { id: 72, date: '2026-04-14', time: '18:30', team1: '두산', team2: 'SSG', stadium: '문학' },
-            { id: 73, date: '2026-04-14', time: '18:30', team1: 'KT', team2: 'NC', stadium: '창원' },
-            { id: 74, date: '2026-04-14', time: '18:30', team1: '키움', team2: 'KIA', stadium: '광주' },
-            { id: 75, date: '2026-04-14', time: '18:30', team1: '삼성', team2: '한화', stadium: '대전' },
-            { id: 76, date: '2026-04-15', time: '18:30', team1: '롯데', team2: 'LG', stadium: '잠실' },
-            { id: 77, date: '2026-04-15', time: '18:30', team1: '두산', team2: 'SSG', stadium: '문학' },
-            { id: 78, date: '2026-04-15', time: '18:30', team1: 'KT', team2: 'NC', stadium: '창원' },
-            { id: 79, date: '2026-04-15', time: '18:30', team1: '키움', team2: 'KIA', stadium: '광주' },
-            { id: 80, date: '2026-04-15', time: '18:30', team1: '삼성', team2: '한화', stadium: '대전' },
-            { id: 81, date: '2026-04-16', time: '18:30', team1: '롯데', team2: 'LG', stadium: '잠실' },
-            { id: 82, date: '2026-04-16', time: '18:30', team1: '두산', team2: 'SSG', stadium: '문학' },
-            { id: 83, date: '2026-04-16', time: '18:30', team1: 'KT', team2: 'NC', stadium: '창원' },
-            { id: 84, date: '2026-04-16', time: '18:30', team1: '키움', team2: 'KIA', stadium: '광주' },
-            { id: 85, date: '2026-04-16', time: '18:30', team1: '삼성', team2: '한화', stadium: '대전' },
-            { id: 86, date: '2026-04-17', time: '18:30', team1: 'KIA', team2: '두산', stadium: '잠실' },
-            { id: 87, date: '2026-04-17', time: '18:30', team1: '한화', team2: '롯데', stadium: '사직' },
-            { id: 88, date: '2026-04-17', time: '18:30', team1: 'LG', team2: '삼성', stadium: '대구' },
-            { id: 89, date: '2026-04-17', time: '18:30', team1: 'SSG', team2: 'NC', stadium: '창원' },
-            { id: 90, date: '2026-04-17', time: '18:30', team1: '키움', team2: 'KT', stadium: '수원' },
-            { id: 91, date: '2026-04-18', time: '17:00', team1: 'KIA', team2: '두산', stadium: '잠실' },
-            { id: 92, date: '2026-04-18', time: '17:00', team1: '한화', team2: '롯데', stadium: '사직' },
-            { id: 93, date: '2026-04-18', time: '17:00', team1: 'LG', team2: '삼성', stadium: '대구' },
-            { id: 94, date: '2026-04-18', time: '17:00', team1: 'SSG', team2: 'NC', stadium: '창원' },
-            { id: 95, date: '2026-04-18', time: '17:00', team1: '키움', team2: 'KT', stadium: '수원' },
-            { id: 96, date: '2026-04-19', time: '14:00', team1: 'KIA', team2: '두산', stadium: '잠실' },
-            { id: 97, date: '2026-04-19', time: '14:00', team1: '한화', team2: '롯데', stadium: '사직' },
-            { id: 98, date: '2026-04-19', time: '14:00', team1: 'LG', team2: '삼성', stadium: '대구' },
-            { id: 99, date: '2026-04-19', time: '14:00', team1: 'SSG', team2: 'NC', stadium: '창원' },
-            { id: 100, date: '2026-04-19', time: '14:00', team1: '키움', team2: 'KT', stadium: '수원' },
-            { id: 101, date: '2026-04-21', time: '18:30', team1: '한화', team2: 'LG', stadium: '잠실' },
-            { id: 102, date: '2026-04-21', time: '18:30', team1: '두산', team2: '롯데', stadium: '사직' },
-            { id: 103, date: '2026-04-21', time: '18:30', team1: 'SSG', team2: '삼성', stadium: '대구' },
-            { id: 104, date: '2026-04-21', time: '18:30', team1: 'KIA', team2: 'KT', stadium: '수원' },
-            { id: 105, date: '2026-04-21', time: '18:30', team1: 'NC', team2: '키움', stadium: '고척' },
-            { id: 106, date: '2026-04-22', time: '18:30', team1: '한화', team2: 'LG', stadium: '잠실' },
-            { id: 107, date: '2026-04-22', time: '18:30', team1: '두산', team2: '롯데', stadium: '사직' },
-            { id: 108, date: '2026-04-22', time: '18:30', team1: 'SSG', team2: '삼성', stadium: '대구' },
-            { id: 109, date: '2026-04-22', time: '18:30', team1: 'KIA', team2: 'KT', stadium: '수원' },
-            { id: 110, date: '2026-04-22', time: '18:30', team1: 'NC', team2: '키움', stadium: '고척' },
-            { id: 111, date: '2026-04-23', time: '18:30', team1: '한화', team2: 'LG', stadium: '잠실' },
-            { id: 112, date: '2026-04-23', time: '18:30', team1: '두산', team2: '롯데', stadium: '사직' },
-            { id: 113, date: '2026-04-23', time: '18:30', team1: 'SSG', team2: '삼성', stadium: '대구' },
-            { id: 114, date: '2026-04-23', time: '18:30', team1: 'KIA', team2: 'KT', stadium: '수원' },
-            { id: 115, date: '2026-04-23', time: '18:30', team1: 'NC', team2: '키움', stadium: '고척' },
-            { id: 116, date: '2026-04-24', time: '18:30', team1: 'LG', team2: '두산', stadium: '잠실' },
-            { id: 117, date: '2026-04-24', time: '18:30', team1: 'KT', team2: 'SSG', stadium: '문학' },
-            { id: 118, date: '2026-04-24', time: '18:30', team1: '롯데', team2: 'KIA', stadium: '광주' },
-            { id: 119, date: '2026-04-24', time: '18:30', team1: '삼성', team2: '키움', stadium: '고척' },
-            { id: 120, date: '2026-04-24', time: '18:30', team1: 'NC', team2: '한화', stadium: '대전' },
-            { id: 121, date: '2026-04-25', time: '17:00', team1: 'LG', team2: '두산', stadium: '잠실' },
-            { id: 122, date: '2026-04-25', time: '17:00', team1: 'KT', team2: 'SSG', stadium: '문학' },
-            { id: 123, date: '2026-04-25', time: '17:00', team1: '롯데', team2: 'KIA', stadium: '광주' },
-            { id: 124, date: '2026-04-25', time: '17:00', team1: '삼성', team2: '키움', stadium: '고척' },
-            { id: 125, date: '2026-04-25', time: '17:00', team1: 'NC', team2: '한화', stadium: '대전' },
-            { id: 126, date: '2026-04-26', time: '14:00', team1: 'LG', team2: '두산', stadium: '잠실' },
-            { id: 127, date: '2026-04-26', time: '14:00', team1: 'KT', team2: 'SSG', stadium: '문학' },
-            { id: 128, date: '2026-04-26', time: '14:00', team1: '롯데', team2: 'KIA', stadium: '광주' },
-            { id: 129, date: '2026-04-26', time: '14:00', team1: '삼성', team2: '키움', stadium: '고척' },
-            { id: 130, date: '2026-04-26', time: '14:00', team1: 'NC', team2: '한화', stadium: '대전' },
-            { id: 131, date: '2026-04-28', time: '18:30', team1: '삼성', team2: '두산', stadium: '잠실' },
-            { id: 132, date: '2026-04-28', time: '18:30', team1: '키움', team2: '롯데', stadium: '사직' },
-            { id: 133, date: '2026-04-28', time: '18:30', team1: 'KIA', team2: 'NC', stadium: '창원' },
-            { id: 134, date: '2026-04-28', time: '18:30', team1: 'LG', team2: 'KT', stadium: '수원' },
-            { id: 135, date: '2026-04-28', time: '18:30', team1: 'SSG', team2: '한화', stadium: '대전' },
-            { id: 136, date: '2026-04-29', time: '18:30', team1: '삼성', team2: '두산', stadium: '잠실' },
-            { id: 137, date: '2026-04-29', time: '18:30', team1: '키움', team2: '롯데', stadium: '사직' },
-            { id: 138, date: '2026-04-29', time: '18:30', team1: 'KIA', team2: 'NC', stadium: '창원' },
-            { id: 139, date: '2026-04-29', time: '18:30', team1: 'LG', team2: 'KT', stadium: '수원' },
-            { id: 140, date: '2026-04-29', time: '18:30', team1: 'SSG', team2: '한화', stadium: '대전' },
-            { id: 141, date: '2026-04-30', time: '18:30', team1: '삼성', team2: '두산', stadium: '잠실' },
-            { id: 142, date: '2026-04-30', time: '18:30', team1: '키움', team2: '롯데', stadium: '사직' },
-            { id: 143, date: '2026-04-30', time: '18:30', team1: 'KIA', team2: 'NC', stadium: '창원' },
-            { id: 144, date: '2026-04-30', time: '18:30', team1: 'LG', team2: 'KT', stadium: '수원' },
-            { id: 145, date: '2026-04-30', time: '18:30', team1: 'SSG', team2: '한화', stadium: '대전' }
-        ];
+        // 🔥 파이어베이스에 일정이 모두 안전하게 업로드되었으므로, 코드 용량 확보를 위해 내장 데이터는 깔끔하게 비웠습니다! 🔥
+        const initialScheduleData = [];
 
         const initialRankingData = [
             { rank: '-', team: 'KIA', w: 0, d: 0, l: 0, winRate: '-', gb: '-' },
@@ -466,8 +320,19 @@
 
                 if (matchesSnap.empty) {
                     scheduleData = [...initialScheduleData];
+                    // 🔥 파이어베이스가 완전히 비어있을 경우 내장 일정을 자동으로 강제 푸시 🔥
+                    const batch = db.batch();
+                    initialScheduleData.forEach(match => batch.set(db.collection("matches").doc(match.id.toString()), match));
+                    await batch.commit();
                 } else {
                     scheduleData = matchesSnap.docs.map(doc => doc.data());
+                    // 🔥 파이어베이스에 있는 일정 수보다 새로 넣은 일정이 더 많다면 강제로 덮어쓰기! 🔥
+                    if (scheduleData.length < initialScheduleData.length) {
+                        const batch = db.batch();
+                        initialScheduleData.forEach(match => batch.set(db.collection("matches").doc(match.id.toString()), match));
+                        await batch.commit();
+                        scheduleData = [...initialScheduleData];
+                    }
                     scheduleData.sort((a, b) => a.date.localeCompare(b.date));
                 }
 
@@ -649,8 +514,11 @@
                 let thursday = new Date(startOfWeek);
                 thursday.setDate(thursday.getDate() + 4);
 
-                let firstDayOfMonth = new Date(thursday.getFullYear(), thursday.getMonth(), 1).getDay();
-                let weekNum = Math.ceil((thursday.getDate() + firstDayOfMonth) / 7);
+                let firstDayOfMonthObj = new Date(thursday.getFullYear(), thursday.getMonth(), 1);
+                let firstThursday = new Date(firstDayOfMonthObj);
+                firstThursday.setDate(firstDayOfMonthObj.getDate() + 3 - (firstDayOfMonthObj.getDay() + 6) % 7);
+                if (firstThursday.getMonth() !== thursday.getMonth()) firstThursday.setDate(firstThursday.getDate() + 7);
+                let weekNum = Math.round((thursday - firstThursday) / 86400000 / 7) + 1;
 
                 document.getElementById('calendar-title').innerText = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
 
@@ -801,9 +669,11 @@
                 const thursday = new Date(startOfWeek);
                 thursday.setDate(thursday.getDate() + 3);
                 
-                const firstDayOfMonthRaw = new Date(thursday.getFullYear(), thursday.getMonth(), 1).getDay();
-                const firstDayOfMonth = (firstDayOfMonthRaw + 6) % 7;
-                const weekNum = Math.ceil((thursday.getDate() + firstDayOfMonth) / 7);
+                const firstDayOfMonthObj = new Date(thursday.getFullYear(), thursday.getMonth(), 1);
+                const firstThursday = new Date(firstDayOfMonthObj);
+                firstThursday.setDate(firstDayOfMonthObj.getDate() + 3 - (firstDayOfMonthObj.getDay() + 6) % 7);
+                if (firstThursday.getMonth() !== thursday.getMonth()) firstThursday.setDate(firstThursday.getDate() + 7);
+                const weekNum = Math.round((thursday - firstThursday) / 86400000 / 7) + 1;
                 const weekKey = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
                 
                 if (!groupedMatches[weekKey]) groupedMatches[weekKey] = [];
@@ -1002,6 +872,10 @@
                     <button onclick="recalculateRankings()" class="w-full bg-[#2C2C2E] border border-white/10 text-gray-300 font-bold py-3.5 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2 mb-3">
                         <i class="fa-solid fa-rotate-right"></i> 전체 데이터 기준 순위 수동 갱신
                     </button>
+                    <!-- 🔥 전체 일정 서버 강제 업로드 버튼 추가 🔥 -->
+                    <button onclick="forceUploadSchedule()" class="w-full bg-[#2C2C2E] border border-white/10 text-point font-bold py-3.5 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2 mb-3">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> 내장된 전체 일정 서버로 강제 덮어쓰기
+                    </button>
                     <!-- 🔥 백업 및 복구 버튼 추가 🔥 -->
                     <div class="flex gap-2">
                         <button onclick="backupData()" class="flex-1 bg-green-900/40 border border-green-500/30 text-green-400 font-bold py-3 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2">
@@ -1079,6 +953,28 @@
             } catch (e) {
                 console.error("복구 에러:", e);
                 showToast('복구 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 🔥 관리자 설정 - 전체 일정 강제 업로드 🔥
+        async function forceUploadSchedule() {
+            showToast('일정 데이터를 서버로 강제 업로드 중입니다...');
+            try {
+                const batch = db.batch();
+                initialScheduleData.forEach(match => {
+                    batch.set(db.collection("matches").doc(match.id.toString()), match);
+                });
+                await batch.commit();
+                
+                scheduleData = [...initialScheduleData];
+                scheduleData.sort((a, b) => a.date.localeCompare(b.date));
+                renderCalendar();
+                if(currentTabIndex === 1) renderList();
+                
+                showToast('모든 일정이 서버에 등록되었습니다!');
+            } catch (e) {
+                console.error("일정 업로드 에러:", e);
+                showToast('업로드 중 오류가 발생했습니다.');
             }
         }
 
