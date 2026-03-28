@@ -24,7 +24,9 @@ jobs:
         pip install requests firebase-admin
 
     - name: 비밀 금고에서 열쇠 꺼내서 파일 만들기
-      run: echo "${{ secrets.FIREBASE_KEY }}" > serviceAccountKey.json
+      env:
+        FIREBASE_KEY: ${{ secrets.FIREBASE_KEY }}
+      run: echo "$FIREBASE_KEY" > serviceAccountKey.json
 
     - name: 로사의 실시간 크롤러 실행!
       run: python kbo_crawler.py
