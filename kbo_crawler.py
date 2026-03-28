@@ -81,10 +81,12 @@ def fetch_and_update_kbo_scores():
             
             print(f"✔️ 업데이트 완료: [{gameStatus}] {away_team} {away_score} : {home_score} {home_team} (Match ID: {match_id})")
 
-# 6. 프로그램이 꺼지지 않고 1분(60초)마다 자동으로 계속 갱신되게 무한 루프!
+# 6. 깃허브 무료 서버(5분 주기)에 맞춰 1분마다 총 5번 갱신하고 끄도록 수정!
 if __name__ == "__main__":
     print("🚀 로사의 KBO 실시간 점수 봇 가동!")
-    while True:
+    # 무한루프(while True) 대신 5번만 돌고 깔끔하게 종료
+    for _ in range(5):
         fetch_and_update_kbo_scores()
         print("---------------------------------------")
-        time.sleep(60) # 60초 대기 후 다시 수집
+        time.sleep(60) # 60초(1분) 대기 후 다시 수집
+    print("🏁 5분 사이클 완료. 깃허브가 곧 다시 실행시켜 줍니다!")
