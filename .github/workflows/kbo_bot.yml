@@ -2,8 +2,12 @@ name: KBO Live Score Bot
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # 매 5분마다 자동으로 실행 (한국시간 기준 24시간 내내)
-  workflow_dispatch: # 우리가 원할 때 수동으로 강제 실행할 수 있는 버튼 추가
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+# 🔥 깃허브의 Node.js 20 경고 잔소리를 영원히 꺼버리는 강제 변수 🔥
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
