@@ -16,7 +16,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Enjoy - Toss Style (Cloud Backup)</title>
+    <title>엔조이 공식 홈페이지</title>
     
     <!-- 홈 화면 바로가기 아이콘 -->
     <link rel="apple-touch-icon" href="icon.png">
@@ -856,7 +856,6 @@
     <div id="meeting-screen" class="hidden fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-30 flex-col overflow-hidden bg-black">
         <header class="flex-none pt-safe px-5 pb-2 flex justify-between items-center bg-black z-10 sticky top-0">
             <h2 class="text-[22px] font-bold text-white tracking-tight">모임통장</h2>
-            <button onclick="window.haptic(); window.openPasswordModal()" class="text-gray-400 hover:text-white transition-colors active:scale-90 p-1"><i class="fa-solid fa-gear text-lg"></i></button>
         </header>
 
         <div class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-3 w-full max-w-md mx-auto">
@@ -967,62 +966,6 @@
     </nav>
 
     <!-- Modals -->
-    <div id="password-modal" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-[#1C1C1E] rounded-3xl p-6 w-full max-w-xs shadow-2xl scale-in text-center relative border border-white/5">
-            <h3 class="text-lg font-bold text-main mb-4">관리자 비밀번호</h3>
-            <input type="password" id="admin-password-input" class="w-full bg-[#2C2C2E] border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-center text-lg mb-4 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="비밀번호 4자리" maxlength="4">
-            <div class="flex gap-2">
-                <button onclick="window.haptic(); window.closeModal('password-modal')" class="flex-1 bg-[#2C2C2E] text-gray-400 font-bold py-3 rounded-xl active:bg-gray-700">취소</button>
-                <button onclick="window.haptic(); window.checkPassword()" class="flex-1 bg-blue-500 text-white font-bold py-3 rounded-xl shadow-md hover:bg-blue-600 active:bg-blue-700">확인</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="admin-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
-        <div class="bg-[#1C1C1E] rounded-3xl p-6 w-full max-w-sm shadow-2xl scale-in relative overflow-hidden max-h-[80vh] flex flex-col border border-white/5">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-main">회비 관리 (<span id="admin-month-title"></span>)</h3>
-                <button onclick="window.haptic(); window.closeModal('admin-modal')" class="text-gray-500 hover:text-gray-300 active:scale-90"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="overflow-y-auto flex-1 pr-1">
-                <!-- 클라우드 백업 기능 -->
-                <div class="mb-6 bg-blue-900/20 p-3 rounded-xl border border-blue-900/50">
-                    <label class="block text-xs text-blue-400 font-bold mb-2">☁️ 클라우드 백업 (서버 저장)</label>
-                    <div class="flex gap-2 mb-2">
-                        <button onclick="window.createCloudBackup()" class="flex-1 bg-transparent border border-blue-500/50 text-blue-400 font-bold py-2 rounded-lg text-xs shadow-sm hover:bg-blue-500/10 active:bg-blue-500/20">
-                            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 현재 상태 저장
-                        </button>
-                    </div>
-                    <div class="relative">
-                        <select id="backup-select" class="w-full bg-[#2C2C2E] border border-gray-700 text-white text-xs rounded-lg p-2 mb-2 h-9 focus:ring-1 focus:ring-blue-500 outline-none">
-                            <option value="">백업 기록을 불러오는 중...</option>
-                        </select>
-                        <button onclick="window.restoreCloudBackup()" class="w-full bg-red-900/20 text-red-400 border border-red-900/50 font-bold py-2 rounded-lg text-xs shadow-sm hover:bg-red-900/40 active:bg-red-900/60">
-                            <i class="fa-solid fa-clock-rotate-left mr-1"></i> 선택한 날짜로 되돌리기
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-gray-400 mt-1.5 leading-snug">* '현재 상태 저장'을 누르면 서버에 안전하게 보관됩니다. 문제가 생기면 목록에서 선택해 되돌리세요.</p>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-xs text-gray-400 font-bold mb-1">총 회비 잔액</label>
-                    <input type="number" id="admin-total-balance" class="w-full bg-[#2C2C2E] border border-gray-700 rounded-xl px-4 py-3 font-bold text-lg text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="금액 입력">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-xs text-gray-400 font-bold mb-2">멤버별 납부 상태</label>
-                    <div id="admin-member-list" class="space-y-2"></div>
-                </div>
-                <div>
-                    <label class="block text-xs text-emerald-400 font-bold mb-2">면제권 관리</label>
-                    <div id="admin-ticket-list" class="space-y-2"></div>
-                </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-gray-800">
-                <button onclick="window.haptic(); window.saveAdminData()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl transition-colors shadow-md active:bg-blue-700">저장하기</button>
-            </div>
-        </div>
-    </div>
-
     <div id="schedule-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-6">
         <div class="bg-[#1C1C1E] rounded-3xl p-6 w-full max-w-sm shadow-2xl scale-in relative overflow-hidden flex flex-col border border-white/5">
             <div class="flex justify-between items-center mb-6">
@@ -1159,171 +1102,6 @@
             document.getElementById('modal-icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-500/20';
             m.classList.remove('hidden');
             m.classList.add('flex');
-        };
-        
-        window.openPasswordModal = function() {
-            document.getElementById('admin-password-input').value = '';
-            document.getElementById('password-modal').classList.remove('hidden');
-            document.getElementById('password-modal').classList.add('flex');
-        };
-        
-        window.checkPassword = function() {
-            const pw = document.getElementById('admin-password-input').value;
-            if (pw === '0920') {
-                window.closeModal('password-modal');
-                window.openAdminModalReal();
-            } else {
-                alert('비밀번호가 틀렸습니다.');
-            }
-        };
-        
-        window.openAdminModalReal = function() { 
-            if (!window.meetingData) window.meetingData = getInitialMeetingData(); 
-            const modal = document.getElementById('admin-modal'); 
-            modal.classList.remove('hidden'); 
-            modal.classList.add('flex'); 
-            
-            document.getElementById('admin-month-title').innerText = `${window.currentDuesMonth}월`; 
-            document.getElementById('admin-total-balance').value = window.meetingData.totalBalance || 0; 
-            
-            const list = document.getElementById('admin-member-list'); 
-            list.innerHTML = ''; 
-            
-            if (!window.meetingData.records[window.currentDuesMonth]) {
-                window.meetingData.records[window.currentDuesMonth] = createEmptyMonthData(); 
-            }
-            
-            const records = window.meetingData.records[window.currentDuesMonth]; 
-            records.forEach((m, i) => { 
-                const isPaid = m.status === 'paid'; 
-                const isDeferred = m.status === 'deferred';
-                list.innerHTML += `
-                <div class="flex items-center justify-between p-3 bg-[#2C2C2E] rounded-xl border border-gray-700">
-                    <span class="font-bold text-sm text-main">${m.name}</span>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="edit-amt-${i}" class="w-16 text-right text-xs p-1 border border-gray-600 bg-black text-white rounded" value="${m.amount}">
-                        <button onclick="window.toggleDeferred(${i})" class="text-xs font-bold px-2 py-1.5 rounded-lg transition-colors ${isDeferred ? 'bg-amber-900/30 text-amber-400' : 'bg-[#3C3C3E] text-gray-400'}">유예</button>
-                        <button onclick="window.togglePay(${i})" class="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isPaid ? 'bg-blue-900/30 text-blue-400' : (isDeferred ? 'bg-gray-800 text-gray-500' : 'bg-red-900/30 text-red-400')}">${isPaid ? '납부' : '미납'}</button>
-                    </div>
-                </div>`; 
-            }); 
-            
-            const ticketList = document.getElementById('admin-ticket-list'); 
-            ticketList.innerHTML = '';
-            const members = ['홍박사', '류짱', '오스틴', '전시기', '이진누', '성원제'];
-            const exemptions = window.meetingData.exemptions || { '류짱': 1, '성원제': 1, '전시기': 1 };
-            
-            members.forEach((name, i) => {
-                const count = exemptions[name] || 0;
-                ticketList.innerHTML += `
-                <div class="flex items-center justify-between p-3 bg-emerald-900/20 rounded-xl border border-emerald-900/30">
-                    <span class="font-bold text-sm text-main">${name}</span>
-                    <div class="flex items-center gap-2">
-                        <button onclick="window.updateExemption('${name}', -1)" class="w-7 h-7 rounded-full bg-[#3C3C3E] text-emerald-400 flex items-center justify-center font-bold shadow-sm active:scale-90">-</button>
-                        <span id="admin-ticket-${name}" class="font-bold text-sm w-4 text-center text-emerald-400">${count}</span>
-                        <button onclick="window.updateExemption('${name}', 1)" class="w-7 h-7 rounded-full bg-[#3C3C3E] text-emerald-400 flex items-center justify-center font-bold shadow-sm active:scale-90">+</button>
-                    </div>
-                </div>`;
-            });
-            
-            // 모달 열 때 백업 리스트 불러오기
-            if(window.fetchBackupList) window.fetchBackupList();
-        };
-
-        window.updateExemption = function(name, delta) {
-            const el = document.getElementById(`admin-ticket-${name}`);
-            let val = parseInt(el.innerText);
-            val += delta;
-            if(val < 0) val = 0;
-            el.innerText = val;
-            
-            if(!window.meetingData.exemptions) window.meetingData.exemptions = { '류짱': 1, '성원제': 1, '전시기': 1 };
-            window.meetingData.exemptions[name] = val;
-        }
-
-        window.toggleDeferred = function(idx) {
-            const records = window.meetingData.records[window.currentDuesMonth];
-            const totalBalanceInput = document.getElementById('admin-total-balance');
-            let currentBalance = parseInt(totalBalanceInput.value) || 0;
-
-            if(records && records[idx]) {
-                const m = records[idx];
-                if(m.status === 'deferred') {
-                    m.status = 'unpaid';
-                    m.amount = 0;
-                } else {
-                    if(m.status === 'paid') {
-                        currentBalance -= m.amount;
-                    }
-                    m.status = 'deferred';
-                    m.amount = 0;
-                }
-
-                const row = document.getElementById('admin-member-list').children[idx];
-                row.querySelector('input').value = m.amount;
-                const btns = row.querySelectorAll('button');
-                btns[0].className = `text-xs font-bold px-2 py-1.5 rounded-lg transition-colors ${m.status === 'deferred' ? 'bg-amber-900/30 text-amber-400' : 'bg-[#3C3C3E] text-gray-400'}`;
-                btns[1].className = `text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${m.status === 'deferred' ? 'bg-gray-800 text-gray-500' : 'bg-red-900/30 text-red-400'}`;
-                btns[1].innerText = '미납';
-
-                totalBalanceInput.value = currentBalance;
-                window.meetingData.totalBalance = currentBalance;
-            }
-        };
-
-        window.togglePay = function(idx) { 
-            const records = window.meetingData.records[window.currentDuesMonth]; 
-            const totalBalanceInput = document.getElementById('admin-total-balance');
-            let currentBalance = parseInt(totalBalanceInput.value) || 0;
-
-            if(records && records[idx]) { 
-                const m = records[idx]; 
-                if(m.status === 'paid') { 
-                    currentBalance -= m.amount;
-                    m.status = 'unpaid'; 
-                    m.amount = 0; 
-                } else { 
-                    m.status = 'paid'; 
-                    m.amount = 20000; 
-                    currentBalance += 20000;
-                } 
-                
-                const row = document.getElementById('admin-member-list').children[idx]; 
-                row.querySelector('input').value = m.amount; 
-                const btns = row.querySelectorAll('button');
-                btns[0].className = 'text-xs font-bold px-2 py-1.5 rounded-lg transition-colors bg-[#3C3C3E] text-gray-400';
-                btns[1].className = `text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : 'bg-red-900/30 text-red-400'}`; 
-                btns[1].innerText = m.status === 'paid' ? '납부' : '미납'; 
-                
-                totalBalanceInput.value = currentBalance;
-                window.meetingData.totalBalance = currentBalance;
-            } 
-        };
-
-        window.saveAdminData = async function() { 
-            if (!window.meetingData || !window.meetingDb) { alert("DB 연결 안됨"); return; } 
-            
-            const bal = parseInt(document.getElementById('admin-total-balance').value) || 0; 
-            window.meetingData.totalBalance = bal; 
-            
-            const records = window.meetingData.records[window.currentDuesMonth]; 
-            if(records) { 
-                records.forEach((m, i) => { 
-                    const val = document.getElementById(`edit-amt-${i}`).value; 
-                    m.amount = parseInt(val) || 0; 
-                }); 
-            } 
-            
-            if(!window.meetingData.exemptions) window.meetingData.exemptions = { '류짱': 1, '성원제': 1, '전시기': 1 };
-
-            try { 
-                await window.setDoc(window.doc(window.meetingDb, ...window.MEETING_PATH), window.meetingData); 
-                alert('저장 완료! ✅'); 
-                window.closeModal('admin-modal'); 
-            } catch (e) { 
-                console.error(e); 
-                alert('저장 실패'); 
-            } 
         };
         
         window.saveScheduleToFirebase = async function() { 
@@ -2127,93 +1905,6 @@
             } catch (error) {
                 console.error("푸시 알림 설정 에러:", error);
                 alert("푸시 설정 실패! 서버에 'firebase-messaging-sw.js' 파일이 없거나, 현재 미리보기 화면에서 알림이 차단되었습니다.\n\n상세 원인: " + error.message);
-            }
-        };
-
-        // [New] 클라우드 백업 생성
-        window.createCloudBackup = async function() {
-            if (!window.meetingData || !window.meetingDb) { alert("저장할 데이터가 없습니다."); return; }
-            const confirmSave = confirm("현재 상태를 서버에 백업하시겠습니까?");
-            if (!confirmSave) return;
-
-            try {
-                const backupData = {
-                    ...window.meetingData,
-                    savedAt: new Date().toISOString()
-                };
-                
-                await addDoc(collection(window.meetingDb, ...window.BACKUP_PATH), backupData);
-                alert("✅ 안전하게 백업되었습니다!");
-                
-                if (typeof window.fetchBackupList === 'function') {
-                    window.fetchBackupList();
-                }
-            } catch (e) {
-                console.error(e);
-                alert("백업 중 오류가 발생했습니다.");
-            }
-        };
-
-        // [New] 백업 리스트 불러오기
-        window.fetchBackupList = async function() {
-            if (!window.meetingDb) return;
-            const selectEl = document.getElementById('backup-select');
-            if(!selectEl) return;
-            
-            selectEl.innerHTML = '<option>불러오는 중...</option>';
-
-            try {
-                const q = query(collection(window.meetingDb, ...window.BACKUP_PATH), orderBy('savedAt', 'desc'), limit(5));
-                const querySnapshot = await getDocs(q);
-                
-                selectEl.innerHTML = '';
-                if (querySnapshot.empty) {
-                    selectEl.innerHTML = '<option value="">저장된 백업이 없습니다.</option>';
-                    return;
-                }
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const date = new Date(data.savedAt);
-                    const label = `${date.getMonth()+1}월 ${date.getDate()}일 ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')} 저장됨`;
-                    
-                    const option = document.createElement('option');
-                    option.value = doc.id;
-                    option.innerText = label;
-                    selectEl.appendChild(option);
-                });
-            } catch (e) {
-                console.error(e);
-                selectEl.innerHTML = '<option>백업 목록 로드 실패</option>';
-            }
-        };
-
-        // [New] 선택한 백업으로 복원
-        window.restoreCloudBackup = async function() {
-            const selectEl = document.getElementById('backup-select');
-            const docId = selectEl.value;
-            if (!docId) { alert("복원할 백업을 선택해주세요."); return; }
-
-            if (!confirm("⚠️ 정말 이 시점으로 되돌리시겠습니까?\n현재 데이터는 사라지고 선택한 백업으로 덮어씌워집니다.")) return;
-
-            try {
-                const backupDocRef = doc(window.meetingDb, ...window.BACKUP_PATH, docId);
-                const backupSnap = await getDoc(backupDocRef);
-
-                if (!backupSnap.exists()) {
-                    alert("백업 데이터를 찾을 수 없습니다.");
-                    return;
-                }
-
-                const backupData = backupSnap.data();
-                delete backupData.savedAt;
-
-                await setDoc(doc(window.meetingDb, ...window.MEETING_PATH), backupData);
-                alert("✅ 복원 완료! 데이터가 성공적으로 되돌려졌습니다.");
-                window.closeModal('admin-modal');
-            } catch (e) {
-                console.error(e);
-                alert("복원 중 오류가 발생했습니다.");
             }
         };
 
