@@ -111,9 +111,9 @@
                 </div>
                 <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-500 origin-right">
                     <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
-                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all">전체</button>
-                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all">KIA</button>
-                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all">삼성</button>
+                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 z-10">전체</button>
+                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10">KIA</button>
+                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10">삼성</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span>
@@ -333,7 +333,10 @@
                         await batch.commit();
                         scheduleData = [...initialScheduleData];
                     }
-                    scheduleData.sort((a, b) => a.date.localeCompare(b.date));
+                    scheduleData.sort((a, b) => {
+                        if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
+                        return a.date.localeCompare(b.date);
+                    });
                 }
 
                 // 2. 🔥 순위 실시간 동기화 (onSnapshot 추가로 실시간 갱신!) 🔥
@@ -449,8 +452,8 @@
         function setTeamFilter(team) {
             selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
             const btns = ['all', 'KIA', '삼성'].map(id => document.getElementById(`btn-team-${id}`));
-            btns.forEach(btn => btn.className = 'px-2.5 py-1 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all');
-            document.getElementById(`btn-team-${team}`).className = 'px-2.5 py-1 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all';
+            btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10');
+            document.getElementById(`btn-team-${team}`).className = 'px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 z-10';
             renderCalendar(); if(currentTabIndex === 1) renderList(); closeBottomSheet(); renderBanners();
         }
 
@@ -550,7 +553,8 @@
 
                             if (live && live.gameStatus !== '경기전') {
                                 let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
-                                statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${live.gameStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                                let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                                statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
                                 scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
                             }
 
@@ -624,7 +628,8 @@
                     
                     if (live && live.gameStatus !== '경기전') {
                         let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
-                        statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${live.gameStatus}</span><span class="text-[10px] text-gray-400 font-bold">${live.awayScore}:${live.homeScore}</span></div>`;
+                        let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                        statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${live.awayScore}:${live.homeScore}</span></div>`;
                     }
 
                     let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team1] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team1.substring(0,1)}</div>`;
@@ -720,7 +725,8 @@
 
                 if (live && live.gameStatus !== '경기전') {
                     let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
-                    headerHtml = `<div class="flex items-center gap-2"><span class="text-[10px] font-bold text-white ${badgeClass} px-2.5 py-0.5 rounded-full tracking-widest">${live.gameStatus}</span><span class="text-[12px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                    let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                    headerHtml = `<div class="flex items-center gap-2"><span class="text-[10px] font-bold text-white ${badgeClass} px-2.5 py-0.5 rounded-full tracking-widest">${displayStatus}</span><span class="text-[12px] text-gray-400 font-bold">${match.stadium}</span></div>`;
                     
                     scoreBoardHtml = `
                     <div class="flex items-center justify-between mt-1 bg-white/5 rounded-xl p-2.5 border border-white/5 shadow-inner">
@@ -836,6 +842,12 @@
                 matches.forEach(match => {
                     let live = liveDataStore[match.id] || { gameStatus: '경기전', awayScore: 0, homeScore: 0 };
                     
+                    let inningOptionsHtml = `<option value="" class="text-black">-</option>`;
+                    for (let i = 1; i <= 15; i++) {
+                        inningOptionsHtml += `<option value="${i}회초" ${live.inning === i+'회초' ? 'selected' : ''} class="text-black">${i}회초</option>`;
+                        inningOptionsHtml += `<option value="${i}회말" ${live.inning === i+'회말' ? 'selected' : ''} class="text-black">${i}회말</option>`;
+                    }
+                    
                     html += `
                         <div class="bg-[#1C1C1E] border border-white/10 rounded-2xl p-4 flex flex-col shadow-lg relative overflow-hidden">
                             <div class="flex justify-between items-center mb-3">
@@ -853,13 +865,16 @@
                             </div>
                             
                             <div class="flex justify-between items-center gap-2">
+                                <select id="inning-${match.id}" class="w-[76px] px-1 bg-white/10 text-white font-bold text-center rounded-lg border border-white/20 p-2 text-sm focus:border-point outline-none transition-colors">
+                                    ${inningOptionsHtml}
+                                </select>
                                 <select id="status-${match.id}" class="bg-white/10 border border-white/20 rounded-lg p-2 text-sm text-white font-bold focus:border-point outline-none flex-1">
                                     <option value="경기전" ${live.gameStatus === '경기전' ? 'selected' : ''} class="text-black">경기전</option>
                                     <option value="경기중" ${live.gameStatus === '경기중' ? 'selected' : ''} class="text-black">경기중</option>
                                     <option value="종료" ${live.gameStatus === '종료' ? 'selected' : ''} class="text-black">종료</option>
                                 </select>
-                                <button onclick="saveMatchData(${match.id})" class="bg-point hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg text-sm shadow-md active:scale-95 transition-all">
-                                    서버 저장
+                                <button onclick="saveMatchData(${match.id})" class="bg-point hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm shadow-md active:scale-95 transition-all shrink-0">
+                                    저장
                                 </button>
                             </div>
                         </div>
@@ -967,7 +982,10 @@
                 await batch.commit();
                 
                 scheduleData = [...initialScheduleData];
-                scheduleData.sort((a, b) => a.date.localeCompare(b.date));
+                scheduleData.sort((a, b) => {
+                    if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
+                    return a.date.localeCompare(b.date);
+                });
                 renderCalendar();
                 if(currentTabIndex === 1) renderList();
                 
@@ -981,6 +999,7 @@
         // 🔥 관리자 설정 - 파이어베이스 경기 데이터 저장 및 순위 자동 트리거 🔥
         async function saveMatchData(matchId) {
             const status = document.getElementById(`status-${matchId}`).value;
+            const inning = document.getElementById(`inning-${matchId}`).value;
             const awayScore = parseInt(document.getElementById(`away-score-${matchId}`).value) || 0;
             const homeScore = parseInt(document.getElementById(`home-score-${matchId}`).value) || 0;
 
@@ -988,6 +1007,7 @@
                 // merge: true 옵션으로 기존 라인업 등 다른 데이터는 훼손하지 않고 상태/점수만 덮어씀
                 await db.collection("lineups").doc(matchId.toString()).set({
                     gameStatus: status,
+                    inning: inning,
                     awayScore: awayScore,
                     homeScore: homeScore
                 }, { merge: true });
@@ -1167,10 +1187,22 @@
                 return now < matchEnd;
             });
 
+            // 🔥 정렬 기준 완벽 적용 (날짜순 -> 시간순) 🔥
+            validMatches.sort((a, b) => {
+                if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
+                return a.date.localeCompare(b.date);
+            });
+
             let topMatches = [];
             let seenTeams = new Set();
+            
+            // 🔥 너무 먼 미래(다음주 등)의 경기를 끌어오지 않도록 가장 빠른 다음 일정의 '날짜'를 기준으로 제한 🔥
+            let targetDate = validMatches.length > 0 ? validMatches[0].date : null;
 
             for (let match of validMatches) {
+                // 해당 기준 날짜(가장 가까운 당일)의 경기만 배너에 표시
+                if (targetDate && match.date !== targetDate) continue;
+
                 if (selectedTeam === 'all') {
                     // 🔥 중복된 팀이 배너를 도배하는 것을 막고, 누락된 팀의 다음 경기를 우선적으로 채움 🔥
                     if (!seenTeams.has(match.team1) && !seenTeams.has(match.team2)) {
@@ -1202,9 +1234,10 @@
                 // 🔥 경기 중이면 배너 중앙에 실시간 점수와 깜빡이는 라이브 배지 표시 🔥
                 let centerHtml = `<span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>`;
                 if (live && live.gameStatus === '경기중') {
+                    let displayStatus = live.inning ? live.inning : '경기중';
                     centerHtml = `
                         <div class="flex items-center justify-center w-full relative">
-                            <span class="absolute -top-6 text-[10px] font-bold text-white bg-red-600 px-2.5 py-0.5 rounded-full live-badge tracking-widest whitespace-nowrap">경기중</span>
+                            <span class="absolute -top-6 text-[10px] font-bold text-white bg-red-600 px-2.5 py-0.5 rounded-full live-badge tracking-widest whitespace-nowrap">${displayStatus}</span>
                             <div class="flex items-center justify-center w-full">
                                 <div class="flex-1 flex justify-end"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'} leading-none">${live.awayScore}</span></div>
                                 <div class="px-1.5 flex justify-center items-center pb-0.5"><span class="text-base text-gray-500 font-bold leading-none">:</span></div>
@@ -1317,9 +1350,10 @@
 
             let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
             if (live.gameStatus !== '경기전') {
+                let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
                 scoreCenterHtml = `
                     <div class="flex flex-col items-center gap-1">
-                        <span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${live.gameStatus}</span>
+                        <span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${displayStatus}</span>
                         <div class="flex items-center gap-2 mt-2">
                             <span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span>
                             <span class="text-xl text-gray-500">:</span>
