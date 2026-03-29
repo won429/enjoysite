@@ -251,6 +251,59 @@
                     </div>
 
                     <!-- 선수 응원가 리스트 (기본 숨김) -->
+                    <div id="content-cheer-kia-player" class="hidden flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('kia/kia_kimdoyoung.mp3', 'KIA 김도영')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김도영</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 삼성 응원가 목록 -->
+                <div class="cheer-team cheer-삼성 w-full flex-col gap-2 mt-2">
+                    <div class="flex items-center gap-2.5 mb-1.5 px-1">
+                        <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-7 h-7 object-contain drop-shadow-md">
+                        <h2 class="text-lg font-extrabold text-white tracking-tight">삼성 응원가</h2>
+                    </div>
+                    
+                    <!-- 탭 메뉴 추가 (구단 / 선수) -->
+                    <div class="flex bg-white/5 p-1 rounded-xl mb-1">
+                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-xs font-bold bg-[#2563eb] text-white rounded-lg transition-all shadow-sm">구단</button>
+                        <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">선수</button>
+                    </div>
+
+                    <!-- 구단 응원가 리스트 -->
+                    <div id="content-cheer-samsung-team" class="flex flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lineup.mp3', '삼성 라인업송')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">라인업송</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_eldorado.mp3', '삼성 엘도라도')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">엘도라도</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 선수 응원가 리스트 (기본 숨김) -->
                     <div id="content-cheer-samsung-player" class="hidden flex-col gap-2">
                         <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_koojawook.mp3', '삼성 구자욱')">
                             <div class="flex items-center gap-3">
