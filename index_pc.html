@@ -1218,13 +1218,15 @@
             
             const records = window.meetingData.records[window.currentDuesMonth]; 
             records.forEach((m, i) => { 
-                const isPaid = m.status === 'paid'; 
+                const btnClass = m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : (m.status === 'deferred' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-red-900/30 text-red-400');
+                const btnText = m.status === 'paid' ? '납부' : (m.status === 'deferred' ? '유예' : '미납');
+                
                 list.innerHTML += `
                 <div class="flex items-center justify-between p-4 bg-[#2C2C2E] rounded-2xl border border-gray-700">
                     <span class="font-bold text-lg text-main">${m.name}</span>
                     <div class="flex items-center gap-3">
                         <input type="number" id="edit-amt-${i}" class="w-28 text-right text-base p-2 border border-gray-600 bg-black text-white rounded-lg" value="${m.amount}">
-                        <button onclick="window.togglePay(${i})" class="text-sm font-bold px-5 py-2.5 rounded-xl transition-colors ${isPaid ? 'bg-blue-900/30 text-blue-400' : 'bg-red-900/30 text-red-400'}">${isPaid ? '납부' : '미납'}</button>
+                        <button onclick="window.togglePay(${i})" class="text-sm font-bold px-5 py-2.5 rounded-xl transition-colors ${btnClass}">${btnText}</button>
                     </div>
                 </div>`; 
             }); 
@@ -1272,6 +1274,9 @@
                     currentBalance -= m.amount;
                     m.status = 'unpaid'; 
                     m.amount = 0; 
+                } else if(m.status === 'unpaid') { 
+                    m.status = 'deferred'; 
+                    m.amount = 0; 
                 } else { 
                     m.status = 'paid'; 
                     m.amount = 20000; 
@@ -1281,8 +1286,10 @@
                 const row = document.getElementById('admin-member-list').children[idx]; 
                 row.querySelector('input').value = m.amount; 
                 const btn = row.querySelector('button'); 
-                btn.className = `text-sm font-bold px-5 py-2.5 rounded-xl transition-colors ${m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : 'bg-red-900/30 text-red-400'}">${m.status === 'paid' ? '납부' : '미납'}`; 
-                btn.innerText = m.status === 'paid' ? '납부' : '미납'; 
+                const btnClass = m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : (m.status === 'deferred' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-red-900/30 text-red-400');
+                const btnText = m.status === 'paid' ? '납부' : (m.status === 'deferred' ? '유예' : '미납');
+                btn.className = `text-sm font-bold px-5 py-2.5 rounded-xl transition-colors ${btnClass}`; 
+                btn.innerText = btnText; 
                 
                 totalBalanceInput.value = currentBalance;
                 window.meetingData.totalBalance = currentBalance;
@@ -1579,17 +1586,34 @@
             let htmlPenalty = ''; let hasPenalty = false;
             
             if (window.meetingData && window.meetingData.records) {
-                for(let m=1; m < currentRealMonth; m++) {
+                for(let m=1; m <= currentRealMonth; m++) {
                     const records = window.meetingData.records[m] || [];
                     records.forEach(mem => {
-                        if(mem.status === 'unpaid') {
-                             hasPenalty = true; 
-                             htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-[#F04452] shrink-0">${m}월 미납</span></div>`;
+                        if (m < currentRealMonth) {
+                            if(mem.status === 'unpaid') {
+                                 hasPenalty = true; 
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-[#F04452] shrink-0">${m}월 미납</span></div>`;
+                            } else if (mem.status === 'deferred') {
+                                 hasPenalty = true; 
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-yellow-400 shrink-0">${m}월 유예</span></div>`;
+                            }
+                        } else if (m === currentRealMonth) {
+                            if (mem.status === 'deferred') {
+                                 hasPenalty = true; 
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-yellow-400 shrink-0">${m}월 유예</span></div>`;
+                            } else if (mem.status === 'unpaid') {
+                                const today = now.getDate();
+                                const lastDay = new Date(now.getFullYear(), currentRealMonth, 0).getDate();
+                                if (today >= lastDay - 4 && today <= lastDay) {
+                                     hasPenalty = true; 
+                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-orange-400 shrink-0">${m}월 부과금 예정</span></div>`;
+                                }
+                            }
                         }
                     });
                 }
             }
-            if (!hasPenalty) htmlPenalty = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-xl"></i><span class="text-[13px] font-semibold text-gray-400">미납 없음</span></div>`;
+            if (!hasPenalty) htmlPenalty = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-xl"></i><span class="text-[13px] font-semibold text-gray-400">내역 없음</span></div>`;
             penaltyListMini.innerHTML = htmlPenalty;
 
             let htmlTicket = '';
@@ -1625,20 +1649,33 @@
             
             let displayRecords = [...records];
             displayRecords.sort((a, b) => {
-                if (a.status === 'paid' && b.status !== 'paid') return -1;
-                if (a.status !== 'paid' && b.status === 'paid') return 1;
-                return 0;
+                const order = { 'paid': 1, 'deferred': 2, 'unpaid': 3 };
+                return (order[a.status] || 3) - (order[b.status] || 3);
             });
 
             if (displayRecords.length === 0) { list.innerHTML = `<div class="py-16 text-center"><p class="text-[15px] font-medium text-gray-500">납부 내역이 없습니다</p></div>`; return; }
             
+            const now = new Date();
+            const currentRealMonth = now.getMonth() + 1;
+            const today = now.getDate();
+            const lastDay = new Date(now.getFullYear(), currentRealMonth, 0).getDate();
+
             displayRecords.forEach((m, i) => {
                 const c = memberColors[m.name] || { bg: 'bg-[#2C2C2E]', text: 'text-gray-300', char: '?' }; 
                 const isPaid = m.status === 'paid'; 
+                const isDeferred = m.status === 'deferred';
                 
-                const amtClass = isPaid ? 'text-white' : 'text-[#F04452]'; 
-                const amtText = isPaid ? `${m.amount.toLocaleString()}원` : '미납';
+                const amtClass = isPaid ? 'text-white' : (isDeferred ? 'text-yellow-400' : 'text-[#F04452]'); 
+                const amtText = isPaid ? `${m.amount.toLocaleString()}원` : (isDeferred ? '유예' : '미납');
                 const badge = m.isLeader ? `<span class="bg-[#2C2C2E] text-gray-400 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1.5 inline-flex items-center justify-center leading-none">회장</span>` : '';
+                
+                const statusClass = isPaid ? 'text-[#8B95A1]' : (isDeferred ? 'text-yellow-400' : 'text-[#F04452]');
+                const statusText = isPaid ? '납부완료' : (isDeferred ? '다음달 납부 (유예)' : '미납 상태');
+
+                let penHtml = m.penalty ? `<div class="ml-[62px] mt-1.5 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${m.penalty}</div>` : '';
+                if (!m.penalty && m.status === 'unpaid' && month === currentRealMonth && today >= lastDay - 4 && today <= lastDay) {
+                    penHtml = `<div class="ml-[62px] mt-1.5 text-[12px] text-orange-400/90 font-medium leading-snug">· 부과금 10,000원 예정</div>`;
+                }
 
                 list.innerHTML += `
                 <div class="flex flex-col py-4 px-4 rounded-[16px] active:bg-[#1C1C1E] hover:bg-[#1C1C1E] transition-colors cursor-pointer">
@@ -1652,14 +1689,14 @@
                                     <span class="text-[17px] font-semibold text-white/95 tracking-tight">${m.name}</span>
                                     ${badge}
                                 </div>
-                                <span class="text-[13px] font-medium ${isPaid ? 'text-[#8B95A1]' : 'text-[#F04452]'}">${isPaid ? '납부완료' : '미납 상태'}</span>
+                                <span class="text-[13px] font-medium ${statusClass}">${statusText}</span>
                             </div>
                         </div>
                         <div class="text-right">
                             <span class="text-[18px] font-bold ${amtClass} tracking-tight">${amtText}</span>
                         </div>
                     </div>
-                    ${m.penalty ? `<div class="ml-[62px] mt-1.5 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${m.penalty}</div>` : ''}
+                    ${penHtml}
                 </div>`;
             });
         };
@@ -1728,10 +1765,12 @@
             const holidays = window.getHolidays(year, month); Object.keys(holidays).forEach(k => { events[k] = (events[k] || []).concat(holidays[k]); });
             
             const duesAmount = year >= 2026 ? '20,000원' : '15,000원';
-            events[`${keyPrefix}-06`] = (events[`${keyPrefix}-06`]||[]).concat([{ type: 'dues', title: '회비 납부일 💰', time: duesAmount }]);
+            const lastDayOfMonth = new Date(year, month, 0).getDate();
+            const duesDateStr = `${keyPrefix}-${String(lastDayOfMonth).padStart(2, '0')}`;
+            events[duesDateStr] = (events[duesDateStr]||[]).concat([{ type: 'dues', title: '회비 납부일 💰', time: duesAmount }]);
             
             const birthdays = { '01-02': '전시기 생일 🎂', '03-22': '이진누 생일 🎂', '04-01': '오스틴 생일 🎂', '06-05': '홍박사 생일 🎂', '06-12': '류짱 생일 🎂', '10-15': '성원제 생일 🎂' }; Object.entries(birthdays).forEach(([d, t]) => { const [m, day] = d.split('-'); if (parseInt(m) === month) { const k = `${keyPrefix}-${day}`; events[k] = (events[k] || []).concat([{ type: 'bday', title: t, time: '하루 종일' }]); } });
-            if(month===6) { const l = new Date(year, month, 0).getDate(); const a = year - 2024; for(let i=1; i<=l; i++) { const k = `${keyPrefix}-${String(i).padStart(2,'0')}`; events[k] = (events[k]||[]).concat([{type:'anniv', title:`엔조이 ${a}주년 🎉`, time:'하루종일'}]); } }
+            if(month===6) { const l = new Date(year, month, 0).getDate(); const a = year - 2024; for(let i=1; i<=l; i++) { const k = `${keyPrefix}-${String(i).padStart(2,'0')}`; events[k] = (events[k]||[]).concat([{type:'anniv', title:`엔조이 ${a}주년 🎉`, 시:'하루종일'}]); } }
             if (year === 2025 && month === 12) { events[`${keyPrefix}-12`] = (events[`${keyPrefix}-12`]||[]).concat([{type:'school', title:'우송대(전시기) 종강', time:'일정'}]); events[`${keyPrefix}-20`] = (events[`${keyPrefix}-20`]||[]).concat([{type:'school', title:'안동대(성원제) 종강', time:'일정'}]); }
             if (year === 2025 && month === 2) { ['05', '06', '07'].forEach(day => { const k = `${keyPrefix}-${day}`; events[k] = (events[k]||[]).concat([{type:'meet', title:'경북칠곡, 대구 여행 🚅', time:'정기모임'}]); }); }
             if (year === 2025 && month === 8) { ['29', '30'].forEach(day => { const k = `${keyPrefix}-${day}`; events[k] = (events[k]||[]).concat([{type:'meet', title:'진주 여행 🏰', time:'정기모임'}]); }); }
