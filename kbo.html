@@ -331,7 +331,7 @@
         </div>
 
         <!-- 🔥 미니 플레이어 바 (신규 추가) 🔥 -->
-        <div id="mini-player" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#2C2C2E]/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] p-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none">
+        <div id="mini-player" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#2C2C2E]/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] p-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden">
             <div class="flex items-center gap-3 overflow-hidden flex-1 pl-1">
                 <div class="w-10 h-10 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1 shrink-0"><img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-90"></div>
                 <div class="flex flex-col truncate">
@@ -342,6 +342,10 @@
             <div class="flex items-center gap-1.5 shrink-0 px-2">
                 <button onclick="toggleMiniPlayerPlay()" class="w-8 h-8 flex items-center justify-center text-white active:scale-95 transition-transform"><i id="mini-player-btn" class="fa-solid fa-pause text-base"></i></button>
                 <button onclick="closeMiniPlayer()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-95 transition-transform"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <!-- 🔥 재생 진행률 바 추가 🔥 -->
+            <div class="absolute bottom-0 left-0 w-full h-[2px] bg-white/10">
+                <div id="mini-player-progress" class="h-full bg-point w-0" style="transition: width 0.25s linear;"></div>
             </div>
         </div>
 
@@ -1258,6 +1262,39 @@
         // 🔥 숨겨진 유튜브 플레이어 로직 🔥
         let ytPlayer;
         let isYtReady = false;
+        let progressInterval;
+        let currentSongTitle = '';
+        let currentSongCover = '';
+
+        function updateMediaSession() {
+            if ('mediaSession' in navigator && currentSongTitle) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentSongTitle,
+                    artist: 'KBO 리그 응원가',
+                    artwork: [{ src: currentSongCover, sizes: '512x512' }]
+                });
+                navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
+                navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
+            }
+        }
+
+        function startProgressBar() {
+            if(progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                if(ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
+                    const duration = ytPlayer.getDuration();
+                    const current = ytPlayer.getCurrentTime();
+                    if(duration > 0) {
+                        const percent = (current / duration) * 100;
+                        document.getElementById('mini-player-progress').style.width = percent + '%';
+                    }
+                }
+            }, 250);
+        }
+
+        function stopProgressBar() {
+            if(progressInterval) clearInterval(progressInterval);
+        }
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('yt-player', {
@@ -1287,8 +1324,11 @@
             if (btn) {
                 if(event.data == YT.PlayerState.PLAYING) {
                     btn.className = 'fa-solid fa-pause text-base';
+                    startProgressBar();
+                    updateMediaSession();
                 } else {
                     btn.className = 'fa-solid fa-play text-base ml-0.5';
+                    stopProgressBar();
                 }
             }
         }
@@ -1307,6 +1347,9 @@
             if(ytPlayer && isYtReady) ytPlayer.stopVideo();
             const playerUI = document.getElementById('mini-player');
             playerUI.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+            stopProgressBar();
+            const progressBar = document.getElementById('mini-player-progress');
+            if(progressBar) progressBar.style.width = '0%';
         }
 
         function playCheerSong(urlOrId, title) {
@@ -1339,6 +1382,13 @@
 
             document.getElementById('mini-player-title').innerText = title;
             document.getElementById('mini-player-cover').src = coverUrl;
+            
+            currentSongTitle = title;
+            currentSongCover = coverUrl;
+            updateMediaSession();
+            
+            const progressBar = document.getElementById('mini-player-progress');
+            if(progressBar) progressBar.style.width = '0%';
             
             const playerUI = document.getElementById('mini-player');
             playerUI.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
