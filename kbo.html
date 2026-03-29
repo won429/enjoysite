@@ -221,7 +221,7 @@
                     
                     <!-- 구단 응원가 리스트 -->
                     <div id="content-cheer-kia-team" class="flex flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('라인업송 재생 준비 중입니다.')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/Zo0dyn8sD_s?si=LUMTOVtqv8LYOAze', 'KIA 라인업송')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -232,7 +232,7 @@
                             <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                         </div>
 
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('남행열차 재생 준비 중입니다.')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/dudVNSG9foc?si=Nto4ypS7yHWzfxJo', 'KIA 남행열차')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -246,7 +246,7 @@
 
                     <!-- 선수 응원가 리스트 (기본 숨김) -->
                     <div id="content-cheer-kia-player" class="hidden flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('김도영 응원가 재생 준비 중입니다.')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/mcbKTiUAkdc?si=HmLrXMvTh4LWa82n', 'KIA 김도영')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -299,11 +299,22 @@
 
                     <!-- 선수 응원가 리스트 (기본 숨김) -->
                     <div id="content-cheer-samsung-player" class="hidden flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('구자욱 응원가 재생 준비 중입니다.')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/3MxdMmF4eGM?si=E0tPw-tGUWz_4TO8', '삼성 구자욱')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
                                     <span class="text-[14px] font-bold text-white mb-0.5">구자욱</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/-ESloJSalCg?si=0y9QB8hiqyDuuRVq', '삼성 최형우')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">최형우</span>
                                     <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
                                 </div>
                             </div>
