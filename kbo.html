@@ -12,9 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- 🔥 유튜브 IFrame API 추가 🔥 -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-
     <style>
         @font-face {
             font-family: 'KBO-Dia-Gothic';
@@ -106,13 +103,8 @@
 </head>
 <body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden" data-theme="all">
 
-    <!-- 🔥 숨겨진 유튜브 플레이어 컨테이너 (안정적인 백그라운드 재생을 위해 화면 밖으로 넉넉하게 배치) 🔥 -->
-    <div style="position: absolute; top: -9999px; left: -9999px; width: 300px; height: 300px;">
-        <div id="yt-player"></div>
-    </div>
-    
-    <!-- 🔥 잠금화면 탈취용 무음 오디오 (유튜브 Iframe이 잠금화면을 가져가는 것을 막기 위함) 🔥 -->
-    <audio id="silent-audio" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" loop playsinline></audio>
+    <!-- 🔥 MP3 재생용 오디오 태그 (유튜브 대체) 🔥 -->
+    <audio id="audio-player" style="display:none;" preload="metadata"></audio>
 
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
@@ -224,7 +216,7 @@
                     
                     <!-- 구단 응원가 리스트 -->
                     <div id="content-cheer-kia-team" class="flex flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/Zo0dyn8sD_s?si=LUMTOVtqv8LYOAze', 'KIA 라인업송')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('kia/kia_lineup.mp3', 'KIA 라인업송')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -235,7 +227,7 @@
                             <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                         </div>
 
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/dudVNSG9foc?si=Nto4ypS7yHWzfxJo', 'KIA 남행열차')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('kia/kia_namhaeng.mp3', 'KIA 남행열차')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -249,7 +241,7 @@
 
                     <!-- 선수 응원가 리스트 (기본 숨김) -->
                     <div id="content-cheer-kia-player" class="hidden flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/mcbKTiUAkdc?si=HmLrXMvTh4LWa82n', 'KIA 김도영')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('kia/kia_kimdoyoung.mp3', 'KIA 김도영')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -277,7 +269,7 @@
 
                     <!-- 구단 응원가 리스트 -->
                     <div id="content-cheer-samsung-team" class="flex flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/3a7a1MXoAhs?si=3bJBZPBVCTZMc7vH', '삼성 라인업송')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lineup.mp3', '삼성 라인업송')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -288,7 +280,7 @@
                             <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                         </div>
 
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('엘도라도 재생 준비 중입니다.')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_eldorado.mp3', '삼성 엘도라도')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -302,7 +294,7 @@
 
                     <!-- 선수 응원가 리스트 (기본 숨김) -->
                     <div id="content-cheer-samsung-player" class="hidden flex-col gap-2">
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/3MxdMmF4eGM?si=E0tPw-tGUWz_4TO8', '삼성 구자욱')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_koojawook.mp3', '삼성 구자욱')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -313,7 +305,7 @@
                             <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                         </div>
 
-                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/-ESloJSalCg?si=0y9QB8hiqyDuuRVq', '삼성 최형우')">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_choihyoungwoo.mp3', '삼성 최형우')">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
                                 <div class="flex flex-col">
@@ -408,7 +400,6 @@
         let currentTabIndex = 0;
 
         // 서버 비어있을 때 넣는 임시 데이터
-        // 🔥 파이어베이스에 일정이 모두 안전하게 업로드되었으므로, 코드 용량 확보를 위해 내장 데이터는 깔끔하게 비웠습니다! 🔥
         const initialScheduleData = [];
 
         const initialRankingData = [
@@ -455,7 +446,7 @@
                 document.getElementById('mobile-wrapper').appendChild(toast);
             }
             toast.innerText = msg;
-            void toast.offsetWidth; // 리플로우 강제 트리거
+            void toast.offsetWidth; 
             toast.classList.remove('opacity-0', '-translate-y-4');
             toast.classList.add('opacity-100', 'translate-y-0');
             
@@ -468,18 +459,15 @@
         // 🔥 서버 통신 및 실시간 점수 리스너 등록 🔥
         async function syncWithFirestore() {
             try {
-                // 1. 경기 일정 기본 데이터 로드 (한 번만 로드)
                 const matchesSnap = await db.collection("matches").get();
 
                 if (matchesSnap.empty) {
                     scheduleData = [...initialScheduleData];
-                    // 🔥 파이어베이스가 완전히 비어있을 경우 내장 일정을 자동으로 강제 푸시 🔥
                     const batch = db.batch();
                     initialScheduleData.forEach(match => batch.set(db.collection("matches").doc(match.id.toString()), match));
                     await batch.commit();
                 } else {
                     scheduleData = matchesSnap.docs.map(doc => doc.data());
-                    // 🔥 파이어베이스에 있는 일정 수보다 새로 넣은 일정이 더 많다면 강제로 덮어쓰기! 🔥
                     if (scheduleData.length < initialScheduleData.length) {
                         const batch = db.batch();
                         initialScheduleData.forEach(match => batch.set(db.collection("matches").doc(match.id.toString()), match));
@@ -492,7 +480,6 @@
                     });
                 }
 
-                // 2. 🔥 순위 실시간 동기화 (onSnapshot 추가로 실시간 갱신!) 🔥
                 db.collection("rankings").onSnapshot((snapshot) => {
                     if (snapshot.empty) {
                         rankingData = [...initialRankingData];
@@ -506,7 +493,6 @@
                     if (currentTabIndex === 2) renderRanking();
                 });
 
-                // 3. 🚀 라인업/점수 실시간 변경 감지 🚀
                 db.collection("lineups").onSnapshot((snapshot) => {
                     snapshot.forEach(doc => {
                         liveDataStore[doc.id] = doc.data(); 
@@ -519,7 +505,6 @@
                         renderPopupContent(currentPopupMatchId);
                     }
                     
-                    // 🔥 실시간 점수/상태가 바뀌면 배너도 즉시 새로고침하여 종료된 경기 지우고 다음 경기 띄우기 🔥
                     renderBanners(); 
                 });
 
@@ -533,7 +518,6 @@
             currentTabIndex = index;
             if (navigator.vibrate) navigator.vibrate(10);
             
-            // 4개의 스크린 매핑 (응원가 추가)
             const screens = [
                 document.getElementById('calendar-screen'), 
                 document.getElementById('list-screen'), 
@@ -848,13 +832,12 @@
             const wrapper = document.createElement('div'); wrapper.className = 'flex flex-col gap-6 w-full pb-6';
 
             for (const [weekKey, matches] of Object.entries(groupedMatches)) {
-                // 🔥 경기 종료된 일정은 해당 주차 내에서 맨 아래로 내리기 🔥
                 matches.sort((a, b) => {
                     const statusA = liveDataStore[a.id] ? liveDataStore[a.id].gameStatus : '경기전';
                     const statusB = liveDataStore[b.id] ? liveDataStore[b.id].gameStatus : '경기전';
                     if (statusA === '종료' && statusB !== '종료') return 1;
                     if (statusA !== '종료' && statusB === '종료') return -1;
-                    return 0; // 둘 다 종료거나 둘 다 종료가 아니면 원래 날짜 순서 유지
+                    return 0;
                 });
 
                 const weekGroup = document.createElement('div');
@@ -991,7 +974,6 @@
             }, 3000);
         }
 
-        // 🔥 배너 일시정지/재생 토글 함수 추가 🔥
         function toggleBannerPlay() {
             isPlaying = !isPlaying;
             const icon = document.querySelector('#btn-banner-play i');
@@ -1015,20 +997,16 @@
             let validMatches = scheduleData.filter(match => {
                 if (selectedTeam !== 'all' && match.team1 !== selectedTeam && match.team2 !== selectedTeam) return false;
                 
-                // 🔥 1. 관리자가 '종료'로 설정한 경기는 배너에서 즉시 제외 (다음 경기로 자동 전환) 🔥
                 const live = liveDataStore[match.id];
                 if (live && live.gameStatus === '종료') return false;
 
                 const matchStart = new Date(`${match.date}T${match.time}:00`);
-                
-                // 🔥 2. '경기중' 상태라면 5시간이 넘어가도 배너에서 사라지지 않게 유지 🔥
                 if (live && live.gameStatus === '경기중') return true;
                 
                 const matchEnd = new Date(matchStart.getTime() + 5 * 60 * 60 * 1000);
                 return now < matchEnd;
             });
 
-            // 🔥 정렬 기준 완벽 적용 (날짜순 -> 시간순) 🔥
             validMatches.sort((a, b) => {
                 if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
                 return a.date.localeCompare(b.date);
@@ -1036,24 +1014,19 @@
 
             let topMatches = [];
             let seenTeams = new Set();
-            
-            // 🔥 너무 먼 미래(다음주 등)의 경기를 끌어오지 않도록 가장 빠른 다음 일정의 '날짜'를 기준으로 제한 🔥
             let targetDate = validMatches.length > 0 ? validMatches[0].date : null;
 
             for (let match of validMatches) {
-                // 해당 기준 날짜(가장 가까운 당일)의 경기만 배너에 표시
                 if (targetDate && match.date !== targetDate) continue;
 
                 if (selectedTeam === 'all') {
-                    // 🔥 중복된 팀이 배너를 도배하는 것을 막고, 누락된 팀의 다음 경기를 우선적으로 채움 🔥
                     if (!seenTeams.has(match.team1) && !seenTeams.has(match.team2)) {
                         topMatches.push(match);
                         seenTeams.add(match.team1);
                         seenTeams.add(match.team2);
                     }
-                    if (topMatches.length >= 5) break; // 최대 5경기(10구단)를 꽉 채우기
+                    if (topMatches.length >= 5) break; 
                 } else {
-                    // 🔥 특정 팀 보기: 첫 번째 경기가 '경기중'이면 다음 일정을 중복으로 보여주지 않음 🔥
                     if (topMatches.length > 0) {
                         let firstLive = liveDataStore[topMatches[0].id];
                         if (firstLive && firstLive.gameStatus === '경기중') break;
@@ -1072,7 +1045,6 @@
 
                 const live = liveDataStore[match.id];
                 
-                // 🔥 경기 중이면 배너 중앙에 실시간 점수와 깜빡이는 라이브 배지 표시 🔥
                 let centerHtml = `<span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>`;
                 if (live && live.gameStatus === '경기중') {
                     let displayStatus = live.inning ? live.inning : '경기중';
@@ -1123,7 +1095,7 @@
 
             totalBanners = carousel.children.length;
             const dotsContainer = document.getElementById('banner-dots-container');
-            const playBtn = document.getElementById('btn-banner-play'); // 🔥 플레이 버튼 엘리먼트 가져오기
+            const playBtn = document.getElementById('btn-banner-play');
 
             if(dotsContainer) {
                 dotsContainer.innerHTML = '';
@@ -1134,7 +1106,6 @@
                 }
             }
 
-            // 🔥 배너가 2개 이상일 때만 일시정지 버튼 표시 🔥
             if (playBtn) {
                 if (totalBanners > 1) {
                     playBtn.classList.remove('hidden');
@@ -1152,7 +1123,7 @@
 
         // 🔥 매치 센터 (라인업 & 실시간 점수 상세 팝업) 🔥
         function openLineupPopup(matchId) {
-            currentPopupMatchId = matchId; // 팝업 열 때 현재 열려있는 경기 ID를 기억함 (실시간 업데이트 용)
+            currentPopupMatchId = matchId; 
             if (navigator.vibrate) navigator.vibrate(5);
             const popup = document.getElementById('lineup-popup');
             const bg = document.getElementById('lineup-popup-bg');
@@ -1245,13 +1216,12 @@
         }
 
         function closeLineupPopup() {
-            currentPopupMatchId = null; // 팝업 닫을 때 ID를 초기화해서 백그라운드 렌더링을 막음
+            currentPopupMatchId = null; 
             const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet');
             bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full');
             setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300);
         }
 
-        // 🔥 응원가 탭 (구단/선수) 전환 로직 🔥
         function switchCheerTab(team, type) {
             const btnTeam = document.getElementById(`btn-cheer-${team}-team`);
             const btnPlayer = document.getElementById(`btn-cheer-${team}-player`);
@@ -1273,161 +1243,106 @@
             }
         }
 
-        // 🔥 숨겨진 유튜브 플레이어 로직 🔥
-        let ytPlayer;
-        let isYtReady = false;
-        let progressInterval;
+        // 🔥 HTML5 오디오 플레이어 로직 (MP3 로컬 파일용) 🔥
+        let audioPlayer;
         let currentSongTitle = '';
         let currentSongCover = '';
-        let metaInterval; // 🔥 추가: 메타데이터 강제 주입용 타이머
+
+        function initAudioPlayer() {
+            audioPlayer = document.getElementById('audio-player');
+            
+            audioPlayer.addEventListener('play', () => {
+                const btn = document.getElementById('mini-player-btn');
+                if (btn) btn.className = 'fa-solid fa-pause text-base';
+                updateMediaSession();
+            });
+            
+            audioPlayer.addEventListener('pause', () => {
+                const btn = document.getElementById('mini-player-btn');
+                if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
+            });
+            
+            audioPlayer.addEventListener('timeupdate', () => {
+                if(audioPlayer.duration) {
+                    const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                    document.getElementById('mini-player-progress').style.width = percent + '%';
+                }
+            });
+            
+            audioPlayer.addEventListener('ended', () => {
+                const btn = document.getElementById('mini-player-btn');
+                if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
+                document.getElementById('mini-player-progress').style.width = '0%';
+            });
+            
+            audioPlayer.addEventListener('error', () => {
+                showToast('음원 파일을 불러올 수 없습니다. 경로를 확인해주세요.');
+                closeMiniPlayer();
+            });
+        }
 
         function updateMediaSession() {
             if ('mediaSession' in navigator && currentSongTitle) {
-                // 사이트에 표기된 대로 서브타이틀(가수명) 설정
                 let artistName = '팀 응원가';
                 if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) {
                     artistName = '선수 응원가';
                 }
 
-                const enforceMetadata = () => {
-                    // 🔥 앨범 표지(artwork) 완벽 제거: 이미지 로딩 에러로 인해 튕기는 것을 방지하고 텍스트만 주입 🔥
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: currentSongTitle,
-                        artist: artistName
-                    });
-                };
-
-                // 초기 세팅
-                enforceMetadata();
-
-                // 🔥 유튜브 IFrame이 몰래 메타데이터를 뺏어가는 것을 무력화하기 위해 1초마다 무한 덮어쓰기 🔥
-                if (metaInterval) clearInterval(metaInterval);
-                metaInterval = setInterval(enforceMetadata, 1000);
-
-                navigator.mediaSession.setActionHandler('play', () => { 
-                    if(ytPlayer) ytPlayer.playVideo(); 
-                    document.getElementById('silent-audio').play().catch(()=>{});
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentSongTitle,
+                    artist: artistName,
+                    artwork: [
+                        { src: currentSongCover, sizes: '512x512', type: 'image/png' },
+                        { src: currentSongCover, sizes: '192x192', type: 'image/png' }
+                    ]
                 });
-                navigator.mediaSession.setActionHandler('pause', () => { 
-                    if(ytPlayer) ytPlayer.pauseVideo(); 
-                    document.getElementById('silent-audio').pause();
-                });
-            }
-        }
 
-        function startProgressBar() {
-            if(progressInterval) clearInterval(progressInterval);
-            progressInterval = setInterval(() => {
-                if(ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
-                    const duration = ytPlayer.getDuration();
-                    const current = ytPlayer.getCurrentTime();
-                    if(duration > 0) {
-                        const percent = (current / duration) * 100;
-                        document.getElementById('mini-player-progress').style.width = percent + '%';
-                    }
-                }
-            }, 250);
-        }
-
-        function stopProgressBar() {
-            if(progressInterval) clearInterval(progressInterval);
-        }
-
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('yt-player', {
-                height: '300',
-                width: '300',
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'playsinline': 1,
-                    'rel': 0,
-                    'enablejsapi': 1,
-                    'origin': window.location.origin !== 'null' ? window.location.origin : '*'
-                },
-                events: {
-                    'onReady': function() { isYtReady = true; },
-                    'onStateChange': onPlayerStateChange,
-                    'onError': function(e) {
-                        if(e.data === 101 || e.data === 150) showToast('해당 영상은 유튜버가 외부 재생을 막아두었습니다. 다른 링크가 필요합니다!');
-                        else showToast('음원 재생 중 오류가 발생했습니다.');
-                    }
-                }
-            });
-        }
-
-        function onPlayerStateChange(event) {
-            const btn = document.getElementById('mini-player-btn');
-            if (btn) {
-                if(event.data == YT.PlayerState.PLAYING) {
-                    btn.className = 'fa-solid fa-pause text-base';
-                    startProgressBar();
-                    // 🔥 유튜브가 락스크린을 가져가면, 메인 프레임의 무음 오디오를 재생시켜 통제권을 뺏어옵니다 🔥
-                    document.getElementById('silent-audio').play().catch(()=>{});
-                    updateMediaSession();
-                } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
-                    btn.className = 'fa-solid fa-play text-base ml-0.5';
-                    stopProgressBar();
-                    document.getElementById('silent-audio').pause();
-                    if(metaInterval) clearInterval(metaInterval); // 🔥 타이머 정지
-                }
+                navigator.mediaSession.setActionHandler('play', () => { if(audioPlayer) audioPlayer.play(); });
+                navigator.mediaSession.setActionHandler('pause', () => { if(audioPlayer) audioPlayer.pause(); });
             }
         }
 
         function toggleMiniPlayerPlay() {
-            if(!ytPlayer || !isYtReady) return;
-            const state = ytPlayer.getPlayerState();
-            if(state === YT.PlayerState.PLAYING) {
-                ytPlayer.pauseVideo();
+            if(!audioPlayer) return;
+            if (audioPlayer.paused) {
+                audioPlayer.play();
             } else {
-                ytPlayer.playVideo();
+                audioPlayer.pause();
             }
         }
 
         function closeMiniPlayer() {
-            if(ytPlayer && isYtReady) ytPlayer.stopVideo();
-            document.getElementById('silent-audio').pause();
-            if(metaInterval) clearInterval(metaInterval); // 🔥 타이머 정지
+            if(audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+            }
             const playerUI = document.getElementById('mini-player');
             playerUI.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
-            stopProgressBar();
             const progressBar = document.getElementById('mini-player-progress');
             if(progressBar) progressBar.style.width = '0%';
         }
 
-        function playCheerSong(urlOrId, title) {
-            if (!isYtReady || !ytPlayer || typeof ytPlayer.loadVideoById !== 'function') {
-                showToast('음원 플레이어 로딩 중입니다. 잠시 후 다시 시도해주세요.');
-                return;
-            }
+        function playCheerSong(url, title) {
+            if (!audioPlayer) initAudioPlayer();
 
-            // 🔥 사용자 클릭 이벤트 안에서 무음 오디오를 미리 재생하여 권한을 얻어둡니다 🔥
-            document.getElementById('silent-audio').play().catch(()=>{});
-
-            // 🔥 전체 링크를 넣어도 알아서 유튜브 ID만 추출하는 로직 추가 🔥
-            let videoId = urlOrId;
-            if (urlOrId.includes('youtu.be/')) {
-                videoId = urlOrId.split('youtu.be/')[1].split('?')[0];
-            } else if (urlOrId.includes('v=')) {
-                videoId = urlOrId.split('v=')[1].split('&')[0];
-            }
-
-            // 🔥 미리보기 환경 호환성을 위해 재생 및 볼륨 설정 순서 교정 🔥
-            ytPlayer.loadVideoById(videoId); 
-            ytPlayer.playVideo();
-            ytPlayer.unMute(); 
-            ytPlayer.setVolume(100);
+            audioPlayer.src = url;
+            audioPlayer.play().catch(e => {
+                showToast('음원 재생 중 오류가 발생했습니다. (파일 확인 필요)');
+            });
             
             showToast(`🎵 ${title} 재생을 시작합니다.`);
 
-            // 🔥 미니 플레이어 띄우기 및 정보 업데이트 🔥
-            let coverUrl = teamLogos['KIA']; // 기본값
-            if (title.includes('삼성') || title.includes('엘도라도') || title.includes('구자욱')) {
-                coverUrl = teamLogos['삼성'];
+            // 🔥 잠금화면 호환용 PNG 표지 및 UI 로고 세팅 🔥
+            let coverUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/8/87/Kia_Tigers_logo.svg/512px-Kia_Tigers_logo.svg.png';
+            let displayCoverUrl = teamLogos['KIA'];
+            
+            if (title.includes('삼성') || title.includes('엘도라도') || title.includes('구자욱') || title.includes('최형우')) {
+                coverUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Samsung_Lions_logo.svg/512px-Samsung_Lions_logo.svg.png';
+                displayCoverUrl = teamLogos['삼성'];
             }
 
             document.getElementById('mini-player-title').innerText = title;
-            document.getElementById('mini-player-cover').src = coverUrl;
+            document.getElementById('mini-player-cover').src = displayCoverUrl;
             
             currentSongTitle = title;
             currentSongCover = coverUrl;
@@ -1442,12 +1357,12 @@
 
         // 앱 구동 시작점!
         window.onload = async () => {
-            await syncWithFirestore(); // 서버 데이터 연동부터 시작
+            initAudioPlayer(); // 오디오 플레이어 초기화
+            await syncWithFirestore(); 
             setTeamFilter(selectedTeam);
             switchTab(0);
-            renderBanners(); // 배너 초기화
+            renderBanners(); 
 
-            // 스와이프로 넘길 때 점이랑 싱크 맞추는 리스너 추가
             const bannerCarousel = document.getElementById('banner-carousel');
             if (bannerCarousel) {
                 bannerCarousel.addEventListener('scroll', () => {
