@@ -1279,29 +1279,30 @@
         let progressInterval;
         let currentSongTitle = '';
         let currentSongCover = '';
+        let metaInterval; // 🔥 추가: 메타데이터 강제 주입용 타이머
 
         function updateMediaSession() {
             if ('mediaSession' in navigator && currentSongTitle) {
-                // 🔥 SVG는 모바일 락스크린에서 무시되므로 고해상도 PNG로 강제 매핑 🔥
-                let artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/8/87/Kia_Tigers_logo.svg/512px-Kia_Tigers_logo.svg.png'; // 기본 KIA
-                if (currentSongCover.includes('j_0SPzwNZ9') || currentSongTitle.includes('삼성')) {
-                    artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Samsung_Lions_logo.svg/512px-Samsung_Lions_logo.svg.png';
-                }
-
                 // 사이트에 표기된 대로 서브타이틀(가수명) 설정
                 let artistName = '팀 응원가';
                 if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) {
                     artistName = '선수 응원가';
                 }
 
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: currentSongTitle,
-                    artist: artistName,
-                    artwork: [
-                        { src: artworkUrl, sizes: '512x512', type: 'image/png' },
-                        { src: artworkUrl, sizes: '192x192', type: 'image/png' }
-                    ]
-                });
+                const enforceMetadata = () => {
+                    // 🔥 앨범 표지(artwork) 완벽 제거: 이미지 로딩 에러로 인해 튕기는 것을 방지하고 텍스트만 주입 🔥
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: currentSongTitle,
+                        artist: artistName
+                    });
+                };
+
+                // 초기 세팅
+                enforceMetadata();
+
+                // 🔥 유튜브 IFrame이 몰래 메타데이터를 뺏어가는 것을 무력화하기 위해 1초마다 무한 덮어쓰기 🔥
+                if (metaInterval) clearInterval(metaInterval);
+                metaInterval = setInterval(enforceMetadata, 1000);
 
                 navigator.mediaSession.setActionHandler('play', () => { 
                     if(ytPlayer) ytPlayer.playVideo(); 
@@ -1368,6 +1369,7 @@
                     btn.className = 'fa-solid fa-play text-base ml-0.5';
                     stopProgressBar();
                     document.getElementById('silent-audio').pause();
+                    if(metaInterval) clearInterval(metaInterval); // 🔥 타이머 정지
                 }
             }
         }
@@ -1385,6 +1387,7 @@
         function closeMiniPlayer() {
             if(ytPlayer && isYtReady) ytPlayer.stopVideo();
             document.getElementById('silent-audio').pause();
+            if(metaInterval) clearInterval(metaInterval); // 🔥 타이머 정지
             const playerUI = document.getElementById('mini-player');
             playerUI.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
             stopProgressBar();
