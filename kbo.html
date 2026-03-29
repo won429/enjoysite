@@ -1279,11 +1279,34 @@
 
         function updateMediaSession() {
             if ('mediaSession' in navigator && currentSongTitle) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: currentSongTitle,
-                    artist: 'KBO 리그 응원가',
-                    artwork: [{ src: currentSongCover, sizes: '512x512' }]
-                });
+                // 🔥 iOS/Android 잠금화면(MediaSession)은 SVG 이미지를 인식하지 못하고 무시하는 버그가 있습니다.
+                // SVG가 들어오면 메타데이터가 깨지면서 유튜브가 설정한 기본 썸네일로 덮어씌워지므로, PNG 이미지로 변환하여 적용합니다.
+                let artworkUrl = currentSongCover;
+                if (currentSongCover.includes('W0yZrMENss')) {
+                    artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/8/87/Kia_Tigers_logo.svg/512px-Kia_Tigers_logo.svg.png';
+                } else if (currentSongCover.includes('j_0SPzwNZ9')) {
+                    artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Samsung_Lions_logo.svg/512px-Samsung_Lions_logo.svg.png';
+                }
+
+                const setMetadata = () => {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: currentSongTitle,
+                        artist: 'KBO 리그 응원가',
+                        artwork: [
+                            { src: artworkUrl, sizes: '512x512', type: 'image/png' },
+                            { src: artworkUrl, sizes: '192x192', type: 'image/png' }
+                        ]
+                    });
+                };
+
+                // 초기 세팅
+                setMetadata();
+
+                // 🔥 유튜브 IFrame이 뒤늦게 락스크린 통제권을 탈취하는 것을 방지하기 위해 강제로 0.5초, 1초, 2초 뒤에 다시 우리 데이터로 덮어씌웁니다.
+                setTimeout(setMetadata, 500);
+                setTimeout(setMetadata, 1000);
+                setTimeout(setMetadata, 2000);
+
                 navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
                 navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
             }
