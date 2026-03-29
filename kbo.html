@@ -189,11 +189,6 @@
             <div class="w-full pt-main pb-10" id="ranking-container"></div>
         </main>
 
-        <!-- 🔥 4. 설정 화면 (관리자 전용 점수 및 일정 컨트롤) 🔥 -->
-        <main id="settings-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
-            <div class="px-5 pt-main flex flex-col gap-4 text-white pb-10" id="settings-container"></div>
-        </main>
-
         <!-- 실시간 매치 센터 (라인업 & 실시간 점수 상세 팝업) -->
         <div id="lineup-popup" class="fixed inset-0 z-[60] hidden flex-col justify-end pointer-events-none">
             <div id="lineup-popup-bg" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeLineupPopup()"></div>
@@ -226,9 +221,6 @@
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)">
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">순위</span></div>
                 </button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)">
-                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-gear text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">설정</span></div>
-                </button>
             </div>
         </nav>
     </div>
@@ -252,7 +244,6 @@
         let liveDataStore = {}; 
         let currentPopupMatchId = null;
         let currentTabIndex = 0;
-        let isSettingsUnlocked = false; // 🔥 설정 탭 잠금 상태 변수 추가
 
         // 서버 비어있을 때 넣는 임시 데이터
         // 🔥 파이어베이스에 일정이 모두 안전하게 업로드되었으므로, 코드 용량 확보를 위해 내장 데이터는 깔끔하게 비웠습니다! 🔥
@@ -361,7 +352,6 @@
                     
                     if (currentTabIndex === 0) renderCalendar();
                     else if (currentTabIndex === 1) renderList();
-                    else if (currentTabIndex === 3) renderSettings(); // 설정 탭도 실시간 반영
                     
                     if (currentPopupMatchId) {
                         renderPopupContent(currentPopupMatchId);
@@ -381,12 +371,11 @@
             currentTabIndex = index;
             if (navigator.vibrate) navigator.vibrate(10);
             
-            // 4개의 스크린 매핑
+            // 3개의 스크린 매핑 (설정 화면 제거)
             const screens = [
                 document.getElementById('calendar-screen'), 
                 document.getElementById('list-screen'), 
-                document.getElementById('ranking-screen'),
-                document.getElementById('settings-screen')
+                document.getElementById('ranking-screen')
             ];
             closeBottomSheet();
 
@@ -417,19 +406,16 @@
             if (index === 0) mainText.innerHTML = `KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
-            else if (index === 3) mainText.innerHTML = `관리자 설정<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
 
             if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
             else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
             else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
-            else if (index === 3) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
 
             screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
 
             if (index === 0) renderCalendar(); 
             else if (index === 1) renderList(); 
             else if (index === 2) renderRanking();
-            else if (index === 3) renderSettings();
         }
 
         function setViewMode(mode) { 
@@ -794,329 +780,10 @@
                             <div class="w-8 text-center text-sm font-medium text-gray-300">${team.l}</div>
                             <div class="w-12 text-center text-sm font-medium text-point">${team.winRate}</div>
                             <div class="w-10 text-center text-[11px] font-medium text-gray-500">${team.gb}</div>
-                        </div>`;
+                    </div>`;
             });
             html += `</div></div>`;
             container.innerHTML = html;
-        }
-
-        // 🔥 관리자 설정(Settings) 화면 렌더링 🔥
-        function renderSettings() {
-            const container = document.getElementById('settings-container');
-            if (!container) return;
-
-            // 🔥 암호 잠금 화면 구현 (비밀번호: 3611) 🔥
-            if (!isSettingsUnlocked) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-[60vh] gap-4">
-                        <i class="fa-solid fa-lock text-4xl text-gray-500 mb-2"></i>
-                        <h2 class="text-lg font-bold text-white">관리자 설정</h2>
-                        <p class="text-[11px] text-gray-400 mb-2">설정에 접근하려면 암호가 필요합니다.</p>
-                        <input type="password" id="admin-pwd" placeholder="비밀번호" class="bg-[#1C1C1E] text-white border border-white/20 rounded-xl p-3 text-center w-48 focus:outline-none focus:border-point tracking-widest font-bold">
-                        <button onclick="checkAdminPwd()" class="bg-point hover:bg-blue-600 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-all active:scale-95 w-48">확인</button>
-                    </div>
-                `;
-                return;
-            }
-
-            let dateInput = document.getElementById('settings-date-input');
-            let selectedDate = dateInput ? dateInput.value : todayStr;
-
-            let html = `
-                <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-lg font-bold text-white">경기 점수 및 상태 관리</h2>
-                    <input type="date" id="settings-date-input" value="${selectedDate}" onchange="renderSettings()" class="bg-[#1C1C1E] text-white border border-white/20 rounded p-1.5 text-sm focus:outline-none focus:border-point">
-                </div>
-                <p class="text-[11px] text-gray-400 mb-4">입력 후 <span class="text-point font-bold">저장</span>을 누르면 실시간으로 서버에 반영됩니다. 경기를 <span class="text-white font-bold">'종료'</span>로 변경 시 <span class="text-white font-bold">순위표</span>가 전체 자동 재계산됩니다.</p>
-                <div class="flex flex-col gap-3">
-            `;
-
-            let matches = scheduleData.filter(m => m.date === selectedDate);
-            if (matches.length === 0) {
-                html += `
-                    <div class="bg-white/5 border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
-                        <i class="fa-regular fa-calendar-xmark text-3xl text-gray-500 mb-2"></i>
-                        <span class="text-gray-400 text-sm">해당 날짜에는 경기가 없습니다.</span>
-                    </div>`;
-            } else {
-                matches.forEach(match => {
-                    let live = liveDataStore[match.id] || { gameStatus: '경기전', awayScore: 0, homeScore: 0 };
-                    
-                    let inningOptionsHtml = `<option value="" class="text-black">-</option>`;
-                    for (let i = 1; i <= 15; i++) {
-                        inningOptionsHtml += `<option value="${i}회초" ${live.inning === i+'회초' ? 'selected' : ''} class="text-black">${i}회초</option>`;
-                        inningOptionsHtml += `<option value="${i}회말" ${live.inning === i+'회말' ? 'selected' : ''} class="text-black">${i}회말</option>`;
-                    }
-                    
-                    html += `
-                        <div class="bg-[#1C1C1E] border border-white/10 rounded-2xl p-4 flex flex-col shadow-lg relative overflow-hidden">
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="text-[11px] text-gray-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">${match.stadium} | ${match.time}</span>
-                            </div>
-                            
-                            <div class="flex items-center justify-between gap-3 mb-4 bg-black/30 p-3 rounded-xl border border-white/5">
-                                <div class="flex-1 text-center font-extrabold text-[15px]">${match.team1}</div>
-                                <div class="flex items-center gap-1.5">
-                                    <input type="number" id="away-score-${match.id}" value="${live.awayScore || 0}" min="0" class="w-12 bg-white/10 text-white font-bold text-center rounded border border-white/20 p-1.5 focus:border-point outline-none transition-colors">
-                                    <span class="text-gray-500 font-bold">:</span>
-                                    <input type="number" id="home-score-${match.id}" value="${live.homeScore || 0}" min="0" class="w-12 bg-white/10 text-white font-bold text-center rounded border border-white/20 p-1.5 focus:border-point outline-none transition-colors">
-                                </div>
-                                <div class="flex-1 text-center font-extrabold text-[15px]">${match.team2}</div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center gap-2">
-                                <select id="inning-${match.id}" class="w-[76px] px-1 bg-white/10 text-white font-bold text-center rounded-lg border border-white/20 p-2 text-sm focus:border-point outline-none transition-colors">
-                                    ${inningOptionsHtml}
-                                </select>
-                                <select id="status-${match.id}" class="bg-white/10 border border-white/20 rounded-lg p-2 text-sm text-white font-bold focus:border-point outline-none flex-1">
-                                    <option value="경기전" ${live.gameStatus === '경기전' ? 'selected' : ''} class="text-black">경기전</option>
-                                    <option value="경기중" ${live.gameStatus === '경기중' ? 'selected' : ''} class="text-black">경기중</option>
-                                    <option value="종료" ${live.gameStatus === '종료' ? 'selected' : ''} class="text-black">종료</option>
-                                </select>
-                                <button onclick="saveMatchData(${match.id})" class="bg-point hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm shadow-md active:scale-95 transition-all shrink-0">
-                                    저장
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            html += `</div>
-                <div class="mt-6 border-t border-white/10 pt-6">
-                    <button onclick="recalculateRankings()" class="w-full bg-[#2C2C2E] border border-white/10 text-gray-300 font-bold py-3.5 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2 mb-3">
-                        <i class="fa-solid fa-rotate-right"></i> 전체 데이터 기준 순위 수동 갱신
-                    </button>
-                    <!-- 🔥 전체 일정 서버 강제 업로드 버튼 추가 🔥 -->
-                    <button onclick="forceUploadSchedule()" class="w-full bg-[#2C2C2E] border border-white/10 text-point font-bold py-3.5 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2 mb-3">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> 내장된 전체 일정 서버로 강제 덮어쓰기
-                    </button>
-                    <!-- 🔥 백업 및 복구 버튼 추가 🔥 -->
-                    <div class="flex gap-2">
-                        <button onclick="backupData()" class="flex-1 bg-green-900/40 border border-green-500/30 text-green-400 font-bold py-3 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> 백업
-                        </button>
-                        <button onclick="restoreData()" class="flex-1 bg-red-900/40 border border-red-500/30 text-red-400 font-bold py-3 rounded-2xl active:scale-95 transition-transform shadow flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-down"></i> 복구
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-gray-500 text-center mt-3">오류 발생 시 백업 데이터를 복구하세요.</p>
-                </div>`;
-            
-            container.innerHTML = html;
-        }
-
-        // 🔥 관리자 암호 확인 로직 🔥
-        function checkAdminPwd() {
-            const pwd = document.getElementById('admin-pwd').value;
-            if (pwd === '3611') {
-                isSettingsUnlocked = true;
-                renderSettings();
-                showToast('관리자 모드가 활성화되었습니다.');
-            } else {
-                showToast('비밀번호가 일치하지 않습니다.');
-            }
-        }
-
-        // 🔥 데이터 백업 로직 🔥
-        async function backupData() {
-            showToast('데이터 백업 중...');
-            try {
-                const lineupsSnap = await db.collection("lineups").get();
-                const rankingsSnap = await db.collection("rankings").get();
-
-                const batch = db.batch();
-
-                lineupsSnap.forEach(doc => {
-                    batch.set(db.collection("backup_lineups").doc(doc.id), doc.data());
-                });
-                rankingsSnap.forEach(doc => {
-                    batch.set(db.collection("backup_rankings").doc(doc.id), doc.data());
-                });
-
-                await batch.commit();
-                showToast('백업이 완료되었습니다.');
-            } catch (e) {
-                console.error("백업 에러:", e);
-                showToast('백업 중 오류가 발생했습니다.');
-            }
-        }
-
-        // 🔥 데이터 복구 로직 🔥
-        async function restoreData() {
-            showToast('데이터 복구 중...');
-            try {
-                const bLineupsSnap = await db.collection("backup_lineups").get();
-                const bRankingsSnap = await db.collection("backup_rankings").get();
-
-                if (bLineupsSnap.empty && bRankingsSnap.empty) {
-                    showToast('복구할 백업 데이터가 없습니다.');
-                    return;
-                }
-
-                const batch = db.batch();
-
-                bLineupsSnap.forEach(doc => {
-                    batch.set(db.collection("lineups").doc(doc.id), doc.data());
-                });
-                bRankingsSnap.forEach(doc => {
-                    batch.set(db.collection("rankings").doc(doc.id), doc.data());
-                });
-
-                await batch.commit();
-                showToast('데이터가 백업 시점으로 복구되었습니다.');
-            } catch (e) {
-                console.error("복구 에러:", e);
-                showToast('복구 중 오류가 발생했습니다.');
-            }
-        }
-
-        // 🔥 관리자 설정 - 전체 일정 강제 업로드 🔥
-        async function forceUploadSchedule() {
-            showToast('일정 데이터를 서버로 강제 업로드 중입니다...');
-            try {
-                const batch = db.batch();
-                initialScheduleData.forEach(match => {
-                    batch.set(db.collection("matches").doc(match.id.toString()), match);
-                });
-                await batch.commit();
-                
-                scheduleData = [...initialScheduleData];
-                scheduleData.sort((a, b) => {
-                    if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
-                    return a.date.localeCompare(b.date);
-                });
-                renderCalendar();
-                if(currentTabIndex === 1) renderList();
-                
-                showToast('모든 일정이 서버에 등록되었습니다!');
-            } catch (e) {
-                console.error("일정 업로드 에러:", e);
-                showToast('업로드 중 오류가 발생했습니다.');
-            }
-        }
-
-        // 🔥 관리자 설정 - 파이어베이스 경기 데이터 저장 및 순위 자동 트리거 🔥
-        async function saveMatchData(matchId) {
-            const status = document.getElementById(`status-${matchId}`).value;
-            const inning = document.getElementById(`inning-${matchId}`).value;
-            const awayScore = parseInt(document.getElementById(`away-score-${matchId}`).value) || 0;
-            const homeScore = parseInt(document.getElementById(`home-score-${matchId}`).value) || 0;
-
-            try {
-                // merge: true 옵션으로 기존 라인업 등 다른 데이터는 훼손하지 않고 상태/점수만 덮어씀
-                await db.collection("lineups").doc(matchId.toString()).set({
-                    gameStatus: status,
-                    inning: inning,
-                    awayScore: awayScore,
-                    homeScore: homeScore
-                }, { merge: true });
-
-                showToast('성공적으로 서버에 저장되었습니다.');
-
-                // 경기 상태를 '종료'로 바꿨다면 자동으로 전체 순위 재계산!
-                if (status === '종료') {
-                    await recalculateRankings();
-                }
-
-            } catch(e) {
-                console.error("데이터 저장 에러:", e);
-                showToast('저장 중 통신 오류가 발생했습니다.');
-            }
-        }
-
-        // 🔥 파이어베이스 전체 경기 기록을 기반으로 KBO 규칙 순위 자동 재계산 및 서버 푸시 🔥
-        async function recalculateRankings() {
-            showToast('전체 순위를 재계산 중입니다...');
-            
-            let teamStats = {};
-            const allTeams = ['KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움'];
-            
-            // 초기화
-            allTeams.forEach(t => { teamStats[t] = { team: t, w: 0, d: 0, l: 0, winRate: 0, gb: 0 }; });
-
-            // 일정(scheduleData)을 처음부터 끝까지 돌며, 서버(liveDataStore)상 '종료'된 경기 결과 누적
-            scheduleData.forEach(match => {
-                const live = liveDataStore[match.id];
-                if (live && live.gameStatus === '종료') {
-                    const awayTeam = match.team1;
-                    const homeTeam = match.team2;
-                    const awayScore = parseInt(live.awayScore) || 0;
-                    const homeScore = parseInt(live.homeScore) || 0;
-
-                    if (awayScore > homeScore) {
-                        if (teamStats[awayTeam]) teamStats[awayTeam].w++;
-                        if (teamStats[homeTeam]) teamStats[homeTeam].l++;
-                    } else if (homeScore > awayScore) {
-                        if (teamStats[homeTeam]) teamStats[homeTeam].w++;
-                        if (teamStats[awayTeam]) teamStats[awayTeam].l++;
-                    } else {
-                        if (teamStats[awayTeam]) teamStats[awayTeam].d++;
-                        if (teamStats[homeTeam]) teamStats[homeTeam].d++;
-                    }
-                }
-            });
-
-            // KBO 승률 계산 및 정렬 (승률 = 승 / (승+패), 무승부 제외)
-            let statsArray = Object.values(teamStats);
-            statsArray.forEach(t => {
-                const total = t.w + t.l;
-                t.winRate = total === 0 ? '-' : (t.w / total).toFixed(3);
-                t._calcWinRate = total === 0 ? -1 : (t.w / total);
-            });
-
-            statsArray.sort((a, b) => {
-                // 1순위: 승률
-                if (b._calcWinRate !== a._calcWinRate) return b._calcWinRate - a._calcWinRate;
-                // 2순위: 다승
-                if (b.w !== a.w) return b.w - a.w;
-                return 0; 
-            });
-
-            // KBO 승차(GB) 및 순위 넘버링 계산
-            if (statsArray.length > 0) {
-                const firstTeam = statsArray[0];
-                
-                statsArray.forEach((t, i) => {
-                    // GB = ((1위승 - 내승) + (내패 - 1위패)) / 2
-                    if (i === 0 || firstTeam._calcWinRate === -1) {
-                        t.gb = '-';
-                    } else {
-                        const gb = ((firstTeam.w - t.w) + (t.l - firstTeam.l)) / 2;
-                        t.gb = gb === 0 ? '-' : gb.toString();
-                    }
-
-                    // 공동 순위 적용
-                    if (i > 0) {
-                        const prev = statsArray[i-1];
-                        if (t._calcWinRate === prev._calcWinRate && t.w === prev.w) {
-                            t.rank = prev.rank;
-                        } else {
-                            t.rank = (i + 1).toString();
-                        }
-                    } else {
-                        t.rank = t._calcWinRate === -1 ? '-' : '1';
-                    }
-                });
-            }
-
-            // 파이어베이스 Batch(일괄 처리)로 10개 구단 순위 데이터 안전하게 덮어쓰기
-            try {
-                const batch = db.batch();
-                statsArray.forEach(t => {
-                    const dataToSave = { ...t };
-                    delete dataToSave._calcWinRate; // 계산용 임시변수 제거
-                    
-                    const docRef = db.collection("rankings").doc(t.team);
-                    batch.set(docRef, dataToSave);
-                });
-                await batch.commit();
-                
-                showToast('서버 순위가 완벽하게 동기화되었습니다!');
-            } catch(error) {
-                console.error("순위 업데이트 실패:", error);
-                showToast('순위 반영 중 오류가 발생했습니다.');
-            }
         }
 
         // 🔥 배너 로직 완벽 복구 🔥
