@@ -1332,12 +1332,12 @@
             
             showToast(`🎵 ${title} 재생을 시작합니다.`);
 
-            // 🔥 잠금화면 호환용 PNG 표지 및 UI 로고 세팅 🔥
-            let coverUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/8/87/Kia_Tigers_logo.svg/512px-Kia_Tigers_logo.svg.png';
+            // 🔥 잠금화면 호환용 로컬 PNG 표지 세팅 🔥
+            let coverUrl = 'kia/kia_logo.png';
             let displayCoverUrl = teamLogos['KIA'];
             
             if (title.includes('삼성') || title.includes('엘도라도') || title.includes('구자욱') || title.includes('최형우')) {
-                coverUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Samsung_Lions_logo.svg/512px-Samsung_Lions_logo.svg.png';
+                coverUrl = 'samsung/samsung_logo.png';
                 displayCoverUrl = teamLogos['삼성'];
             }
 
