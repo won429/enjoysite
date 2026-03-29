@@ -110,6 +110,9 @@
     <div style="position: absolute; top: -9999px; left: -9999px; width: 300px; height: 300px;">
         <div id="yt-player"></div>
     </div>
+    
+    <!-- 🔥 잠금화면 탈취용 무음 오디오 (유튜브 Iframe이 잠금화면을 가져가는 것을 막기 위함) 🔥 -->
+    <audio id="silent-audio" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" loop playsinline></audio>
 
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
@@ -1279,36 +1282,35 @@
 
         function updateMediaSession() {
             if ('mediaSession' in navigator && currentSongTitle) {
-                // 🔥 iOS/Android 잠금화면(MediaSession)은 SVG 이미지를 인식하지 못하고 무시하는 버그가 있습니다.
-                // SVG가 들어오면 메타데이터가 깨지면서 유튜브가 설정한 기본 썸네일로 덮어씌워지므로, PNG 이미지로 변환하여 적용합니다.
-                let artworkUrl = currentSongCover;
-                if (currentSongCover.includes('W0yZrMENss')) {
-                    artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/8/87/Kia_Tigers_logo.svg/512px-Kia_Tigers_logo.svg.png';
-                } else if (currentSongCover.includes('j_0SPzwNZ9')) {
+                // 🔥 SVG는 모바일 락스크린에서 무시되므로 고해상도 PNG로 강제 매핑 🔥
+                let artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/8/87/Kia_Tigers_logo.svg/512px-Kia_Tigers_logo.svg.png'; // 기본 KIA
+                if (currentSongCover.includes('j_0SPzwNZ9') || currentSongTitle.includes('삼성')) {
                     artworkUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/4/42/Samsung_Lions_logo.svg/512px-Samsung_Lions_logo.svg.png';
                 }
 
-                const setMetadata = () => {
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: currentSongTitle,
-                        artist: 'KBO 리그 응원가',
-                        artwork: [
-                            { src: artworkUrl, sizes: '512x512', type: 'image/png' },
-                            { src: artworkUrl, sizes: '192x192', type: 'image/png' }
-                        ]
-                    });
-                };
+                // 사이트에 표기된 대로 서브타이틀(가수명) 설정
+                let artistName = '팀 응원가';
+                if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) {
+                    artistName = '선수 응원가';
+                }
 
-                // 초기 세팅
-                setMetadata();
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentSongTitle,
+                    artist: artistName,
+                    artwork: [
+                        { src: artworkUrl, sizes: '512x512', type: 'image/png' },
+                        { src: artworkUrl, sizes: '192x192', type: 'image/png' }
+                    ]
+                });
 
-                // 🔥 유튜브 IFrame이 뒤늦게 락스크린 통제권을 탈취하는 것을 방지하기 위해 강제로 0.5초, 1초, 2초 뒤에 다시 우리 데이터로 덮어씌웁니다.
-                setTimeout(setMetadata, 500);
-                setTimeout(setMetadata, 1000);
-                setTimeout(setMetadata, 2000);
-
-                navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
-                navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
+                navigator.mediaSession.setActionHandler('play', () => { 
+                    if(ytPlayer) ytPlayer.playVideo(); 
+                    document.getElementById('silent-audio').play().catch(()=>{});
+                });
+                navigator.mediaSession.setActionHandler('pause', () => { 
+                    if(ytPlayer) ytPlayer.pauseVideo(); 
+                    document.getElementById('silent-audio').pause();
+                });
             }
         }
 
@@ -1359,10 +1361,13 @@
                 if(event.data == YT.PlayerState.PLAYING) {
                     btn.className = 'fa-solid fa-pause text-base';
                     startProgressBar();
+                    // 🔥 유튜브가 락스크린을 가져가면, 메인 프레임의 무음 오디오를 재생시켜 통제권을 뺏어옵니다 🔥
+                    document.getElementById('silent-audio').play().catch(()=>{});
                     updateMediaSession();
-                } else {
+                } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
                     btn.className = 'fa-solid fa-play text-base ml-0.5';
                     stopProgressBar();
+                    document.getElementById('silent-audio').pause();
                 }
             }
         }
@@ -1379,6 +1384,7 @@
 
         function closeMiniPlayer() {
             if(ytPlayer && isYtReady) ytPlayer.stopVideo();
+            document.getElementById('silent-audio').pause();
             const playerUI = document.getElementById('mini-player');
             playerUI.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
             stopProgressBar();
@@ -1391,6 +1397,9 @@
                 showToast('음원 플레이어 로딩 중입니다. 잠시 후 다시 시도해주세요.');
                 return;
             }
+
+            // 🔥 사용자 클릭 이벤트 안에서 무음 오디오를 미리 재생하여 권한을 얻어둡니다 🔥
+            document.getElementById('silent-audio').play().catch(()=>{});
 
             // 🔥 전체 링크를 넣어도 알아서 유튜브 ID만 추출하는 로직 추가 🔥
             let videoId = urlOrId;
