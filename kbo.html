@@ -12,6 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
+    <!-- 🔥 유튜브 IFrame API 추가 🔥 -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <style>
         @font-face {
             font-family: 'KBO-Dia-Gothic';
@@ -94,11 +97,21 @@
             100% { box-shadow: 0 0 0 0 rgba(234, 0, 41, 0); }
         }
         .live-badge { animation: pulse-ring 2s infinite; }
+
+        /* 🔥 응원가 탭 팀별 표시 로직 🔥 */
+        .cheer-team { display: none; flex-direction: column; gap: 16px; }
+        body[data-theme="KIA"] .cheer-KIA { display: flex; }
+        body[data-theme="삼성"] .cheer-삼성 { display: flex; }
     </style>
 </head>
 <body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden" data-theme="all">
 
-    <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
+    <!-- 🔥 숨겨진 유튜브 플레이어 컨테이너 (안정적인 백그라운드 재생을 위해 화면 밖으로 넉넉하게 배치) 🔥 -->
+    <div style="position: absolute; top: -9999px; left: -9999px; width: 300px; height: 300px;">
+        <div id="yt-player"></div>
+    </div>
+
+    <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
         <!-- 헤더 영역 -->
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20 app-bg">
@@ -189,6 +202,119 @@
             <div class="w-full pt-main pb-10" id="ranking-container"></div>
         </main>
 
+        <!-- 4. 응원가 화면 (곡 목록 선택 UI) -->
+        <main id="cheer-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
+            <div class="w-full pt-main pb-10 flex flex-col items-center h-full px-5">
+                
+                <!-- KIA 응원가 목록 -->
+                <div class="cheer-team cheer-KIA w-full flex-col gap-2 mt-2">
+                    <div class="flex items-center gap-2.5 mb-1.5 px-1">
+                        <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-7 h-7 object-contain drop-shadow-md">
+                        <h2 class="text-lg font-extrabold text-white tracking-tight">KIA 응원가</h2>
+                    </div>
+
+                    <!-- 탭 메뉴 추가 (구단 / 선수) -->
+                    <div class="flex bg-white/5 p-1 rounded-xl mb-1">
+                        <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="flex-1 py-1.5 text-xs font-bold bg-[#ea0029] text-white rounded-lg transition-all shadow-sm">구단</button>
+                        <button onclick="switchCheerTab('kia', 'player')" id="btn-cheer-kia-player" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">선수</button>
+                    </div>
+                    
+                    <!-- 구단 응원가 리스트 -->
+                    <div id="content-cheer-kia-team" class="flex flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('라인업송 재생 준비 중입니다.')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">라인업송</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('남행열차 재생 준비 중입니다.')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">남행열차</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 선수 응원가 리스트 (기본 숨김) -->
+                    <div id="content-cheer-kia-player" class="hidden flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('김도영 응원가 재생 준비 중입니다.')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김도영</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 삼성 응원가 목록 -->
+                <div class="cheer-team cheer-삼성 w-full flex-col gap-2 mt-2">
+                    <div class="flex items-center gap-2.5 mb-1.5 px-1">
+                        <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-7 h-7 object-contain drop-shadow-md">
+                        <h2 class="text-lg font-extrabold text-white tracking-tight">삼성 응원가</h2>
+                    </div>
+                    
+                    <!-- 탭 메뉴 추가 (구단 / 선수) -->
+                    <div class="flex bg-white/5 p-1 rounded-xl mb-1">
+                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-xs font-bold bg-[#2563eb] text-white rounded-lg transition-all shadow-sm">구단</button>
+                        <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">선수</button>
+                    </div>
+
+                    <!-- 구단 응원가 리스트 -->
+                    <div id="content-cheer-samsung-team" class="flex flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('https://youtu.be/3a7a1MXoAhs?si=3bJBZPBVCTZMc7vH', '삼성 라인업송')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">라인업송</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('엘도라도 재생 준비 중입니다.')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">엘도라도</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 선수 응원가 리스트 (기본 숨김) -->
+                    <div id="content-cheer-samsung-player" class="hidden flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="showToast('구자욱 응원가 재생 준비 중입니다.')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">구자욱</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
         <!-- 실시간 매치 센터 (라인업 & 실시간 점수 상세 팝업) -->
         <div id="lineup-popup" class="fixed inset-0 z-[60] hidden flex-col justify-end pointer-events-none">
             <div id="lineup-popup-bg" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeLineupPopup()"></div>
@@ -201,6 +327,21 @@
                 </div>
                 <!-- JS 로직으로 파이어베이스의 실시간 데이터가 이곳에 렌더링 됩니다 -->
                 <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide p-6 relative pb-10"></div>
+            </div>
+        </div>
+
+        <!-- 🔥 미니 플레이어 바 (신규 추가) 🔥 -->
+        <div id="mini-player" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#2C2C2E]/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] p-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none">
+            <div class="flex items-center gap-3 overflow-hidden flex-1 pl-1">
+                <div class="w-10 h-10 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1 shrink-0"><img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-90"></div>
+                <div class="flex flex-col truncate">
+                    <span id="mini-player-title" class="text-[13px] font-bold text-white mb-0.5 truncate">곡 제목</span>
+                    <span class="text-[10px] text-gray-400 font-medium truncate">KBO 리그 응원가</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0 px-2">
+                <button onclick="toggleMiniPlayerPlay()" class="w-8 h-8 flex items-center justify-center text-white active:scale-95 transition-transform"><i id="mini-player-btn" class="fa-solid fa-pause text-base"></i></button>
+                <button onclick="closeMiniPlayer()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-95 transition-transform"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
         </div>
 
@@ -220,6 +361,9 @@
                 </button>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)">
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">순위</span></div>
+                </button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)">
+                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">응원가</span></div>
                 </button>
             </div>
         </nav>
@@ -371,11 +515,12 @@
             currentTabIndex = index;
             if (navigator.vibrate) navigator.vibrate(10);
             
-            // 3개의 스크린 매핑 (설정 화면 제거)
+            // 4개의 스크린 매핑 (응원가 추가)
             const screens = [
                 document.getElementById('calendar-screen'), 
                 document.getElementById('list-screen'), 
-                document.getElementById('ranking-screen')
+                document.getElementById('ranking-screen'),
+                document.getElementById('cheer-screen')
             ];
             closeBottomSheet();
 
@@ -394,6 +539,7 @@
                     if(i === 0) iconName = 'fa-calendar-days';
                     else if(i === 1) iconName = 'fa-list-ul';
                     else if(i === 2) iconName = 'fa-trophy';
+                    else if(i === 3) iconName = 'fa-headphones';
                     
                     icon.className = `fa-solid ${iconName} text-base ${i===index?'text-white':'text-gray-300 transition-colors'}`;
                     label.className = `text-[10px] whitespace-nowrap transition-colors ${i===index?'text-white font-bold':'text-gray-300 font-medium'}`;
@@ -406,10 +552,20 @@
             if (index === 0) mainText.innerHTML = `KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            else if (index === 3) mainText.innerHTML = `구단별 응원가<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
 
             if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
             else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
             else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
+            else if (index === 3) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+
+            const btnTeamAll = document.getElementById('btn-team-all');
+            if (index === 3) {
+                btnTeamAll.style.display = 'none';
+                if (selectedTeam === 'all') setTeamFilter('KIA');
+            } else {
+                btnTeamAll.style.display = '';
+            }
 
             screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
 
@@ -1075,6 +1231,117 @@
             const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet');
             bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full');
             setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300);
+        }
+
+        // 🔥 응원가 탭 (구단/선수) 전환 로직 🔥
+        function switchCheerTab(team, type) {
+            const btnTeam = document.getElementById(`btn-cheer-${team}-team`);
+            const btnPlayer = document.getElementById(`btn-cheer-${team}-player`);
+            const contentTeam = document.getElementById(`content-cheer-${team}-team`);
+            const contentPlayer = document.getElementById(`content-cheer-${team}-player`);
+            
+            const pointColor = team === 'kia' ? 'bg-[#ea0029]' : 'bg-[#2563eb]';
+
+            if (type === 'team') {
+                btnTeam.className = `flex-1 py-1.5 text-xs font-bold ${pointColor} text-white rounded-lg transition-all shadow-sm`;
+                btnPlayer.className = 'flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all';
+                contentTeam.classList.remove('hidden'); contentTeam.classList.add('flex');
+                contentPlayer.classList.add('hidden'); contentPlayer.classList.remove('flex');
+            } else {
+                btnPlayer.className = `flex-1 py-1.5 text-xs font-bold ${pointColor} text-white rounded-lg transition-all shadow-sm`;
+                btnTeam.className = 'flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all';
+                contentPlayer.classList.remove('hidden'); contentPlayer.classList.add('flex');
+                contentTeam.classList.add('hidden'); contentTeam.classList.remove('flex');
+            }
+        }
+
+        // 🔥 숨겨진 유튜브 플레이어 로직 🔥
+        let ytPlayer;
+        let isYtReady = false;
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('yt-player', {
+                height: '300',
+                width: '300',
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'playsinline': 1,
+                    'rel': 0,
+                    'enablejsapi': 1,
+                    'origin': window.location.origin !== 'null' ? window.location.origin : '*'
+                },
+                events: {
+                    'onReady': function() { isYtReady = true; },
+                    'onStateChange': onPlayerStateChange,
+                    'onError': function(e) {
+                        if(e.data === 101 || e.data === 150) showToast('해당 영상은 유튜버가 외부 재생을 막아두었습니다. 다른 링크가 필요합니다!');
+                        else showToast('음원 재생 중 오류가 발생했습니다.');
+                    }
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const btn = document.getElementById('mini-player-btn');
+            if (btn) {
+                if(event.data == YT.PlayerState.PLAYING) {
+                    btn.className = 'fa-solid fa-pause text-base';
+                } else {
+                    btn.className = 'fa-solid fa-play text-base ml-0.5';
+                }
+            }
+        }
+
+        function toggleMiniPlayerPlay() {
+            if(!ytPlayer || !isYtReady) return;
+            const state = ytPlayer.getPlayerState();
+            if(state === YT.PlayerState.PLAYING) {
+                ytPlayer.pauseVideo();
+            } else {
+                ytPlayer.playVideo();
+            }
+        }
+
+        function closeMiniPlayer() {
+            if(ytPlayer && isYtReady) ytPlayer.stopVideo();
+            const playerUI = document.getElementById('mini-player');
+            playerUI.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+        }
+
+        function playCheerSong(urlOrId, title) {
+            if (!isYtReady || !ytPlayer || typeof ytPlayer.loadVideoById !== 'function') {
+                showToast('음원 플레이어 로딩 중입니다. 잠시 후 다시 시도해주세요.');
+                return;
+            }
+
+            // 🔥 전체 링크를 넣어도 알아서 유튜브 ID만 추출하는 로직 추가 🔥
+            let videoId = urlOrId;
+            if (urlOrId.includes('youtu.be/')) {
+                videoId = urlOrId.split('youtu.be/')[1].split('?')[0];
+            } else if (urlOrId.includes('v=')) {
+                videoId = urlOrId.split('v=')[1].split('&')[0];
+            }
+
+            // 🔥 미리보기 환경 호환성을 위해 재생 및 볼륨 설정 순서 교정 🔥
+            ytPlayer.loadVideoById(videoId); 
+            ytPlayer.playVideo();
+            ytPlayer.unMute(); 
+            ytPlayer.setVolume(100);
+            
+            showToast(`🎵 ${title} 재생을 시작합니다.`);
+
+            // 🔥 미니 플레이어 띄우기 및 정보 업데이트 🔥
+            let coverUrl = teamLogos['KIA']; // 기본값
+            if (title.includes('삼성') || title.includes('엘도라도') || title.includes('구자욱')) {
+                coverUrl = teamLogos['삼성'];
+            }
+
+            document.getElementById('mini-player-title').innerText = title;
+            document.getElementById('mini-player-cover').src = coverUrl;
+            
+            const playerUI = document.getElementById('mini-player');
+            playerUI.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
         }
 
         // 앱 구동 시작점!
