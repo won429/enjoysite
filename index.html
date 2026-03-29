@@ -871,25 +871,25 @@
             </div>
             
             <!-- 현황 요약 -->
-            <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="grid grid-cols-2 gap-3 mb-6 items-start">
                 <!-- 부과금 -->
-                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[140px]">
+                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col min-h-[140px]">
                     <div class="mb-2">
                         <h3 class="text-[13px] font-semibold text-gray-400">부과금 및 유예 현황</h3>
                     </div>
-                    <div id="penalty-list-mini" class="flex flex-col flex-wrap content-start gap-y-1.5 gap-x-4 h-[88px] overflow-x-auto overflow-y-hidden scrollbar-hide pb-1"></div>
+                    <div id="penalty-list-mini" class="flex flex-col gap-y-1.5 pb-1 w-full"></div>
                 </div>
 
                 <!-- 면제권 -->
-                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col h-[140px]">
+                <div class="bg-[#1C1C1E] rounded-[20px] p-4 flex flex-col min-h-[140px]">
                     <div class="mb-2">
                         <h3 class="text-[13px] font-semibold text-gray-400">면제권 보유</h3>
                     </div>
-                    <div id="ticket-list-mini" class="flex flex-col flex-wrap content-start gap-y-1.5 gap-x-4 h-[88px] overflow-x-auto overflow-y-hidden scrollbar-hide pb-1"></div>
+                    <div id="ticket-list-mini" class="flex flex-col gap-y-1.5 pb-1 w-full"></div>
                 </div>
             </div>
 
-            <!-- 회비 납부 내역 (초깔끔 무테두리 미니 미니멀 리스트) -->
+            <!-- 회비 납부 내역 (초깔끔 무테두리 미니멀 리스트) -->
             <div class="pb-28">
                 <div class="flex justify-between items-end mb-2 px-2">
                     <h3 class="text-[18px] font-bold text-white tracking-tight">납부 내역</h3>
@@ -1367,19 +1367,35 @@
 
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             
-            const now = new Date(); const currentRealMonth = now.getMonth() + 1;
+            const now = new Date(); 
+            const currentRealMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
             let htmlPenalty = ''; let hasPenalty = false;
             
             if (window.meetingData && window.meetingData.records) {
-                for(let m=1; m < currentRealMonth; m++) {
+                for(let m=1; m <= currentRealMonth; m++) {
                     const records = window.meetingData.records[m] || [];
+                    const lastDay = new Date(currentYear, m, 0).getDate();
                     records.forEach(mem => {
                         if(mem.status === 'unpaid') {
-                             hasPenalty = true; 
-                             htmlPenalty += `<div class="w-[130px] flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452] shrink-0">${m}월 미납</span></div>`;
+                             let statusText = '';
+                             let showPenalty = false;
+                             
+                             if (m < currentRealMonth) {
+                                 statusText = `${m}월 부과금 확정`;
+                                 showPenalty = true;
+                             } else if (m === currentRealMonth && now.getDate() >= lastDay - 5) {
+                                 statusText = `${m}월 부과금 예정`;
+                                 showPenalty = true;
+                             }
+
+                             if (showPenalty) {
+                                 hasPenalty = true; 
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452] shrink-0">${statusText}</span></div>`;
+                             }
                         } else if(mem.status === 'deferred') {
                              hasPenalty = true; 
-                             htmlPenalty += `<div class="w-[130px] flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-amber-400 shrink-0">${m}월 유예</span></div>`;
+                             htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-amber-400 shrink-0">${m}월 유예</span></div>`;
                         }
                     });
                 }
@@ -1393,7 +1409,7 @@
             for (const [name, count] of Object.entries(exemptions)) {
                 if (count > 0) {
                     hasTicket = true;
-                    htmlTicket += `<div class="w-[130px] flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${name}</span><span class="text-[12px] font-semibold text-[#3182F6] shrink-0">${count}개</span></div>`;
+                    htmlTicket += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${name}</span><span class="text-[12px] font-semibold text-[#3182F6] shrink-0">${count}개</span></div>`;
                 }
             }
             if (!hasTicket) htmlTicket = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-ticket-simple mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">보유자 없음</span></div>`;
@@ -1436,17 +1452,35 @@
                 let amtText = '미납';
                 let statusText = '미납 상태';
                 let statusColorClass = 'text-[#F04452]';
+                let penaltyText = m.penalty || '';
+
+                const now = new Date();
+                const currentRealMonth = now.getMonth() + 1;
+                const currentYear = now.getFullYear();
+                const lastDay = new Date(currentYear, month, 0).getDate();
+
+                if (!isPaid && !isDeferred) {
+                    if (month < currentRealMonth) {
+                        if (!penaltyText) penaltyText = '미납부로 인한 부과금 10,000원 발생';
+                    } else if (month === currentRealMonth && now.getDate() >= lastDay - 5) {
+                        penaltyText = '부과금 10,000원 다음달 부과 예정';
+                    } else if (month === currentRealMonth && now.getDate() < lastDay - 5) {
+                        penaltyText = '';
+                    }
+                }
 
                 if (isPaid) {
                     amtClass = 'text-white';
                     amtText = `${m.amount.toLocaleString()}원`;
                     statusText = '납부완료';
                     statusColorClass = 'text-[#8B95A1]';
+                    penaltyText = '';
                 } else if (isDeferred) {
                     amtClass = 'text-amber-400';
                     amtText = '다음달 합산';
                     statusText = '납부 유예';
                     statusColorClass = 'text-amber-400';
+                    penaltyText = '';
                 }
 
                 const badge = m.isLeader ? `<span class="bg-[#2C2C2E] text-gray-400 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1.5 inline-flex items-center justify-center leading-none">회장</span>` : '';
@@ -1470,7 +1504,7 @@
                             <span class="text-[17px] font-bold ${amtClass} tracking-tight">${amtText}</span>
                         </div>
                     </div>
-                    ${m.penalty ? `<div class="ml-[56px] mt-1 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${m.penalty}</div>` : ''}
+                    ${penaltyText ? `<div class="ml-[56px] mt-1 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${penaltyText}</div>` : ''}
                 </div>`;
             });
         };
@@ -1540,7 +1574,9 @@
             const holidays = window.getHolidays(year, month); Object.keys(holidays).forEach(k => { events[k] = (events[k] || []).concat(holidays[k]); });
             
             const duesAmount = year >= 2026 ? '20,000원' : '15,000원';
-            events[`${keyPrefix}-06`] = (events[`${keyPrefix}-06`]||[]).concat([{ type: 'dues', title: '회비 납부일 💰', time: duesAmount }]);
+            const lastDayOfMonth = new Date(year, month, 0).getDate();
+            const duesDateStr = `${keyPrefix}-${String(lastDayOfMonth).padStart(2, '0')}`;
+            events[duesDateStr] = (events[duesDateStr]||[]).concat([{ type: 'dues', title: '회비 납부일 💰', time: duesAmount }]);
             
             const birthdays = { '01-02': '전시기 생일 🎂', '03-22': '이진누 생일 🎂', '04-01': '오스틴 생일 🎂', '06-05': '홍박사 생일 🎂', '06-12': '류짱 생일 🎂', '10-15': '성원제 생일 🎂' }; Object.entries(birthdays).forEach(([d, t]) => { const [m, day] = d.split('-'); if (parseInt(m) === month) { const k = `${keyPrefix}-${day}`; events[k] = (events[k] || []).concat([{ type: 'bday', title: t, time: '하루 종일' }]); } });
             if(month===6) { const l = new Date(year, month, 0).getDate(); const a = year - 2024; for(let i=1; i<=l; i++) { const k = `${keyPrefix}-${String(i).padStart(2,'0')}`; events[k] = (events[k]||[]).concat([{type:'anniv', title:`엔조이 ${a}주년 🎉`, time:'하루종일'}]); } }
