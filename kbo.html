@@ -198,8 +198,8 @@
         </main>
 
         <!-- 4. 응원가 화면 (곡 목록 선택 UI) -->
-        <main id="cheer-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-36">
-            <div class="w-full pt-main pb-24 flex flex-col items-center min-h-full px-5">
+        <main id="cheer-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide">
+            <div class="w-full pt-main pb-[220px] flex flex-col items-center px-5">
                 
                 <!-- KIA 응원가 목록 -->
                 <div class="cheer-team cheer-KIA w-full flex-col gap-2 mt-2">
@@ -212,6 +212,8 @@
                     <div class="flex bg-white/5 p-1 rounded-xl mb-1">
                         <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="flex-1 py-1.5 text-xs font-bold bg-[#ea0029] text-white rounded-lg transition-all shadow-sm">구단</button>
                         <button onclick="switchCheerTab('kia', 'player')" id="btn-cheer-kia-player" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">선수</button>
+                        <button onclick="switchCheerTab('kia', 'hitout')" id="btn-cheer-kia-hitout" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">안타/아웃</button>
+                        <button onclick="switchCheerTab('kia', 'entrance')" id="btn-cheer-kia-entrance" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">등장곡</button>
                     </div>
                     
                     <!-- 구단 응원가 리스트 -->
@@ -263,6 +265,16 @@
                             <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                         </div>
                     </div>
+
+                    <!-- 안타/아웃송 리스트 (기본 숨김) -->
+                    <div id="content-cheer-kia-hitout" class="hidden flex-col gap-2">
+                        <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
+                    </div>
+
+                    <!-- 등장곡 리스트 (기본 숨김) -->
+                    <div id="content-cheer-kia-entrance" class="hidden flex-col gap-2">
+                        <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
+                    </div>
                 </div>
 
                 <!-- 삼성 응원가 목록 -->
@@ -276,6 +288,8 @@
                     <div class="flex bg-white/5 p-1 rounded-xl mb-1">
                         <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-xs font-bold bg-[#2563eb] text-white rounded-lg transition-all shadow-sm">구단</button>
                         <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">선수</button>
+                        <button onclick="switchCheerTab('samsung', 'hitout')" id="btn-cheer-samsung-hitout" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">안타/아웃</button>
+                        <button onclick="switchCheerTab('samsung', 'entrance')" id="btn-cheer-samsung-entrance" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">등장곡</button>
                     </div>
 
                     <!-- 구단 응원가 리스트 -->
@@ -579,6 +593,16 @@
                             </div>
                             <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                         </div>
+                    </div>
+
+                    <!-- 안타/아웃송 리스트 (기본 숨김) -->
+                    <div id="content-cheer-samsung-hitout" class="hidden flex-col gap-2">
+                        <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
+                    </div>
+
+                    <!-- 등장곡 리스트 (기본 숨김) -->
+                    <div id="content-cheer-samsung-entrance" class="hidden flex-col gap-2">
+                        <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
                 </div>
 
@@ -1487,24 +1511,22 @@
         }
 
         function switchCheerTab(team, type) {
-            const btnTeam = document.getElementById(`btn-cheer-${team}-team`);
-            const btnPlayer = document.getElementById(`btn-cheer-${team}-player`);
-            const contentTeam = document.getElementById(`content-cheer-${team}-team`);
-            const contentPlayer = document.getElementById(`content-cheer-${team}-player`);
-            
+            const types = ['team', 'player', 'hitout', 'entrance'];
             const pointColor = team === 'kia' ? 'bg-[#ea0029]' : 'bg-[#2563eb]';
 
-            if (type === 'team') {
-                btnTeam.className = `flex-1 py-1.5 text-xs font-bold ${pointColor} text-white rounded-lg transition-all shadow-sm`;
-                btnPlayer.className = 'flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all';
-                contentTeam.classList.remove('hidden'); contentTeam.classList.add('flex');
-                contentPlayer.classList.add('hidden'); contentPlayer.classList.remove('flex');
-            } else {
-                btnPlayer.className = `flex-1 py-1.5 text-xs font-bold ${pointColor} text-white rounded-lg transition-all shadow-sm`;
-                btnTeam.className = 'flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all';
-                contentPlayer.classList.remove('hidden'); contentPlayer.classList.add('flex');
-                contentTeam.classList.add('hidden'); contentTeam.classList.remove('flex');
-            }
+            types.forEach(t => {
+                const btn = document.getElementById(`btn-cheer-${team}-${t}`);
+                const content = document.getElementById(`content-cheer-${team}-${t}`);
+                if (!btn || !content) return;
+
+                if (t === type) {
+                    btn.className = `flex-1 py-1.5 text-xs font-bold ${pointColor} text-white rounded-lg transition-all shadow-sm`;
+                    content.classList.remove('hidden'); content.classList.add('flex');
+                } else {
+                    btn.className = `flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all`;
+                    content.classList.add('hidden'); content.classList.remove('flex');
+                }
+            });
         }
 
         // 🔥 HTML5 오디오 플레이어 로직 (MP3 로컬 파일용) 🔥
