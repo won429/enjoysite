@@ -442,7 +442,7 @@
 
         <!-- [New] KBO 리그 일정 보러가기 (알약 모양 버튼) -->
         <div class="-mt-2 mb-2 px-1 fade-in-up delay-150">
-            <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/enjoy_ballbase/')" class="relative overflow-hidden w-full bg-gradient-to-br from-red-400/25 to-blue-400/25 text-white font-bold text-[16px] py-2 rounded-full flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-white/5 active:scale-95 transition-transform">
+            <button onclick="window.haptic(); window.location.href='kbo.html'" class="relative overflow-hidden w-full bg-gradient-to-br from-red-400/25 to-blue-400/25 text-white font-bold text-[16px] py-2 rounded-full flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-white/5 active:scale-95 transition-transform">
                 <!-- 좌측 은은하게 비치는 구단 로고 -->
                 <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="absolute -left-2 top-1/2 -translate-y-1/2 w-16 h-16 opacity-20 -rotate-12 pointer-events-none" alt="좌측 구단 로고">
                 <!-- 우측 은은하게 비치는 구단 로고 -->
@@ -731,7 +731,7 @@
                 <h4 class="text-[13px] font-bold text-gray-500 mb-2 px-2">소통 & 플레이</h4>
                 <div class="flex flex-col">
                     <!-- KBO 리그 -->
-                    <button onclick="window.haptic(); window.openBrowser('https://won429.github.io/enjoy_ballbase/')" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
+                    <button onclick="window.haptic(); window.location.href='kbo.html'" class="w-full flex items-center py-3 px-2 active:opacity-50 transition-opacity">
                         <div class="w-10 h-10 rounded-[12px] bg-sky-500/15 flex items-center justify-center text-sky-400 text-[16px] mr-3.5 shrink-0">
                             <i class="fa-solid fa-baseball"></i>
                         </div>
@@ -895,7 +895,7 @@
                     <h3 class="text-[18px] font-bold text-white tracking-tight">납부 내역</h3>
                     <div class="flex items-center gap-3">
                         <button onclick="window.haptic(); window.changeDuesMonth(-1)" class="text-gray-500 hover:text-white active:scale-90 transition-all px-1"><i class="fa-solid fa-chevron-left text-[14px]"></i></button>
-                        <span id="dues-month-title" class="text-[15px] font-bold text-white min-w-[32px] text-center">1월</span>
+                        <span id="dues-month-title" class="text-[15px] font-bold text-white min-w-[70px] text-center">2026년 1월</span>
                         <button onclick="window.haptic(); window.changeDuesMonth(1)" class="text-gray-500 hover:text-white active:scale-90 transition-all px-1"><i class="fa-solid fa-chevron-right text-[14px]"></i></button>
                     </div>
                 </div>
@@ -1026,6 +1026,7 @@
     <script>
         // Global Variables
         window.meetingData = null;
+        window.currentDuesYear = new Date().getFullYear();
         // [Modified] 1(1월)로 고정되어 있던 값을 현재 날짜 기준(new Date().getMonth() + 1)으로 변경
         window.currentDuesMonth = new Date().getMonth() + 1; 
         window.dynamicEvents = {};
@@ -1186,9 +1187,22 @@
         
         window.changeDuesMonth = function(delta) { 
             window.currentDuesMonth += delta; 
-            if (window.currentDuesMonth < 1) window.currentDuesMonth = 12; 
-            if (window.currentDuesMonth > 12) window.currentDuesMonth = 1; 
-            window.renderDues(window.currentDuesMonth); 
+            if (window.currentDuesMonth < 1) {
+                window.currentDuesMonth = 12; 
+                window.currentDuesYear--;
+            }
+            if (window.currentDuesMonth > 12) {
+                window.currentDuesMonth = 1; 
+                window.currentDuesYear++;
+            }
+            
+            // 2025년 10월 이전으로는 넘어가지 못하도록 제한
+            if (window.currentDuesYear < 2025 || (window.currentDuesYear === 2025 && window.currentDuesMonth < 10)) {
+                window.currentDuesYear = 2025;
+                window.currentDuesMonth = 10;
+            }
+
+            window.renderDues(window.currentDuesMonth, window.currentDuesYear); 
         }
         
         window.updateMeetingUI = function(data) { 
@@ -1211,7 +1225,7 @@
             }
             const balanceEl = document.getElementById('total-balance'); 
             if (balanceEl) balanceEl.innerHTML = (data.totalBalance || 0).toLocaleString() + '<span class="text-[22px] font-bold text-white ml-1">원</span>'; 
-            window.renderDues(window.currentDuesMonth); 
+            window.renderDues(window.currentDuesMonth, window.currentDuesYear); 
         };
         
         window.openAddScheduleModal = () => { 
@@ -1350,9 +1364,9 @@
                 totalBalance: 448999, 
                 exemptions: { '류짱': 1, '성원제': 1, '전시기': 1 },
                 records: { 
-                    10: [ { name: '오스틴', status: 'unpaid', amount: 0, penalty: '미납부로 인한 부과금 10,000원 발생' }, { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
-                    11: [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 16000 }, { name: '오스틴', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
-                    12: [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'unpaid', amount: 0 }, { name: '오스틴', status: 'unpaid', amount: 0 }, { name: '전시기', status: 'unpaid', amount: 0, isLeader: true }, { name: '이진누', status: 'unpaid', amount: 0 }, { name: '성원제', status: 'unpaid', amount: 0 } ] 
+                    "2025-10": [ { name: '오스틴', status: 'unpaid', amount: 0, penalty: '미납부로 인한 부과금 10,000원 발생' }, { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
+                    "2025-11": [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 16000 }, { name: '오스틴', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
+                    "2025-12": [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'unpaid', amount: 0 }, { name: '오스틴', status: 'unpaid', amount: 0 }, { name: '전시기', status: 'unpaid', amount: 0, isLeader: true }, { name: '이진누', status: 'unpaid', amount: 0 }, { name: '성원제', status: 'unpaid', amount: 0 } ] 
                 } 
             }; 
         }
@@ -1373,31 +1387,38 @@
             let htmlPenalty = ''; let hasPenalty = false;
             
             if (window.meetingData && window.meetingData.records) {
-                for(let m=1; m <= currentRealMonth; m++) {
-                    const records = window.meetingData.records[m] || [];
-                    const lastDay = new Date(currentYear, m, 0).getDate();
-                    records.forEach(mem => {
-                        if(mem.status === 'unpaid') {
-                             let statusText = '';
-                             let showPenalty = false;
-                             
-                             if (m < currentRealMonth) {
-                                 statusText = `${m}월 부과금 확정`;
-                                 showPenalty = true;
-                             } else if (m === currentRealMonth && now.getDate() >= lastDay - 5) {
-                                 statusText = `${m}월 부과금 예정`;
-                                 showPenalty = true;
-                             }
+                const startYear = 2025;
+                for (let y = startYear; y <= currentYear; y++) {
+                    const endMonth = (y === currentYear) ? currentRealMonth : 12;
+                    for (let m = 1; m <= endMonth; m++) {
+                        const key = `${y}-${m}`;
+                        const isLegacy2025 = (y === 2025 && m >= 10);
+                        const isLegacy2026 = (y === 2026 && m <= 9);
+                        const records = window.meetingData.records[key] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[m] : null) || [];
+                        const lastDay = new Date(y, m, 0).getDate();
+                        records.forEach(mem => {
+                            if(mem.status === 'unpaid') {
+                                 let statusText = '';
+                                 let showPenalty = false;
+                                 
+                                 if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
+                                     statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 부과금 확정`;
+                                     showPenalty = true;
+                                 } else if (y === currentYear && m === currentRealMonth && now.getDate() >= lastDay - 5) {
+                                     statusText = `${m}월 부과금 예정`;
+                                     showPenalty = true;
+                                 }
 
-                             if (showPenalty) {
+                                 if (showPenalty) {
+                                     hasPenalty = true; 
+                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452] shrink-0">${statusText}</span></div>`;
+                                 }
+                            } else if(mem.status === 'deferred') {
                                  hasPenalty = true; 
-                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-[#F04452] shrink-0">${statusText}</span></div>`;
-                             }
-                        } else if(mem.status === 'deferred') {
-                             hasPenalty = true; 
-                             htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-amber-400 shrink-0">${m}월 유예</span></div>`;
-                        }
-                    });
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[13px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[12px] font-semibold text-yellow-400 shrink-0">${y !== currentYear ? y+'년 ' : ''}${m}월 유예</span></div>`;
+                            }
+                        });
+                    }
                 }
             }
             if (!hasPenalty) htmlPenalty = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-lg"></i><span class="text-[12px] font-semibold text-gray-400">미납/유예 없음</span></div>`;
@@ -1416,23 +1437,35 @@
             ticketListMini.innerHTML = htmlTicket;
         }
 
-        window.renderDues = function(month) {
+        window.renderDues = function(month, year = window.currentDuesYear) {
             const list = document.getElementById('dues-list'); 
             const title = document.getElementById('dues-month-title'); 
             if(!list) return; 
             
-            title.innerText = `${month}월`; 
+            title.innerText = `${year}년 ${month}월`; 
             
             list.innerHTML = '';
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             
-            if (window.meetingData.records && !window.meetingData.records[month]) {
-                window.meetingData.records[month] = createEmptyMonthData();
+            const monthKey = `${year}-${month}`;
+            
+            if (window.meetingData.records && !window.meetingData.records[monthKey]) {
+                const isLegacy2025 = (year === 2025 && month >= 10);
+                const isLegacy2026 = (year === 2026 && month <= 9);
+                if ((isLegacy2025 || isLegacy2026) && window.meetingData.records[month]) {
+                    // Legacy key exists, do nothing
+                } else {
+                    window.meetingData.records[monthKey] = createEmptyMonthData();
+                }
             }
 
             if(window.activeTabIndex === 4) window.renderMeetingStatus();
             let records = []; 
-            if (window.meetingData && window.meetingData.records) { records = window.meetingData.records[month] || []; }
+            if (window.meetingData && window.meetingData.records) { 
+                const isLegacy2025 = (year === 2025 && month >= 10);
+                const isLegacy2026 = (year === 2026 && month <= 9);
+                records = window.meetingData.records[monthKey] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[month] : []) || []; 
+            }
             
             let displayRecords = [...records];
             displayRecords.sort((a, b) => {
@@ -1453,19 +1486,98 @@
                 let statusText = '미납 상태';
                 let statusColorClass = 'text-[#F04452]';
                 let penaltyText = m.penalty || '';
+                let penaltyColorClass = 'text-[#F04452]/90';
 
                 const now = new Date();
                 const currentRealMonth = now.getMonth() + 1;
                 const currentYear = now.getFullYear();
-                const lastDay = new Date(currentYear, month, 0).getDate();
+                const lastDay = new Date(year, month, 0).getDate();
+
+                let prevYear = year;
+                let prevMonth = month - 1;
+                if (prevMonth < 1) {
+                    prevMonth = 12;
+                    prevYear--;
+                }
+                const prevMonthKey = `${prevYear}-${prevMonth}`;
+                let prevRecords = [];
+                if (window.meetingData && window.meetingData.records) {
+                    const isPrevLegacy2025 = (prevYear === 2025 && prevMonth >= 10);
+                    const isPrevLegacy2026 = (prevYear === 2026 && prevMonth <= 9);
+                    prevRecords = window.meetingData.records[prevMonthKey] || ((isPrevLegacy2025 || isPrevLegacy2026) ? window.meetingData.records[prevMonth] : []) || [];
+                }
+                const prevMember = prevRecords.find(pm => pm.name === m.name);
+                
+                let currentBaseDues = year >= 2026 ? 20000 : 15000;
+                let totalOwed = currentBaseDues;
+                let carryOverTexts = [];
+                let prevMemberDeferred = false;
+
+                let isPrevPastDue = (prevYear < currentYear || (prevYear === currentYear && prevMonth < currentRealMonth));
+
+                if (prevMember) {
+                    let prevBaseDues = prevYear >= 2026 ? 20000 : 15000;
+                    if (prevMember.status === 'unpaid' && isPrevPastDue) {
+                        let isPrevExempted = prevMember.ticketUsed || (prevMember.penalty && prevMember.penalty.includes('면제'));
+                        if (isPrevExempted) {
+                            totalOwed += prevBaseDues;
+                            carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 미납 (부과금 면제)`);
+                        } else {
+                            totalOwed += (prevBaseDues + 10000);
+                            carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 미납 + 부과금 10,000원 발생`);
+                        }
+                    } else if (prevMember.status === 'deferred') {
+                        totalOwed += prevBaseDues;
+                        carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 유예`);
+                        prevMemberDeferred = true;
+                    }
+                }
 
                 if (!isPaid && !isDeferred) {
-                    if (month < currentRealMonth) {
-                        if (!penaltyText) penaltyText = '미납부로 인한 부과금 10,000원 발생';
-                    } else if (month === currentRealMonth && now.getDate() >= lastDay - 5) {
-                        penaltyText = '부과금 10,000원 다음달 부과 예정';
-                    } else if (month === currentRealMonth && now.getDate() < lastDay - 5) {
+                    let isPastDue = (year < currentYear || (year === currentYear && month < currentRealMonth));
+                    let isWarningPeriod = (year === currentYear && month === currentRealMonth && now.getDate() >= lastDay - 5);
+                    let hasCarryOver = (carryOverTexts.length > 0);
+                    let isExempted = m.ticketUsed || (m.penalty && m.penalty.includes('면제'));
+
+                    if (isPastDue || isWarningPeriod || hasCarryOver) {
+                        amtText = `총 ${totalOwed.toLocaleString()}원 미납`;
+                        statusText = '미납 상태';
+                        
+                        if (prevMemberDeferred) {
+                            statusColorClass = 'text-yellow-400';
+                            amtClass = 'text-yellow-400';
+                            penaltyColorClass = 'text-yellow-400/90';
+                        } else {
+                            statusColorClass = 'text-[#F04452]';
+                            amtClass = 'text-[#F04452]';
+                            penaltyColorClass = 'text-[#F04452]/90';
+                        }
+
+                        if (isPastDue) {
+                            if (isExempted) {
+                                if (!penaltyText) penaltyText = '부과금 만원 면제';
+                                penaltyColorClass = 'text-[#3182F6]/90'; // 파란색 표시
+                            } else if (!penaltyText) {
+                                penaltyText = '미납부로 인한 부과금 10,000원 발생';
+                            }
+                        } else {
+                            penaltyText = '';
+                        }
+                    } else {
+                        amtText = `${totalOwed.toLocaleString()}원 납부 전`;
+                        statusText = '납부 전';
+                        statusColorClass = 'text-[#3182F6]';
+                        amtClass = 'text-[#3182F6]';
+                        penaltyColorClass = 'text-[#3182F6]/90';
                         penaltyText = '';
+                    }
+
+                    if (carryOverTexts.length > 0) {
+                        if (penaltyText) {
+                            penaltyText = carryOverTexts.join(', ') + ' / ' + penaltyText;
+                        } else {
+                            penaltyText = carryOverTexts.join(', ');
+                        }
                     }
                 }
 
@@ -1476,10 +1588,10 @@
                     statusColorClass = 'text-[#8B95A1]';
                     penaltyText = '';
                 } else if (isDeferred) {
-                    amtClass = 'text-amber-400';
+                    amtClass = 'text-yellow-400';
                     amtText = '다음달 합산';
                     statusText = '납부 유예';
-                    statusColorClass = 'text-amber-400';
+                    statusColorClass = 'text-yellow-400';
                     penaltyText = '';
                 }
 
@@ -1504,7 +1616,7 @@
                             <span class="text-[17px] font-bold ${amtClass} tracking-tight">${amtText}</span>
                         </div>
                     </div>
-                    ${penaltyText ? `<div class="ml-[56px] mt-1 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${penaltyText}</div>` : ''}
+                    ${penaltyText ? `<div class="ml-[56px] mt-1 text-[12px] ${penaltyColorClass} font-medium leading-snug">· ${penaltyText}</div>` : ''}
                 </div>`;
             });
         };
@@ -1738,7 +1850,7 @@
             else if(index===4) { 
                 meet.classList.remove('hidden'); 
                 meet.classList.add('flex'); 
-                window.renderDues(window.currentDuesMonth); 
+                window.renderDues(window.currentDuesMonth, window.currentDuesYear); 
             }
 
             const ind = document.getElementById('nav-indicator');
