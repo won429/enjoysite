@@ -206,6 +206,25 @@
 
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
+                <!-- [New] 슬라이드 4: 출장엔조이 3화 공개 예정 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')">
+                    <div class="absolute inset-0">
+                        <img src="banner_5.jpg" class="w-full h-full object-cover object-[50%_80%] opacity-80" onerror="this.style.display='none'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                    </div>
+                    
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                        <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">출장엔조이 3화.</h2>
+                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                            드디어 다가오는 3화! 이번주 공개 예정입니다. 기대해주세요.
+                        </p>
+                        <div class="bg-white text-black font-bold text-[15px] whitespace-nowrap py-1.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[92px] flex items-center justify-center active:scale-95 transition-transform">
+                            기대하기
+                        </div>
+                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">출장엔조이 절찬 스트리밍 중</p>
+                    </div>
+                </div>
+
                 <!-- [New] 슬라이드 0: 엔쪽이 브이로그 (과거 여행) (첫번째로 이동) -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')">
                     <div class="absolute inset-0">
@@ -328,95 +347,6 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 2: 출장엔조이 OST 공개 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black" onclick="window.haptic(); window.goToMusic()">
-                    <div class="absolute inset-0">
-                        <img src="banner_4.jpg" class="w-full h-full object-cover object-[50%_80%] opacity-80" onerror="this.style.display='none'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                    </div>
-                    
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
-                        <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">출장엔조이 오리지널 사운드트랙.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
-                            여행의 기억이 음악이 되는 순간. 눈을 감고 그날의 온기를 다시 느껴보세요.
-                        </p>
-                        <div class="bg-white text-black font-bold text-[15px] whitespace-nowrap py-1.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[92px] flex items-center justify-center active:scale-95 transition-transform">
-                            감상하기
-                        </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">언제 어디서든, 무제한 감상 지원</p>
-                    </div>
-                </div>
-
-                <!-- 슬라이드 3: 모임비 인상 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.showDuesModal();">
-                    <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <!-- 동적 맥박 글로우 (지폐 색상에 맞춘 에메랄드 톤) -->
-                        <div class="absolute w-[300px] h-[300px] bg-emerald-500/20 rounded-full blur-[90px] animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none" style="animation-delay: 1s;"></div>
-                        
-                        <!-- 오가닉 변형 메쉬 그래픽 (반대 방향 회전) -->
-                        <div class="absolute w-48 h-48 bg-gradient-to-bl from-emerald-400/40 via-green-500/30 to-teal-500/20 blur-2xl animate-custom-blob pointer-events-none" style="animation-direction: reverse;"></div>
-                        
-                        <!-- 모임비 인상 모션 컨테이너 (틀 완전 제거) -->
-                        <div class="relative flex flex-col items-center justify-center z-10 group-hover:scale-110 transition-transform duration-500">
-                            <div class="relative flex items-center justify-center">
-                                <!-- [New] 기존 drop-shadow를 대체하여 깨짐을 방지하는 안전한 배경 빛 번짐 -->
-                                <div class="absolute w-[100px] h-[100px] bg-emerald-400/20 blur-[20px] rounded-full"></div>
-                                
-                                <!-- 1만원짜 지폐 2장과 상승 화살표 그리기 커스텀 SVG (overflow="visible" 및 drop-shadow 제거로 깨짐 완벽 방지) -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-[130px] h-[130px] relative z-10" viewBox="0 0 120 120" overflow="visible">
-                                    <!-- 계단형 상승 화살표 -->
-                                    <path d="M -5 95 H 25 V 60 H 55 V 25 H 85 V -5" fill="none" stroke="#FB7185" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
-                                          style="stroke-dasharray: 250; animation: draw-step-arrow 2.5s ease-out infinite;" />
-                                    <!-- 상승 화살표 머리 -->
-                                    <path d="M 72 8 L 85 -5 L 98 8" fill="none" stroke="#FB7185" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
-                                          style="animation: show-step-head 2.5s ease-out infinite; transform-origin: 85px -5px;" />
-
-                                    <!-- 뒤쪽 지폐 (1만원) -->
-                                    <g transform="translate(20, 55) rotate(-15)">
-                                        <g style="animation: bill-pop-scale-1 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; transform-origin: 32px 16px;">
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#064E3B" opacity="0.3" transform="translate(2, 4)"/>
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#059669" />
-                                            <rect x="2" y="2" width="60" height="28" rx="2" fill="#10B981" />
-                                            <circle cx="32" cy="16" r="8" fill="#34D399" opacity="0.5"/>
-                                            <rect x="6" y="6" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <rect x="46" y="22" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <text x="32" y="20" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#064E3B" text-anchor="middle">10000</text>
-                                        </g>
-                                    </g>
-
-                                    <!-- 앞쪽 지폐 (1만원) -->
-                                    <g transform="translate(40, 65) rotate(10)">
-                                        <g style="animation: bill-pop-scale-2 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; transform-origin: 32px 16px;">
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#064E3B" opacity="0.4" transform="translate(2, 4)"/>
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#10B981" />
-                                            <rect x="2" y="2" width="60" height="28" rx="2" fill="#34D399" />
-                                            <circle cx="32" cy="16" r="8" fill="#6EE7B7" opacity="0.5"/>
-                                            <rect x="6" y="6" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <rect x="46" y="22" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <text x="32" y="20" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#064E3B" text-anchor="middle">10000</text>
-                                        </g>
-                                    </g>
-                                </svg>
-                            </div>
-                            
-                            <!-- 바닥 그림자 -->
-                            <div class="w-16 h-3 bg-black/50 blur-md rounded-full mt-4 animate-[pulse_2.5s_ease-in-out_infinite]"></div>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
-                    
-                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
-                        <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">더 나은 내일을 위한 투자.</h2>
-                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
-                            엔조이의 퀄리티를 한 단계 높이기 위해, 부득이하게 모임비를 개편합니다.
-                        </p>
-                        <div class="bg-white text-black font-bold text-[15px] whitespace-nowrap py-1.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[92px] flex items-center justify-center active:scale-95 transition-transform">
-                            확인하기
-                        </div>
-                        <p class="text-[11px] text-amber-400 font-bold mt-4 drop-shadow-lg">월 15,000원 → 20,000원으로 인상 (2026년부터 적용)</p>
-                    </div>
-                </div>
-
             </div>
             
             <!-- 메인 화면과의 단절감을 없애고 자연스럽게 이어지는 끝부분 그라데이션 -->
@@ -429,7 +359,6 @@
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
-                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 
                 <div class="w-px h-3 bg-white/20 mx-1 ml-2 pointer-events-none"></div>
                 
@@ -1300,7 +1229,7 @@
                 if(!slider) return;
                 
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 6; // [Modified] 슬라이드 개수 6개로 수정
+                const nextIndex = (currentIndex + 1) % 5; // [Modified] 슬라이드 개수 5개로 수정
                 
                 window.moveBanner(nextIndex);
             }, 3500); // 3.5초로 변경
@@ -1331,8 +1260,7 @@
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4'),
-                document.getElementById('ind-5')
+                document.getElementById('ind-4')
             ];
             
             if(!slider) return;
