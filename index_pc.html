@@ -189,7 +189,7 @@
                     <span class="text-[15px] font-bold text-white transition-colors relative z-10">홈</span>
                 </button>
                 
-                <button id="nav-kbo" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='https://won429.github.io/enjoy_ballbase/'">
+                <button id="nav-kbo" class="relative px-5 py-1 group z-10 active:scale-95 transition-transform" onclick="window.haptic(); window.location.href='kbo.html'">
                     <span class="text-[15px] font-medium text-gray-500 group-hover:text-white transition-colors relative z-10">KBO리그</span>
                 </button>
                 
@@ -272,6 +272,20 @@
                     <div class="flex flex-col">
                         <h4 class="text-[13px] font-bold text-gray-500 mb-3 px-2">소통 & 플레이</h4>
                         <div class="flex flex-col gap-1">
+                            <!-- KBO 리그 링크 PC용도 수정 완료 -->
+                            <button onclick="window.haptic(); window.location.href='kbo.html'" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
+                                <div class="w-10 h-10 rounded-[12px] bg-sky-500/15 flex items-center justify-center text-sky-400 text-[18px] mr-4 shrink-0">
+                                    <i class="fa-solid fa-baseball"></i>
+                                </div>
+                                <div class="flex-1 text-left flex flex-col justify-center">
+                                    <div class="flex items-center">
+                                        <span class="text-[15px] font-semibold text-white tracking-tight">KBO 리그 일정</span>
+                                        <span class="bg-[#3182F6]/10 text-[#3182F6] text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 mt-0.5 inline-flex items-center justify-center leading-none">NEW</span>
+                                    </div>
+                                    <div class="text-[12px] font-medium text-[#8B95A1] mt-0.5">2026년 야구장 갈 사람? ⚾️</div>
+                                </div>
+                            </button>
+
                             <button onclick="window.haptic(); window.playGame()" class="w-full flex items-center py-2.5 px-3 bg-transparent hover:bg-white/10 rounded-[16px] transition-all">
                                 <div class="w-10 h-10 rounded-[12px] bg-red-500/15 flex items-center justify-center text-red-400 text-[18px] mr-4 shrink-0">
                                     <i class="fa-solid fa-dice"></i>
@@ -336,12 +350,10 @@
     </nav>
 
     <!-- 메인 컨텐츠 (홈 화면) -->
-    <!-- PC용으로 최대 너비(max-w-[1200px]) 확장 및 여백 조정 -->
     <main id="home-screen" class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide pt-0 px-8 md:px-12 pb-16 w-full relative min-h-full" onscroll="window.checkScroll(this)">
         
-        <!-- 대형 배너: PC용 사이즈업 -->
+        <!-- 대형 배너: PC용 사이즈업 및 5개 슬라이드 정렬 -->
         <div id="apple-tv-banner" class="fade-in-up delay-100 mb-10 -mx-8 md:-mx-12 mt-0 aspect-[1920/600] min-h-[480px] max-h-[800px] bg-black relative group transition-transform duration-300 overflow-hidden">
-            <!-- 기존 JS 수정 없이 Apple TV 스타일 인디케이터를 구현하기 위한 로컬 스타일 -->
             <style>
                 #apple-tv-banner .bg-black\/60 { background-color: #ffffff !important; width: 28px !important; border-radius: 4px !important; }
                 #apple-tv-banner .bg-black\/20 { background-color: rgba(255,255,255,0.3) !important; width: 10px !important; border-radius: 4px !important; }
@@ -350,7 +362,6 @@
                 #apple-tv-banner .hide-scrollbar::-webkit-scrollbar { display: none; }
                 #apple-tv-banner .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                 
-                /* [New] 커스텀 애니메이션 (모션 그래픽) */
                 @keyframes custom-blob {
                     0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg); }
                     50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: rotate(180deg); }
@@ -362,13 +373,11 @@
                 .animate-custom-blob { animation: custom-blob 8s ease-in-out infinite; }
                 .animate-custom-float { animation: custom-float 4s ease-in-out infinite; }
                 
-                /* [New] 리얼한 걷기 모션용 키프레임 */
                 @keyframes svg-leg-f { 0%, 100% { transform: rotate(35deg); } 50% { transform: rotate(-35deg); } }
                 @keyframes svg-leg-b { 0%, 100% { transform: rotate(-35deg); } 50% { transform: rotate(35deg); } }
                 @keyframes svg-arm-swing { 0%, 100% { transform: rotate(-40deg); } 50% { transform: rotate(40deg); } }
                 @keyframes svg-body-bob { 0%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-6px); } }
                 
-                /* [New] 계단형 상승 화살표 드로잉 애니메이션 (크기/위치 수정) */
                 @keyframes draw-step-arrow {
                     0%, 25% { stroke-dashoffset: 250; opacity: 0; }
                     30% { opacity: 1; stroke-dashoffset: 250; }
@@ -381,7 +390,6 @@
                     75%, 90% { opacity: 1; transform: scale(1); }
                     100% { opacity: 0; }
                 }
-                /* [New] 지폐 카운팅 팝업 모션 */
                 @keyframes bill-pop-scale-1 {
                     0%, 5% { opacity: 0; transform: scale(0.3); }
                     15%, 90% { opacity: 1; transform: scale(1); }
@@ -396,7 +404,26 @@
 
             <div id="banner-slider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
                 
-                <!-- 슬라이드 0: 엔쪽이 브이로그 (과거 여행) -->
+                <!-- [New] 슬라이드 0: 출장엔조이 3화 공개 예정 (맨 앞 배치 + banner_4.jpg 지정) -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')">
+                    <div class="absolute inset-0">
+                        <img src="banner_4.jpg" class="w-full h-full object-cover object-center opacity-80" onerror="this.style.display='none'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                    </div>
+                    
+                    <div class="absolute bottom-16 left-0 right-0 flex flex-col items-start text-left px-12 z-10">
+                        <h2 class="text-[42px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">출장엔조이 3화.</h2>
+                        <p class="text-[18px] text-[#D1D1D6] font-medium mb-5 break-keep leading-relaxed max-w-[500px] drop-shadow-md">
+                            드디어 다가오는 3화! 이번주 공개 예정입니다. 기대해주세요.
+                        </p>
+                        <div class="bg-white text-black font-bold text-[18px] whitespace-nowrap py-2.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[140px] flex items-center justify-center active:scale-95 transition-transform">
+                            기대하기
+                        </div>
+                        <p class="text-[14px] text-[#A1A1A6] mt-5 drop-shadow-md">출장엔조이 절찬 스트리밍 중</p>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 1: 엔쪽이 브이로그 (과거 여행) -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8p77MHyBm8TM-fzkTXw2oSj&jct=dk4QOH-EJt3HuZgM0KvrcQ')">
                     <div class="absolute inset-0">
                         <img src="banner_1_pc.jpg" class="w-full h-full object-cover object-center opacity-80" onerror="this.style.display='none'">
@@ -415,7 +442,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 1: 우리의 발자취 오픈 -->
+                <!-- 슬라이드 2: 우리의 발자취 오픈 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://won429.github.io/bus/')">
                     <div class="absolute inset-0 flex items-center justify-center pb-24">
                         <div class="absolute w-[500px] h-[500px] bg-teal-500/20 rounded-full blur-[100px] animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none"></div>
@@ -461,7 +488,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 2: 그날 엔조이 이야기 -->
+                <!-- 슬라이드 3: 그날 엔조이 이야기 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8rssJc8wQE3jvPGqAFP_yQs&jct=OCpt0PxmET_Ej_etMpY-lw')">
                     <div class="absolute inset-0">
                         <img src="banner_2_pc.jpg" class="w-full h-full object-cover object-center opacity-80" onerror="this.style.display='none'">
@@ -480,7 +507,7 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 3: 환승여행 -->
+                <!-- 슬라이드 4: 환승여행 -->
                 <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black" onclick="window.haptic(); window.openBrowser('https://youtu.be/n9rhdR9jwaI')">
                     <div class="absolute inset-0">
                         <img src="banner_3_pc.jpg" class="w-full h-full object-cover object-center opacity-80" onerror="this.style.display='none'">
@@ -499,95 +526,17 @@
                     </div>
                 </div>
 
-                <!-- 슬라이드 4: 출장엔조이 OST 공개 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black" onclick="window.haptic(); window.goToMusic()">
-                    <div class="absolute inset-0">
-                        <img src="banner_4_pc.jpg" class="w-full h-full object-cover object-center opacity-80" onerror="this.style.display='none'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
-                    </div>
-                    
-                    <div class="absolute bottom-16 left-0 right-0 flex flex-col items-start text-left px-12 z-10">
-                        <h2 class="text-[42px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">출장엔조이 오리지널 사운드트랙.</h2>
-                        <p class="text-[18px] text-[#D1D1D6] font-medium mb-5 break-keep leading-relaxed max-w-[500px] drop-shadow-md">
-                            여행의 기억이 음악이 되는 순간. 눈을 감고 그날의 온기를 다시 느껴보세요.
-                        </p>
-                        <div class="bg-white text-black font-bold text-[18px] whitespace-nowrap py-2.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[140px] flex items-center justify-center active:scale-95 transition-transform">
-                            감상하기
-                        </div>
-                        <p class="text-[14px] text-[#A1A1A6] mt-5 drop-shadow-md">언제 어디서든, 무제한 감상 지원</p>
-                    </div>
-                </div>
-
-                <!-- 슬라이드 5: 모임비 인상 -->
-                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); window.showDuesModal();">
-                    <div class="absolute inset-0 flex items-center justify-center pb-24">
-                        <div class="absolute w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[100px] animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none" style="animation-delay: 1s;"></div>
-                        <div class="absolute w-72 h-72 bg-gradient-to-bl from-emerald-400/40 via-green-500/30 to-teal-500/20 blur-3xl animate-custom-blob pointer-events-none" style="animation-direction: reverse;"></div>
-                        
-                        <div class="relative flex flex-col items-center justify-center z-10 group-hover:scale-110 transition-transform duration-500">
-                            <div class="relative flex items-center justify-center">
-                                <div class="absolute w-[180px] h-[180px] bg-emerald-400/20 blur-[30px] rounded-full"></div>
-                                
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-[240px] h-[240px] relative z-10" viewBox="0 0 120 120" overflow="visible">
-                                    <path d="M -5 95 H 25 V 60 H 55 V 25 H 85 V -5" fill="none" stroke="#FB7185" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
-                                          style="stroke-dasharray: 250; animation: draw-step-arrow 2.5s ease-out infinite;" />
-                                    <path d="M 72 8 L 85 -5 L 98 8" fill="none" stroke="#FB7185" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
-                                          style="animation: show-step-head 2.5s ease-out infinite; transform-origin: 85px -5px;" />
-
-                                    <g transform="translate(20, 55) rotate(-15)">
-                                        <g style="animation: bill-pop-scale-1 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; transform-origin: 32px 16px;">
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#064E3B" opacity="0.3" transform="translate(2, 4)"/>
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#059669" />
-                                            <rect x="2" y="2" width="60" height="28" rx="2" fill="#10B981" />
-                                            <circle cx="32" cy="16" r="8" fill="#34D399" opacity="0.5"/>
-                                            <rect x="6" y="6" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <rect x="46" y="22" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <text x="32" y="20" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#064E3B" text-anchor="middle">10000</text>
-                                        </g>
-                                    </g>
-
-                                    <g transform="translate(40, 65) rotate(10)">
-                                        <g style="animation: bill-pop-scale-2 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; transform-origin: 32px 16px;">
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#064E3B" opacity="0.4" transform="translate(2, 4)"/>
-                                            <rect x="0" y="0" width="64" height="32" rx="4" fill="#10B981" />
-                                            <rect x="2" y="2" width="60" height="28" rx="2" fill="#34D399" />
-                                            <circle cx="32" cy="16" r="8" fill="#6EE7B7" opacity="0.5"/>
-                                            <rect x="6" y="6" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <rect x="46" y="22" width="12" height="4" rx="1" fill="#059669" opacity="0.5"/>
-                                            <text x="32" y="20" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#064E3B" text-anchor="middle">10000</text>
-                                        </g>
-                                    </g>
-                                </svg>
-                            </div>
-                            <div class="w-24 h-4 bg-black/50 blur-md rounded-full mt-6 animate-[pulse_2.5s_ease-in-out_infinite]"></div>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none"></div>
-                    
-                    <div class="absolute bottom-16 left-0 right-0 flex flex-col items-start text-left px-12 z-10">
-                        <h2 class="text-[42px] font-bold text-white mb-2 tracking-tight drop-shadow-lg">더 나은 내일을 위한 투자.</h2>
-                        <p class="text-[18px] text-[#D1D1D6] font-medium mb-5 break-keep leading-relaxed max-w-[500px] drop-shadow-md">
-                            엔조이의 퀄리티를 한 단계 높이기 위해, 부득이하게 모임비를 개편합니다.
-                        </p>
-                        <div class="bg-white text-black font-bold text-[18px] whitespace-nowrap py-2.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[140px] flex items-center justify-center active:scale-95 transition-transform">
-                            확인하기
-                        </div>
-                        <p class="text-[14px] text-amber-400 font-bold mt-5 drop-shadow-lg">월 15,000원 → 20,000원으로 인상 (2026년부터 적용)</p>
-                    </div>
-                </div>
-
             </div>
             
             <div class="absolute -bottom-px left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent pointer-events-none z-20"></div>
             
-            <!-- 슬라이드 인디케이터 -->
+            <!-- 슬라이드 인디케이터 (총 5개) -->
             <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center z-30 pointer-events-none">
                 <button id="ind-0" onclick="window.moveBanner(0)" class="w-2.5 h-2.5 rounded-full bg-black/60 transition-colors pointer-events-auto"></button>
                 <button id="ind-1" onclick="window.moveBanner(1)" class="w-2.5 h-2.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-2.5 h-2.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-2.5 h-2.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-2.5 h-2.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
-                <button id="ind-5" onclick="window.moveBanner(5)" class="w-2.5 h-2.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 
                 <div class="w-px h-4 bg-white/20 mx-2 ml-3 pointer-events-none"></div>
                 
@@ -595,6 +544,16 @@
                     <i id="banner-ctrl-icon" class="fa-solid fa-pause text-[12px] text-white"></i>
                 </button>
             </div>
+        </div>
+
+        <!-- [New] KBO 리그 일정 보러가기 (알약 모양 버튼) -->
+        <div class="-mt-2 mb-8 px-1 fade-in-up delay-150">
+            <button onclick="window.haptic(); window.location.href='kbo.html'" class="relative overflow-hidden w-full bg-gradient-to-br from-red-400/25 to-blue-400/25 text-white font-bold text-[18px] py-4 rounded-full flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-white/5 active:scale-95 transition-transform">
+                <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="absolute -left-4 top-1/2 -translate-y-1/2 w-24 h-24 opacity-20 -rotate-12 pointer-events-none" alt="좌측 구단 로고">
+                <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="absolute right-0 top-1/2 -translate-y-1/2 w-24 h-24 opacity-20 -rotate-12 pointer-events-none" alt="우측 구단 로고">
+                <i class="fa-solid fa-baseball text-gray-300 relative z-10 text-xl"></i>
+                <span class="relative z-10">2026 KBO 리그 일정 보러가기</span>
+            </button>
         </div>
 
         <!-- 지역 통합 탭 브이로그 섹션 -->
@@ -936,7 +895,7 @@
                         <h3 class="text-[20px] font-bold text-white tracking-tight">납부 내역</h3>
                         <div class="flex items-center gap-3">
                             <button onclick="window.haptic(); window.changeDuesMonth(-1)" class="text-gray-500 hover:text-white active:scale-90 transition-all p-1.5"><i class="fa-solid fa-chevron-left text-[14px]"></i></button>
-                            <span id="dues-month-title" class="text-[18px] font-bold text-white min-w-[40px] text-center">1월</span>
+                            <span id="dues-month-title" class="text-[18px] font-bold text-white min-w-[70px] text-center">2026년 1월</span>
                             <button onclick="window.haptic(); window.changeDuesMonth(1)" class="text-gray-500 hover:text-white active:scale-90 transition-all p-1.5"><i class="fa-solid fa-chevron-right text-[14px]"></i></button>
                         </div>
                     </div>
@@ -1073,9 +1032,10 @@
         </div>
     </div>
 
-    <!-- UI Logic Scripts (JS 로직 수정 없이 UI 문자열만 PC용 크기로 덮어씌움) -->
+    <!-- UI Logic Scripts -->
     <script>
         window.meetingData = null;
+        window.currentDuesYear = new Date().getFullYear();
         window.currentDuesMonth = new Date().getMonth() + 1; 
         window.dynamicEvents = {};
         window.viewYear = new Date().getFullYear();
@@ -1116,8 +1076,8 @@
             window.haptic();
             const container = document.getElementById(id);
             if(container) {
-                const scrollAmount = 340 + 24; // 1개 카드 너비 + 갭
-                container.scrollBy({ left: direction * scrollAmount * 2, behavior: 'smooth' }); // 샤라라하고 2개씩 수욱 이동
+                const scrollAmount = 340 + 24; 
+                container.scrollBy({ left: direction * scrollAmount * 2, behavior: 'smooth' }); 
             }
         };
 
@@ -1206,17 +1166,28 @@
             modal.classList.remove('hidden'); 
             modal.classList.add('flex'); 
             
-            document.getElementById('admin-month-title').innerText = `${window.currentDuesMonth}월`; 
+            document.getElementById('admin-month-title').innerText = `${window.currentDuesYear}년 ${window.currentDuesMonth}월`; 
             document.getElementById('admin-total-balance').value = window.meetingData.totalBalance || 0; 
             
             const list = document.getElementById('admin-member-list'); 
             list.innerHTML = ''; 
             
-            if (!window.meetingData.records[window.currentDuesMonth]) {
-                window.meetingData.records[window.currentDuesMonth] = createEmptyMonthData(); 
+            const monthKey = `${window.currentDuesYear}-${window.currentDuesMonth}`;
+
+            if (!window.meetingData.records[monthKey]) {
+                const isLegacy2025 = (window.currentDuesYear === 2025 && window.currentDuesMonth >= 10);
+                const isLegacy2026 = (window.currentDuesYear === 2026 && window.currentDuesMonth <= 9);
+                if ((isLegacy2025 || isLegacy2026) && window.meetingData.records[window.currentDuesMonth]) {
+                    // Legacy key exists, do nothing
+                } else {
+                    window.meetingData.records[monthKey] = createEmptyMonthData(); 
+                }
             }
             
-            const records = window.meetingData.records[window.currentDuesMonth]; 
+            const isLegacy2025 = (window.currentDuesYear === 2025 && window.currentDuesMonth >= 10);
+            const isLegacy2026 = (window.currentDuesYear === 2026 && window.currentDuesMonth <= 9);
+            const records = window.meetingData.records[monthKey] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[window.currentDuesMonth] : []); 
+
             records.forEach((m, i) => { 
                 const btnClass = m.status === 'paid' ? 'bg-blue-900/30 text-blue-400' : (m.status === 'deferred' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-red-900/30 text-red-400');
                 const btnText = m.status === 'paid' ? '납부' : (m.status === 'deferred' ? '유예' : '미납');
@@ -1264,12 +1235,17 @@
         }
 
         window.togglePay = function(idx) { 
-            const records = window.meetingData.records[window.currentDuesMonth]; 
+            const monthKey = `${window.currentDuesYear}-${window.currentDuesMonth}`;
+            const isLegacy2025 = (window.currentDuesYear === 2025 && window.currentDuesMonth >= 10);
+            const isLegacy2026 = (window.currentDuesYear === 2026 && window.currentDuesMonth <= 9);
+            const records = window.meetingData.records[monthKey] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[window.currentDuesMonth] : []); 
+            
             const totalBalanceInput = document.getElementById('admin-total-balance');
             let currentBalance = parseInt(totalBalanceInput.value) || 0;
 
             if(records && records[idx]) { 
                 const m = records[idx]; 
+                let duesBase = window.currentDuesYear >= 2026 ? 20000 : 15000;
                 if(m.status === 'paid') { 
                     currentBalance -= m.amount;
                     m.status = 'unpaid'; 
@@ -1279,8 +1255,8 @@
                     m.amount = 0; 
                 } else { 
                     m.status = 'paid'; 
-                    m.amount = 20000; 
-                    currentBalance += 20000;
+                    m.amount = duesBase; 
+                    currentBalance += duesBase;
                 } 
                 
                 const row = document.getElementById('admin-member-list').children[idx]; 
@@ -1302,7 +1278,14 @@
             const bal = parseInt(document.getElementById('admin-total-balance').value) || 0; 
             window.meetingData.totalBalance = bal; 
             
-            const records = window.meetingData.records[window.currentDuesMonth]; 
+            const monthKey = `${window.currentDuesYear}-${window.currentDuesMonth}`;
+            const isLegacy2025 = (window.currentDuesYear === 2025 && window.currentDuesMonth >= 10);
+            const isLegacy2026 = (window.currentDuesYear === 2026 && window.currentDuesMonth <= 9);
+            
+            let records = window.meetingData.records[monthKey];
+            if (!records && isLegacy2025) records = window.meetingData.records[window.currentDuesMonth];
+            if (!records && isLegacy2026) records = window.meetingData.records[window.currentDuesMonth];
+
             if(records) { 
                 records.forEach((m, i) => { 
                     const val = document.getElementById(`edit-amt-${i}`).value; 
@@ -1402,9 +1385,21 @@
         
         window.changeDuesMonth = function(delta) { 
             window.currentDuesMonth += delta; 
-            if (window.currentDuesMonth < 1) window.currentDuesMonth = 12; 
-            if (window.currentDuesMonth > 12) window.currentDuesMonth = 1; 
-            window.renderDues(window.currentDuesMonth); 
+            if (window.currentDuesMonth < 1) {
+                window.currentDuesMonth = 12; 
+                window.currentDuesYear--;
+            }
+            if (window.currentDuesMonth > 12) {
+                window.currentDuesMonth = 1; 
+                window.currentDuesYear++;
+            }
+            
+            if (window.currentDuesYear < 2025 || (window.currentDuesYear === 2025 && window.currentDuesMonth < 10)) {
+                window.currentDuesYear = 2025;
+                window.currentDuesMonth = 10;
+            }
+
+            window.renderDues(window.currentDuesMonth, window.currentDuesYear); 
         }
         
         window.updateMeetingUI = function(data) { 
@@ -1427,7 +1422,7 @@
             }
             const balanceEl = document.getElementById('total-balance'); 
             if (balanceEl) balanceEl.innerHTML = (data.totalBalance || 0).toLocaleString() + '<span class="text-[28px] font-bold text-white ml-1.5">원</span>'; 
-            window.renderDues(window.currentDuesMonth); 
+            window.renderDues(window.currentDuesMonth, window.currentDuesYear); 
         };
         
         window.openAddScheduleModal = () => { 
@@ -1501,7 +1496,7 @@
                 if(!slider) return;
                 
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 6;
+                const nextIndex = (currentIndex + 1) % 5;
                 
                 window.moveBanner(nextIndex);
             }, 3500);
@@ -1532,8 +1527,7 @@
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4'),
-                document.getElementById('ind-5')
+                document.getElementById('ind-4')
             ];
             
             if(!slider) return;
@@ -1565,9 +1559,9 @@
                 totalBalance: 448999, 
                 exemptions: { '류짱': 1, '성원제': 1, '전시기': 1 },
                 records: { 
-                    10: [ { name: '오스틴', status: 'unpaid', amount: 0, penalty: '미납부로 인한 부과금 10,000원 발생' }, { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
-                    11: [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 16000 }, { name: '오스틴', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
-                    12: [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'unpaid', amount: 0 }, { name: '오스틴', status: 'unpaid', amount: 0 }, { name: '전시기', status: 'unpaid', amount: 0, isLeader: true }, { name: '이진누', status: 'unpaid', amount: 0 }, { name: '성원제', status: 'unpaid', amount: 0 } ] 
+                    "2025-10": [ { name: '오스틴', status: 'unpaid', amount: 0, penalty: '미납부로 인한 부과금 10,000원 발생' }, { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
+                    "2025-11": [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'paid', amount: 16000 }, { name: '오스틴', status: 'paid', amount: 15000 }, { name: '전시기', status: 'paid', amount: 15000, isLeader: true }, { name: '이진누', status: 'paid', amount: 15000 }, { name: '성원제', status: 'paid', amount: 15000 } ], 
+                    "2025-12": [ { name: '홍박사', status: 'paid', amount: 15000 }, { name: '류짱', status: 'unpaid', amount: 0 }, { name: '오스틴', status: 'unpaid', amount: 0 }, { name: '전시기', status: 'unpaid', amount: 0, isLeader: true }, { name: '이진누', status: 'unpaid', amount: 0 }, { name: '성원제', status: 'unpaid', amount: 0 } ] 
                 } 
             }; 
         }
@@ -1582,35 +1576,44 @@
 
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             
-            const now = new Date(); const currentRealMonth = now.getMonth() + 1;
+            const now = new Date(); 
+            const currentRealMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
             let htmlPenalty = ''; let hasPenalty = false;
             
             if (window.meetingData && window.meetingData.records) {
-                for(let m=1; m <= currentRealMonth; m++) {
-                    const records = window.meetingData.records[m] || [];
-                    records.forEach(mem => {
-                        if (m < currentRealMonth) {
+                const startYear = 2025;
+                for (let y = startYear; y <= currentYear; y++) {
+                    const endMonth = (y === currentYear) ? currentRealMonth : 12;
+                    for (let m = 1; m <= endMonth; m++) {
+                        const key = `${y}-${m}`;
+                        const isLegacy2025 = (y === 2025 && m >= 10);
+                        const isLegacy2026 = (y === 2026 && m <= 9);
+                        const records = window.meetingData.records[key] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[m] : null) || [];
+                        const lastDay = new Date(y, m, 0).getDate();
+                        records.forEach(mem => {
                             if(mem.status === 'unpaid') {
-                                 hasPenalty = true; 
-                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-[#F04452] shrink-0">${m}월 미납</span></div>`;
-                            } else if (mem.status === 'deferred') {
-                                 hasPenalty = true; 
-                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-yellow-400 shrink-0">${m}월 유예</span></div>`;
-                            }
-                        } else if (m === currentRealMonth) {
-                            if (mem.status === 'deferred') {
-                                 hasPenalty = true; 
-                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-yellow-400 shrink-0">${m}월 유예</span></div>`;
-                            } else if (mem.status === 'unpaid') {
-                                const today = now.getDate();
-                                const lastDay = new Date(now.getFullYear(), currentRealMonth, 0).getDate();
-                                if (today >= lastDay - 4 && today <= lastDay) {
+                                 let statusText = '';
+                                 let showPenalty = false;
+                                 
+                                 if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
+                                     statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 부과금 확정`;
+                                     showPenalty = true;
+                                 } else if (y === currentYear && m === currentRealMonth && now.getDate() >= lastDay - 5) {
+                                     statusText = `${m}월 부과금 예정`;
+                                     showPenalty = true;
+                                 }
+
+                                 if (showPenalty) {
                                      hasPenalty = true; 
-                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-orange-400 shrink-0">${m}월 부과금 예정</span></div>`;
-                                }
+                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-[#F04452] shrink-0">${statusText}</span></div>`;
+                                 }
+                            } else if(mem.status === 'deferred') {
+                                 hasPenalty = true; 
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-yellow-400 shrink-0">${y !== currentYear ? y+'년 ' : ''}${m}월 유예</span></div>`;
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
             if (!hasPenalty) htmlPenalty = `<div class="h-full w-full flex flex-col items-center justify-center pb-2 opacity-40"><i class="fa-solid fa-circle-check mb-1.5 text-gray-400 text-xl"></i><span class="text-[13px] font-semibold text-gray-400">내역 없음</span></div>`;
@@ -1629,23 +1632,35 @@
             ticketListMini.innerHTML = htmlTicket;
         }
 
-        window.renderDues = function(month) {
+        window.renderDues = function(month, year = window.currentDuesYear) {
             const list = document.getElementById('dues-list'); 
             const title = document.getElementById('dues-month-title'); 
             if(!list) return; 
             
-            title.innerText = `${month}월`; 
+            title.innerText = `${year}년 ${month}월`; 
             
             list.innerHTML = '';
             if (!window.meetingData) window.meetingData = getInitialMeetingData();
             
-            if (window.meetingData.records && !window.meetingData.records[month]) {
-                window.meetingData.records[month] = createEmptyMonthData();
+            const monthKey = `${year}-${month}`;
+            
+            if (window.meetingData.records && !window.meetingData.records[monthKey]) {
+                const isLegacy2025 = (year === 2025 && month >= 10);
+                const isLegacy2026 = (year === 2026 && month <= 9);
+                if ((isLegacy2025 || isLegacy2026) && window.meetingData.records[month]) {
+                    // Legacy key exists, do nothing
+                } else {
+                    window.meetingData.records[monthKey] = createEmptyMonthData();
+                }
             }
 
             if(window.activeTabIndex === 4) window.renderMeetingStatus();
             let records = []; 
-            if (window.meetingData && window.meetingData.records) { records = window.meetingData.records[month] || []; }
+            if (window.meetingData && window.meetingData.records) { 
+                const isLegacy2025 = (year === 2025 && month >= 10);
+                const isLegacy2026 = (year === 2026 && month <= 9);
+                records = window.meetingData.records[monthKey] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[month] : []) || []; 
+            }
             
             let displayRecords = [...records];
             displayRecords.sort((a, b) => {
@@ -1657,25 +1672,128 @@
             
             const now = new Date();
             const currentRealMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
             const today = now.getDate();
-            const lastDay = new Date(now.getFullYear(), currentRealMonth, 0).getDate();
+            const lastDay = new Date(year, month, 0).getDate();
 
             displayRecords.forEach((m, i) => {
                 const c = memberColors[m.name] || { bg: 'bg-[#2C2C2E]', text: 'text-gray-300', char: '?' }; 
                 const isPaid = m.status === 'paid'; 
                 const isDeferred = m.status === 'deferred';
                 
-                const amtClass = isPaid ? 'text-white' : (isDeferred ? 'text-yellow-400' : 'text-[#F04452]'); 
-                const amtText = isPaid ? `${m.amount.toLocaleString()}원` : (isDeferred ? '유예' : '미납');
-                const badge = m.isLeader ? `<span class="bg-[#2C2C2E] text-gray-400 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1.5 inline-flex items-center justify-center leading-none">회장</span>` : '';
-                
-                const statusClass = isPaid ? 'text-[#8B95A1]' : (isDeferred ? 'text-yellow-400' : 'text-[#F04452]');
-                const statusText = isPaid ? '납부완료' : (isDeferred ? '다음달 납부 (유예)' : '미납 상태');
+                let amtClass = 'text-[#F04452]'; 
+                let amtText = '미납';
+                let statusText = '미납 상태';
+                let statusColorClass = 'text-[#F04452]';
+                let penaltyText = m.penalty || '';
+                let penaltyColorClass = 'text-[#F04452]/90';
 
-                let penHtml = m.penalty ? `<div class="ml-[62px] mt-1.5 text-[12px] text-[#F04452]/90 font-medium leading-snug">· ${m.penalty}</div>` : '';
-                if (!m.penalty && m.status === 'unpaid' && month === currentRealMonth && today >= lastDay - 4 && today <= lastDay) {
-                    penHtml = `<div class="ml-[62px] mt-1.5 text-[12px] text-orange-400/90 font-medium leading-snug">· 부과금 10,000원 예정</div>`;
+                let prevYear = year;
+                let prevMonth = month - 1;
+                if (prevMonth < 1) {
+                    prevMonth = 12;
+                    prevYear--;
                 }
+                const prevMonthKey = `${prevYear}-${prevMonth}`;
+                let prevRecords = [];
+                if (window.meetingData && window.meetingData.records) {
+                    const isPrevLegacy2025 = (prevYear === 2025 && prevMonth >= 10);
+                    const isPrevLegacy2026 = (prevYear === 2026 && prevMonth <= 9);
+                    prevRecords = window.meetingData.records[prevMonthKey] || ((isPrevLegacy2025 || isPrevLegacy2026) ? window.meetingData.records[prevMonth] : []) || [];
+                }
+                const prevMember = prevRecords.find(pm => pm.name === m.name);
+                
+                let currentBaseDues = year >= 2026 ? 20000 : 15000;
+                let totalOwed = currentBaseDues;
+                let carryOverTexts = [];
+                let prevMemberDeferred = false;
+
+                let isPrevPastDue = (prevYear < currentYear || (prevYear === currentYear && prevMonth < currentRealMonth));
+
+                if (prevMember) {
+                    let prevBaseDues = prevYear >= 2026 ? 20000 : 15000;
+                    if (prevMember.status === 'unpaid' && isPrevPastDue) {
+                        let isPrevExempted = prevMember.ticketUsed || (prevMember.penalty && prevMember.penalty.includes('면제'));
+                        if (isPrevExempted) {
+                            totalOwed += prevBaseDues;
+                            carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 미납 (부과금 면제)`);
+                        } else {
+                            totalOwed += (prevBaseDues + 10000);
+                            carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 미납 + 부과금 10,000원 발생`);
+                        }
+                    } else if (prevMember.status === 'deferred') {
+                        totalOwed += prevBaseDues;
+                        carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 유예`);
+                        prevMemberDeferred = true;
+                    }
+                }
+
+                if (!isPaid && !isDeferred) {
+                    let isPastDue = (year < currentYear || (year === currentYear && month < currentRealMonth));
+                    let isWarningPeriod = (year === currentYear && month === currentRealMonth && today >= lastDay - 5 && today <= lastDay);
+                    let hasCarryOver = (carryOverTexts.length > 0);
+                    let isExempted = m.ticketUsed || (m.penalty && m.penalty.includes('면제'));
+
+                    if (isPastDue || isWarningPeriod || hasCarryOver) {
+                        amtText = `총 ${totalOwed.toLocaleString()}원 미납`;
+                        statusText = '미납 상태';
+                        
+                        if (prevMemberDeferred) {
+                            statusColorClass = 'text-yellow-400';
+                            amtClass = 'text-yellow-400';
+                            penaltyColorClass = 'text-yellow-400/90';
+                        } else {
+                            statusColorClass = 'text-[#F04452]';
+                            amtClass = 'text-[#F04452]';
+                            penaltyColorClass = 'text-[#F04452]/90';
+                        }
+
+                        if (isPastDue) {
+                            if (isExempted) {
+                                if (!penaltyText) penaltyText = '부과금 만원 면제';
+                                penaltyColorClass = 'text-[#3182F6]/90';
+                            } else if (!penaltyText) {
+                                penaltyText = '미납부로 인한 부과금 10,000원 발생';
+                            }
+                        } else if (isWarningPeriod) {
+                            if (!penaltyText) penaltyText = '부과금 10,000원 예정';
+                            penaltyColorClass = 'text-orange-400/90';
+                        } else {
+                            penaltyText = '';
+                        }
+                    } else {
+                        amtText = `${totalOwed.toLocaleString()}원 납부 전`;
+                        statusText = '납부 전';
+                        statusColorClass = 'text-[#3182F6]';
+                        amtClass = 'text-[#3182F6]';
+                        penaltyColorClass = 'text-[#3182F6]/90';
+                        penaltyText = '';
+                    }
+
+                    if (carryOverTexts.length > 0) {
+                        if (penaltyText) {
+                            penaltyText = carryOverTexts.join(', ') + ' / ' + penaltyText;
+                        } else {
+                            penaltyText = carryOverTexts.join(', ');
+                        }
+                    }
+                }
+
+                if (isPaid) {
+                    amtClass = 'text-white';
+                    amtText = `${m.amount.toLocaleString()}원`;
+                    statusText = '납부완료';
+                    statusColorClass = 'text-[#8B95A1]';
+                    penaltyText = '';
+                } else if (isDeferred) {
+                    amtClass = 'text-yellow-400';
+                    amtText = '다음달 합산';
+                    statusText = '납부 유예';
+                    statusColorClass = 'text-yellow-400';
+                    penaltyText = '';
+                }
+
+                const badge = m.isLeader ? `<span class="bg-[#2C2C2E] text-gray-400 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1.5 inline-flex items-center justify-center leading-none">회장</span>` : '';
 
                 list.innerHTML += `
                 <div class="flex flex-col py-4 px-4 rounded-[16px] active:bg-[#1C1C1E] hover:bg-[#1C1C1E] transition-colors cursor-pointer">
@@ -1689,14 +1807,14 @@
                                     <span class="text-[17px] font-semibold text-white/95 tracking-tight">${m.name}</span>
                                     ${badge}
                                 </div>
-                                <span class="text-[13px] font-medium ${statusClass}">${statusText}</span>
+                                <span class="text-[13px] font-medium ${statusColorClass}">${statusText}</span>
                             </div>
                         </div>
                         <div class="text-right">
                             <span class="text-[18px] font-bold ${amtClass} tracking-tight">${amtText}</span>
                         </div>
                     </div>
-                    ${penHtml}
+                    ${penaltyText ? `<div class="ml-[62px] mt-1.5 text-[12px] ${penaltyColorClass} font-medium leading-snug">· ${penaltyText}</div>` : ''}
                 </div>`;
             });
         };
@@ -1932,7 +2050,7 @@
             else if(index===4) { 
                 meet.classList.remove('hidden'); 
                 meet.classList.add('flex'); 
-                window.renderDues(window.currentDuesMonth); 
+                window.renderDues(window.currentDuesMonth, window.currentDuesYear); 
             }
 
             const ind = document.getElementById('nav-indicator');
