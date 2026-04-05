@@ -16,7 +16,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Enjoy - Toss Style (Cloud Backup)</title>
+    <title>엔조이 공식 홈페이지</title>
     
     <!-- 홈 화면 바로가기 아이콘 -->
     <link rel="apple-touch-icon" href="icon.png">
@@ -216,12 +216,31 @@
                     <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
                         <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">출장엔조이 3화.</h2>
                         <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
-                            드디어 다가오는 3화! 이번주 공개 예정입니다. 기대해주세요.
+                            드디어 3화가 공개되었습니다! 지금 바로 확인해보세요.
+                        </p>
+                        <div class="bg-white text-black font-bold text-[15px] whitespace-nowrap py-1.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[92px] flex items-center justify-center active:scale-95 transition-transform">
+                            보러가기
+                        </div>
+                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">출장엔조이 절찬 스트리밍 중</p>
+                    </div>
+                </div>
+
+                <!-- [New] 슬라이드: 엔조이 브이로그 -->
+                <div class="w-full flex-shrink-0 snap-center h-full relative overflow-hidden cursor-pointer bg-black group" onclick="window.haptic(); alert('올 여름 공개됩니다! 🔒')">
+                    <div class="absolute inset-0">
+                        <img src="banner_5.jpg" class="w-full h-full object-cover object-[50%_80%] opacity-80" onerror="this.src='https://placehold.co/640x360/E0F2F1/teal?text=Coming+Soon'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                    </div>
+                    
+                    <div class="absolute bottom-12 left-0 right-0 flex flex-col items-start text-left px-6 z-10">
+                        <h2 class="text-[26px] font-bold text-white mb-1 tracking-tight drop-shadow-lg">엔조이 브이로그.</h2>
+                        <p class="text-[13px] text-[#D1D1D6] font-medium mb-3 break-keep leading-relaxed max-w-[280px] drop-shadow-md">
+                            작년 진주 여행기!<br>올 여름에 만나요.
                         </p>
                         <div class="bg-white text-black font-bold text-[15px] whitespace-nowrap py-1.5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] w-[92px] flex items-center justify-center active:scale-95 transition-transform">
                             기대하기
                         </div>
-                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">출장엔조이 절찬 스트리밍 중</p>
+                        <p class="text-[11px] text-[#A1A1A6] mt-4 drop-shadow-md">올 여름 공개 예정</p>
                     </div>
                 </div>
 
@@ -359,6 +378,7 @@
                 <button id="ind-2" onclick="window.moveBanner(2)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-3" onclick="window.moveBanner(3)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 <button id="ind-4" onclick="window.moveBanner(4)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
+                <button id="ind-5" onclick="window.moveBanner(5)" class="w-1.5 h-1.5 rounded-full bg-black/20 transition-colors pointer-events-auto"></button>
                 
                 <div class="w-px h-3 bg-white/20 mx-1 ml-2 pointer-events-none"></div>
                 
@@ -382,8 +402,29 @@
             </button>
         </div>
 
+        <!-- [New] 최근 브이로그 섹션 -->
+        <div class="mb-2 fade-in-up delay-200">
+            <div class="flex items-baseline gap-3 mb-3 px-1">
+                <h3 class="text-[18.5px] font-bold text-main tracking-tight flex items-baseline">
+                    최근 브이로그<span class="text-[#3182F6] ml-0.5 font-black">.</span>
+                </h3>
+            </div>
+            
+            <div class="flex overflow-x-auto gap-3 pb-4 scrollbar-hide snap-x snap-mandatory">
+                <!-- 출장엔조이 -->
+                <div onclick="window.haptic(); window.openBrowser('https://www.youtube.com/playlist?list=PL6V2mJA2-n8ptp8LGHjJIw5XMpT5PTgZ4&jct=SmM9dUmiXzF8PZqqEgl7eA')" class="min-w-[160px] w-[160px] snap-start group cursor-pointer">
+                    <div class="relative aspect-video rounded-[14px] overflow-hidden shadow-md bg-[#111] transform-gpu" style="-webkit-mask-image: -webkit-radial-gradient(white, black);">
+                        <img src="nbc_1.jpg" class="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500" alt="출장엔조이" onerror="this.src='https://placehold.co/640x360/111/FFF?text=Ready'">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm z-10 whitespace-nowrap flex items-center justify-center leading-none">매주 업로드</div>
+                    </div>
+                    <p class="text-sm font-bold text-gray-200 leading-tight text-center truncate mt-2">출장엔조이</p>
+                </div>
+            </div>
+        </div>
+
         <!-- [Modified] 대전충남 & 대구경북 통합 탭 브이로그 섹션 -->
-        <div class="mb-6 fade-in-up delay-200">
+        <div class="mb-2 fade-in-up delay-200">
             <!-- 탭 헤더 (이미지 디자인 반영: 활성/비활성 컬러 및 파란 점) -->
             <div class="flex items-baseline gap-3 mb-3 px-1">
                 <button onclick="window.haptic(); window.switchVlogTab('daejeon')" id="tab-daejeon" class="text-[18.5px] font-bold text-main transition-colors tracking-tight flex items-baseline">
@@ -480,7 +521,7 @@
         </div>
 
         <!-- [Modified] 경남 & 제주 통합 탭 브이로그 섹션 -->
-        <div class="mb-6 fade-in-up delay-200">
+        <div class="mb-2 fade-in-up delay-200">
             <!-- 탭 헤더 -->
             <div class="flex items-baseline gap-3 mb-3 px-1">
                 <button onclick="window.haptic(); window.switchGyeongnamJejuTab('gyeongnam')" id="tab-gyeongnam" class="text-[18.5px] font-bold text-main transition-colors tracking-tight flex items-baseline">
@@ -503,16 +544,16 @@
                     <p class="text-sm font-bold text-gray-200 leading-tight text-center truncate mt-2">엔조이 인기가요 2</p>
                 </div>
 
-                <!-- 엔조이 숙려 캠프 -->
+                <!-- 엔조이 브이로그 -->
                 <div onclick="window.haptic(); alert('곧 공개됩니다! 🔒')" class="min-w-[160px] w-[160px] snap-start group cursor-pointer">
                     <div class="relative aspect-video rounded-[14px] overflow-hidden shadow-md bg-[#111] transform-gpu" style="-webkit-mask-image: -webkit-radial-gradient(white, black);">
-                        <img src="coming_4.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="엔조이 숙려 캠프" onerror="this.src='https://placehold.co/640x360/E0F2F1/teal?text=Coming+Soon'">
+                        <img src="coming_4.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 blur-[1px]" alt="엔조이 브이로그" onerror="this.src='https://placehold.co/640x360/E0F2F1/teal?text=Coming+Soon'">
                         <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
                             <i class="fa-solid fa-lock text-white/90 text-2xl drop-shadow-md"></i>
                         </div>
                         <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-gray-800/80 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm z-10 whitespace-nowrap backdrop-blur-sm flex items-center justify-center leading-none">COMING SOON</div>
                     </div>
-                    <p class="text-sm font-bold text-gray-400 leading-tight text-center truncate mt-2">엔조이 숙려 캠프</p>
+                    <p class="text-sm font-bold text-gray-400 leading-tight text-center truncate mt-2">엔조이 브이로그</p>
                 </div>
 
             </div>
@@ -1229,7 +1270,7 @@
                 if(!slider) return;
                 
                 const currentIndex = Math.round(slider.scrollLeft / slider.offsetWidth);
-                const nextIndex = (currentIndex + 1) % 5; // [Modified] 슬라이드 개수 5개로 수정
+                const nextIndex = (currentIndex + 1) % 6; // [Modified] 슬라이드 개수 6개로 수정
                 
                 window.moveBanner(nextIndex);
             }, 3500); // 3.5초로 변경
@@ -1260,7 +1301,8 @@
                 document.getElementById('ind-1'),
                 document.getElementById('ind-2'),
                 document.getElementById('ind-3'),
-                document.getElementById('ind-4')
+                document.getElementById('ind-4'),
+                document.getElementById('ind-5')
             ];
             
             if(!slider) return;
