@@ -175,7 +175,7 @@
         <div id="top-nav-inner" class="flex items-center justify-between w-full px-8 md:px-12 h-full">
             <!-- 로고 및 페이지 타이틀 (동적 변경) -->
             <div class="flex items-center gap-3">
-                <div class="text-[22px] font-black text-white cursor-pointer shrink-0" onclick="window.haptic(); window.goHome()">
+                <div class="text-[22px] font-bold text-white cursor-pointer shrink-0" onclick="window.haptic(); window.goHome()">
                     엔조이<span class="text-blue-500">.</span>
                 </div>
                 <div id="top-nav-title" class="hidden text-[15px] font-bold text-gray-400 border-l border-white/20 pl-3 whitespace-nowrap"></div>
@@ -1629,6 +1629,20 @@
             const now = new Date(); 
             const currentRealMonth = now.getMonth() + 1;
             const currentYear = now.getFullYear();
+            
+            // [New] 현재 달의 멤버 상태를 가져와서 납부완료 여부 파악
+            let currentRealMonthRecords = [];
+            if (window.meetingData && window.meetingData.records) {
+                const currentKey = `${currentYear}-${currentRealMonth}`;
+                const isLegacy2025 = (currentYear === 2025 && currentRealMonth >= 10);
+                const isLegacy2026 = (currentYear === 2026 && currentRealMonth <= 9);
+                currentRealMonthRecords = window.meetingData.records[currentKey] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[currentRealMonth] : null) || [];
+            }
+            const currentMemberStatusMap = {};
+            currentRealMonthRecords.forEach(m => {
+                currentMemberStatusMap[m.name] = m;
+            });
+
             let htmlPenalty = ''; let hasPenalty = false;
             
             if (window.meetingData && window.meetingData.records) {
@@ -1642,25 +1656,42 @@
                         const records = window.meetingData.records[key] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[m] : null) || [];
                         const lastDay = new Date(y, m, 0).getDate();
                         records.forEach(mem => {
+                            let isNowPaid = currentMemberStatusMap[mem.name] && currentMemberStatusMap[mem.name].status === 'paid';
+
                             if(mem.status === 'unpaid') {
                                  let statusText = '';
                                  let showPenalty = false;
+                                 let colorClass = 'text-[#F04452]';
                                  
                                  if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
                                      statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 부과금 확정`;
                                      showPenalty = true;
+                                     if (isNowPaid) {
+                                         statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 부과금 (납부완료)`;
+                                         colorClass = 'text-[#3182F6]';
+                                     }
                                  } else if (y === currentYear && m === currentRealMonth && now.getDate() >= lastDay - 5) {
                                      statusText = `${m}월 부과금 예정`;
                                      showPenalty = true;
+                                     if (isNowPaid) showPenalty = false;
                                  }
 
                                  if (showPenalty) {
                                      hasPenalty = true; 
-                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-[#F04452] shrink-0">${statusText}</span></div>`;
+                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold ${colorClass} shrink-0">${statusText}</span></div>`;
                                  }
                             } else if(mem.status === 'deferred') {
+                                 let statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 유예`;
+                                 let colorClass = 'text-yellow-400';
+                                 
+                                 if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
+                                     if (isNowPaid) {
+                                         statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 유예 (납부완료)`;
+                                         colorClass = 'text-[#3182F6]';
+                                     }
+                                 }
                                  hasPenalty = true; 
-                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold text-yellow-400 shrink-0">${y !== currentYear ? y+'년 ' : ''}${m}월 유예</span></div>`;
+                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold ${colorClass} shrink-0">${statusText}</span></div>`;
                             }
                         });
                     }
@@ -1834,13 +1865,41 @@
                     amtText = `${m.amount.toLocaleString()}원`;
                     statusText = '납부완료';
                     statusColorClass = 'text-[#8B95A1]';
-                    penaltyText = '';
+                    
+                    let paidReasons = [];
+                    if (carryOverTexts.length > 0) {
+                        paidReasons.push(...carryOverTexts);
+                    }
+                    if (m.penalty && m.penalty.trim() !== '') {
+                        paidReasons.push(m.penalty);
+                    }
+                    
+                    if (paidReasons.length > 0) {
+                        penaltyText = `(${paidReasons.join(', ')})`;
+                        penaltyColorClass = 'text-[#8B95A1]';
+                    } else {
+                        penaltyText = '';
+                    }
                 } else if (isDeferred) {
                     amtClass = 'text-yellow-400';
                     amtText = '다음달 합산';
                     statusText = '납부 유예';
                     statusColorClass = 'text-yellow-400';
-                    penaltyText = '';
+                    
+                    let deferredReasons = [];
+                    if (carryOverTexts.length > 0) {
+                        deferredReasons.push(...carryOverTexts);
+                    }
+                    if (m.penalty && m.penalty.trim() !== '') {
+                        deferredReasons.push(m.penalty);
+                    }
+                    
+                    if (deferredReasons.length > 0) {
+                        penaltyText = `(${deferredReasons.join(', ')})`;
+                        penaltyColorClass = 'text-yellow-400/90';
+                    } else {
+                        penaltyText = '';
+                    }
                 }
 
                 const badge = m.isLeader ? `<span class="bg-[#2C2C2E] text-gray-400 text-[10px] px-1.5 py-0.5 rounded font-bold ml-1.5 inline-flex items-center justify-center leading-none">회장</span>` : '';
