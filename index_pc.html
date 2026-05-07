@@ -170,6 +170,12 @@
 </head>
 <body class="w-full h-[100dvh] flex flex-col overflow-hidden bg-black" ontouchstart="">
 
+    <!-- [New] 앱 전체 로딩 인디케이터 -->
+    <div id="app-loader" class="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center transition-opacity duration-500">
+        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-[#3182F6] mb-4"></i>
+        <span class="text-gray-400 text-sm font-medium tracking-tight">데이터 동기화 중...</span>
+    </div>
+
     <!-- 상단 탭 메뉴 (PC 버전) -->
     <nav id="top-nav" class="fixed top-0 left-0 right-0 z-50 flex justify-center bg-transparent h-10">
         <div id="top-nav-inner" class="flex items-center justify-between w-full px-8 md:px-12 h-full">
@@ -564,16 +570,6 @@
                     <i id="banner-ctrl-icon" class="fa-solid fa-pause text-[12px] text-white"></i>
                 </button>
             </div>
-        </div>
-
-        <!-- [New] KBO 리그 일정 보러가기 (알약 모양 버튼) -->
-        <div class="-mt-2 mb-2 px-1 fade-in-up delay-150 max-w-[900px] mx-auto">
-            <button onclick="window.haptic(); window.location.href='kbo.html'" class="relative overflow-hidden w-full bg-gradient-to-br from-red-400/25 to-blue-400/25 text-white font-bold text-[20px] py-5 rounded-full flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-white/5 active:scale-95 transition-transform">
-                <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="absolute -left-2 top-[70%] -translate-y-1/2 w-64 h-64 opacity-20 -rotate-12 pointer-events-none" alt="좌측 구단 로고">
-                <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="absolute right-2 top-1/2 -translate-y-1/2 w-64 h-64 opacity-20 -rotate-12 pointer-events-none" alt="우측 구단 로고">
-                <i class="fa-solid fa-baseball text-gray-300 relative z-10 text-2xl"></i>
-                <span class="relative z-10">2026 KBO 리그 일정 보러가기</span>
-            </button>
         </div>
 
         <!-- [New] 최근 브이로그 섹션 -->
@@ -1616,8 +1612,104 @@
             }; 
         }
         
-        const memberColors = { '홍박사': { bg: 'bg-blue-500/20', text: 'text-blue-400', char: '홍' }, '류짱': { bg: 'bg-purple-500/20', text: 'text-purple-400', char: '류' }, '오스틴': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', char: '오' }, '전시기': { bg: 'bg-orange-500/20', text: 'text-orange-400', char: '전' }, '이진누': { bg: 'bg-indigo-500/20', text: 'text-indigo-400', char: '이' }, '성원제': { bg: 'bg-pink-500/20', text: 'text-pink-400', char: '성' } };
+        const memberColors = { 
+            '홍박사': { bg: 'bg-blue-500/20', text: 'text-blue-400', char: '홍' }, 
+            '류짱': { bg: 'bg-purple-500/20', text: 'text-purple-400', char: '류' }, 
+            '오스틴': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', char: '오' }, 
+            '전시기': { bg: 'bg-orange-500/20', text: 'text-orange-400', char: '전' }, 
+            '이진누': { bg: 'bg-indigo-500/20', text: 'text-indigo-400', char: '이' }, 
+            '성원제': { bg: 'bg-pink-500/20', text: 'text-pink-400', char: '성' } 
+        };
         
+        window.calculateMemberHistory = function() {
+            const startYear = 2025;
+            const now = new Date(); 
+            const currentRealMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            const members = ['홍박사', '류짱', '오스틴', '전시기', '이진누', '성원제'];
+            const memberHistory = {};
+
+            if (!window.meetingData) window.meetingData = getInitialMeetingData();
+
+            members.forEach(name => {
+                let history = {}; 
+                let carriedDebt = 0;
+                let prevStatus = 'paid';
+                let prevExempted = false;
+
+                let maxYear = Math.max(currentYear, window.currentDuesYear);
+                for (let y = startYear; y <= maxYear; y++) {
+                    let startM = (y === startYear) ? 10 : 1;
+                    for (let m = startM; m <= 12; m++) {
+                        let key = `${y}-${m}`;
+                        let isL25 = (y === 2025 && m >= 10);
+                        let isL26 = (y === 2026 && m <= 9);
+                        let records = (window.meetingData && window.meetingData.records) 
+                                        ? (window.meetingData.records[key] || ((isL25 || isL26) ? window.meetingData.records[m] : [])) 
+                                        : [];
+                        let mem = records ? records.find(r => r.name === name) : null;
+                        
+                        let amount = mem ? (mem.amount || 0) : 0;
+                        let status = mem ? mem.status : 'unpaid';
+                        let isExempted = mem && (mem.ticketUsed || (mem.penalty && mem.penalty.includes('면제')));
+                        let isLeader = mem ? mem.isLeader : (name === '전시기');
+                        let rawPenaltyText = mem ? (mem.penalty || '') : '';
+
+                        let baseDues = y >= 2026 ? 20000 : 15000;
+                        let penaltyAmount = 0;
+                        
+                        let isPastOrCurrent = (y < currentYear || (y === currentYear && m <= currentRealMonth));
+
+                        if (isPastOrCurrent) {
+                            if (prevStatus === 'unpaid' && !prevExempted) {
+                                penaltyAmount = 10000;
+                            }
+                        }
+                        
+                        let totalOwed = baseDues + penaltyAmount + carriedDebt; 
+                        let balanceAfter = amount - totalOwed; 
+                        
+                        history[key] = {
+                            amount: amount,
+                            status: status,
+                            isExempted: isExempted,
+                            isLeader: isLeader,
+                            rawPenaltyText: rawPenaltyText,
+                            baseDues: baseDues,
+                            penaltyAmount: penaltyAmount,
+                            carriedDebt: carriedDebt,
+                            totalOwed: totalOwed,
+                            balanceAfter: balanceAfter, 
+                            prevStatus: prevStatus
+                        };
+                        
+                        if (isPastOrCurrent) {
+                            if (balanceAfter < 0) {
+                                carriedDebt = Math.abs(balanceAfter);
+                                if (status === 'deferred') {
+                                    prevStatus = 'deferred';
+                                    prevExempted = false;
+                                } else {
+                                    prevStatus = 'unpaid';
+                                    prevExempted = (status === 'unpaid') ? isExempted : false;
+                                }
+                            } else {
+                                carriedDebt = 0;
+                                prevStatus = 'paid';
+                                prevExempted = false;
+                            }
+                        } else {
+                            carriedDebt = 0;
+                            prevStatus = 'paid'; 
+                            prevExempted = false;
+                        }
+                    }
+                }
+                memberHistory[name] = history;
+            });
+            return memberHistory;
+        };
+
         window.renderMeetingStatus = function() {
             const penaltyListMini = document.getElementById('penalty-list-mini');
             const ticketListMini = document.getElementById('ticket-list-mini');
@@ -1629,20 +1721,9 @@
             const now = new Date(); 
             const currentRealMonth = now.getMonth() + 1;
             const currentYear = now.getFullYear();
+            const lastDay = new Date(currentYear, currentRealMonth, 0).getDate();
             
-            // [New] 현재 달의 멤버 상태를 가져와서 납부완료 여부 파악
-            let currentRealMonthRecords = [];
-            if (window.meetingData && window.meetingData.records) {
-                const currentKey = `${currentYear}-${currentRealMonth}`;
-                const isLegacy2025 = (currentYear === 2025 && currentRealMonth >= 10);
-                const isLegacy2026 = (currentYear === 2026 && currentRealMonth <= 9);
-                currentRealMonthRecords = window.meetingData.records[currentKey] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[currentRealMonth] : null) || [];
-            }
-            const currentMemberStatusMap = {};
-            currentRealMonthRecords.forEach(m => {
-                currentMemberStatusMap[m.name] = m;
-            });
-
+            const hist = window.calculateMemberHistory();
             let htmlPenalty = ''; let hasPenalty = false;
             
             if (window.meetingData && window.meetingData.records) {
@@ -1654,44 +1735,63 @@
                         const isLegacy2025 = (y === 2025 && m >= 10);
                         const isLegacy2026 = (y === 2026 && m <= 9);
                         const records = window.meetingData.records[key] || ((isLegacy2025 || isLegacy2026) ? window.meetingData.records[m] : null) || [];
-                        const lastDay = new Date(y, m, 0).getDate();
+                        
                         records.forEach(mem => {
-                            let isNowPaid = currentMemberStatusMap[mem.name] && currentMemberStatusMap[mem.name].status === 'paid';
+                            let h = hist[mem.name][key];
+                            if (h && h.balanceAfter < 0) {
+                                let isResolved = false;
+                                let cy = y, cm = m;
+                                let resolvedY = null, resolvedM = null;
+                                while(true) {
+                                    let k = `${cy}-${cm}`;
+                                    if (!hist[mem.name][k]) break;
+                                    if (hist[mem.name][k].balanceAfter >= 0 && hist[mem.name][k].status === 'paid') {
+                                        isResolved = true; 
+                                        resolvedY = cy;
+                                        resolvedM = cm;
+                                        break;
+                                    }
+                                    cm++; if(cm > 12) { cm = 1; cy++; }
+                                    if (cy > currentYear || (cy === currentYear && cm > currentRealMonth)) break; 
+                                }
 
-                            if(mem.status === 'unpaid') {
-                                 let statusText = '';
-                                 let showPenalty = false;
-                                 let colorClass = 'text-[#F04452]';
-                                 
-                                 if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
-                                     statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 부과금 확정`;
-                                     showPenalty = true;
-                                     if (isNowPaid) {
-                                         statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 부과금 (납부완료)`;
-                                         colorClass = 'text-[#3182F6]';
-                                     }
-                                 } else if (y === currentYear && m === currentRealMonth && now.getDate() >= lastDay - 5) {
-                                     statusText = `${m}월 부과금 예정`;
-                                     showPenalty = true;
-                                     if (isNowPaid) showPenalty = false;
-                                 }
+                                let statusText = '';
+                                let showPenalty = false;
+                                let colorClass = mem.status === 'deferred' ? 'text-yellow-400' : 'text-[#F04452]';
+                                let baseType = mem.status === 'deferred' ? '유예' : (mem.status === 'paid' ? '미납(일부납부)' : '부과금 확정');
+                                
+                                if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
+                                    statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 ${baseType}`;
+                                    showPenalty = true;
+                                    if (isResolved) {
+                                        if (resolvedY < currentYear || (resolvedY === currentYear && resolvedM < currentRealMonth)) {
+                                            showPenalty = false;
+                                        } else {
+                                            statusText += ' (해결완료)';
+                                            colorClass = 'text-[#3182F6]';
+                                        }
+                                    }
+                                } else if (y === currentYear && m === currentRealMonth && mem.status !== 'deferred' && now.getDate() >= lastDay - 5) {
+                                    statusText = `${m}월 부과금 예정`;
+                                    showPenalty = true;
+                                    if (isResolved) showPenalty = false;
+                                } else if (y === currentYear && m === currentRealMonth && mem.status === 'deferred') {
+                                    statusText = `${m}월 유예`;
+                                    showPenalty = true;
+                                    if (isResolved) {
+                                        if (resolvedY < currentYear || (resolvedY === currentYear && resolvedM < currentRealMonth)) {
+                                            showPenalty = false;
+                                        } else {
+                                            statusText += ' (해결완료)';
+                                            colorClass = 'text-[#3182F6]';
+                                        }
+                                    }
+                                }
 
-                                 if (showPenalty) {
-                                     hasPenalty = true; 
-                                     htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold ${colorClass} shrink-0">${statusText}</span></div>`;
-                                 }
-                            } else if(mem.status === 'deferred') {
-                                 let statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 유예`;
-                                 let colorClass = 'text-yellow-400';
-                                 
-                                 if (y < currentYear || (y === currentYear && m < currentRealMonth)) {
-                                     if (isNowPaid) {
-                                         statusText = `${y !== currentYear ? y+'년 ' : ''}${m}월 유예 (납부완료)`;
-                                         colorClass = 'text-[#3182F6]';
-                                     }
-                                 }
-                                 hasPenalty = true; 
-                                 htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold ${colorClass} shrink-0">${statusText}</span></div>`;
+                                if (showPenalty) {
+                                    hasPenalty = true; 
+                                    htmlPenalty += `<div class="w-full flex-none flex justify-between items-center"><span class="text-[14px] font-semibold text-white/90 truncate mr-2">${mem.name}</span><span class="text-[13px] font-semibold ${colorClass} shrink-0">${statusText}</span></div>`;
+                                }
                             }
                         });
                     }
@@ -1756,70 +1856,74 @@
             const currentYear = now.getFullYear();
             const today = now.getDate();
             const lastDay = new Date(year, month, 0).getDate();
+            const histAll = window.calculateMemberHistory();
 
             displayRecords.forEach((m, i) => {
                 const c = memberColors[m.name] || { bg: 'bg-[#2C2C2E]', text: 'text-gray-300', char: '?' }; 
-                const isPaid = m.status === 'paid'; 
-                const isDeferred = m.status === 'deferred';
-                
+                let h = histAll[m.name][`${year}-${month}`];
+                if (!h) return;
+
+                let totalOwed = h.totalOwed;
                 let amtClass = 'text-[#F04452]'; 
                 let amtText = '미납';
                 let statusText = '미납 상태';
                 let statusColorClass = 'text-[#F04452]';
-                let penaltyText = m.penalty || '';
                 let penaltyColorClass = 'text-[#F04452]/90';
+                let penaltyText = '';
 
-                let prevYear = year;
-                let prevMonth = month - 1;
-                if (prevMonth < 1) {
-                    prevMonth = 12;
-                    prevYear--;
-                }
-                const prevMonthKey = `${prevYear}-${prevMonth}`;
-                let prevRecords = [];
-                if (window.meetingData && window.meetingData.records) {
-                    const isPrevLegacy2025 = (prevYear === 2025 && prevMonth >= 10);
-                    const isPrevLegacy2026 = (prevYear === 2026 && prevMonth <= 9);
-                    prevRecords = window.meetingData.records[prevMonthKey] || ((isPrevLegacy2025 || isPrevLegacy2026) ? window.meetingData.records[prevMonth] : []) || [];
-                }
-                const prevMember = prevRecords.find(pm => pm.name === m.name);
-                
-                let currentBaseDues = year >= 2026 ? 20000 : 15000;
-                let totalOwed = currentBaseDues;
                 let carryOverTexts = [];
-                let prevMemberDeferred = false;
+                if (h.carriedDebt > 0) carryOverTexts.push(`이전 미납/유예 합산 ${h.carriedDebt.toLocaleString()}원`);
+                if (h.penaltyAmount > 0) carryOverTexts.push(`이전 부과금 ${h.penaltyAmount.toLocaleString()}원`);
 
-                let isPrevPastDue = (prevYear < currentYear || (prevYear === currentYear && prevMonth < currentRealMonth));
+                let isPaid = h.status === 'paid';
+                let isDeferred = h.status === 'deferred';
+                let isPastDue = (year < currentYear || (year === currentYear && month < currentRealMonth));
+                let isWarningPeriod = (year === currentYear && month === currentRealMonth && today >= lastDay - 5 && today <= lastDay);
 
-                if (prevMember) {
-                    let prevBaseDues = prevYear >= 2026 ? 20000 : 15000;
-                    if (prevMember.status === 'unpaid' && isPrevPastDue) {
-                        let isPrevExempted = prevMember.ticketUsed || (prevMember.penalty && prevMember.penalty.includes('면제'));
-                        if (isPrevExempted) {
-                            totalOwed += prevBaseDues;
-                            carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 미납 (부과금 면제)`);
-                        } else {
-                            totalOwed += (prevBaseDues + 10000);
-                            carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 미납 + 부과금 10,000원 발생`);
+                if (isPaid) {
+                    if (h.amount >= totalOwed) {
+                        amtClass = 'text-white';
+                        amtText = `${h.amount.toLocaleString()}원`;
+                        statusText = '납부완료';
+                        statusColorClass = 'text-[#8B95A1]';
+                        
+                        let reasons = [...carryOverTexts];
+                        if (h.rawPenaltyText && h.rawPenaltyText.trim() !== '') reasons.push(h.rawPenaltyText);
+                        
+                        if (reasons.length > 0) {
+                            penaltyText = `(${reasons.join(', ')})`;
+                            penaltyColorClass = 'text-[#8B95A1]';
                         }
-                    } else if (prevMember.status === 'deferred') {
-                        totalOwed += prevBaseDues;
-                        carryOverTexts.push(`지난달 ${prevBaseDues.toLocaleString()}원 유예`);
-                        prevMemberDeferred = true;
+                    } else {
+                        amtClass = 'text-[#F04452]';
+                        let remain = totalOwed - h.amount;
+                        amtText = `잔여 ${remain.toLocaleString()}원 미납`;
+                        statusText = '일부 납부 (미납)';
+                        statusColorClass = 'text-[#F04452]';
+                        penaltyColorClass = 'text-[#F04452]/90';
+                        
+                        let reasonsStr = carryOverTexts.length > 0 ? `${carryOverTexts.join(', ')} 포함, ` : '';
+                        penaltyText = `${reasonsStr}총 ${totalOwed.toLocaleString()}원 중 ${h.amount.toLocaleString()}원 납부`;
                     }
-                }
-
-                if (!isPaid && !isDeferred) {
-                    let isPastDue = (year < currentYear || (year === currentYear && month < currentRealMonth));
-                    let isWarningPeriod = (year === currentYear && month === currentRealMonth && today >= lastDay - 5 && today <= lastDay);
-                    let hasCarryOver = (carryOverTexts.length > 0);
-                    let isExempted = m.ticketUsed || (m.penalty && m.penalty.includes('면제'));
-
-                    if (isPastDue || isWarningPeriod || hasCarryOver) {
+                } else if (isDeferred) {
+                    amtClass = 'text-yellow-400';
+                    amtText = '다음달 합산';
+                    statusText = '납부 유예';
+                    statusColorClass = 'text-yellow-400';
+                    
+                    let reasons = [...carryOverTexts];
+                    if (h.rawPenaltyText && h.rawPenaltyText.trim() !== '') reasons.push(h.rawPenaltyText);
+                    
+                    if (reasons.length > 0) {
+                        penaltyText = `(${reasons.join(', ')})`;
+                        penaltyColorClass = 'text-yellow-400/90';
+                    }
+                } else {
+                    if (isPastDue || isWarningPeriod || h.carriedDebt > 0 || h.penaltyAmount > 0) {
                         amtText = `총 ${totalOwed.toLocaleString()}원 미납`;
                         statusText = '미납 상태';
                         
-                        if (prevMemberDeferred) {
+                        if (h.prevStatus === 'deferred') {
                             statusColorClass = 'text-yellow-400';
                             amtClass = 'text-yellow-400';
                             penaltyColorClass = 'text-yellow-400/90';
@@ -1829,76 +1933,29 @@
                             penaltyColorClass = 'text-[#F04452]/90';
                         }
 
+                        let reasons = [...carryOverTexts];
+                        
                         if (isPastDue) {
-                            if (isExempted) {
-                                if (!penaltyText) penaltyText = '부과금 만원 면제';
-                                penaltyColorClass = 'text-[#3182F6]/90';
-                            } else if (!penaltyText) {
-                                penaltyText = '미납부로 인한 부과금 10,000원 발생';
+                            if (h.isExempted) {
+                                reasons.push('부과금 만원 면제');
+                                penaltyColorClass = 'text-[#3182F6]/90'; 
+                            } else if (h.rawPenaltyText && h.rawPenaltyText.trim() !== '') {
+                                reasons.push(h.rawPenaltyText);
+                            } else {
+                                reasons.push('미납부로 인한 부과금 10,000원 발생');
                             }
                         } else if (isWarningPeriod) {
-                            if (!penaltyText) penaltyText = '부과금 10,000원 예정';
+                            if (!penaltyText) reasons.push('부과금 10,000원 예정');
                             penaltyColorClass = 'text-orange-400/90';
-                        } else {
-                            penaltyText = '';
                         }
+                        penaltyText = reasons.join(' / ');
                     } else {
                         amtText = `${totalOwed.toLocaleString()}원 납부 전`;
                         statusText = '납부 전';
                         statusColorClass = 'text-[#3182F6]';
                         amtClass = 'text-[#3182F6]';
                         penaltyColorClass = 'text-[#3182F6]/90';
-                        penaltyText = '';
-                    }
-
-                    if (carryOverTexts.length > 0) {
-                        if (penaltyText) {
-                            penaltyText = carryOverTexts.join(', ') + ' / ' + penaltyText;
-                        } else {
-                            penaltyText = carryOverTexts.join(', ');
-                        }
-                    }
-                }
-
-                if (isPaid) {
-                    amtClass = 'text-white';
-                    amtText = `${m.amount.toLocaleString()}원`;
-                    statusText = '납부완료';
-                    statusColorClass = 'text-[#8B95A1]';
-                    
-                    let paidReasons = [];
-                    if (carryOverTexts.length > 0) {
-                        paidReasons.push(...carryOverTexts);
-                    }
-                    if (m.penalty && m.penalty.trim() !== '') {
-                        paidReasons.push(m.penalty);
-                    }
-                    
-                    if (paidReasons.length > 0) {
-                        penaltyText = `(${paidReasons.join(', ')})`;
-                        penaltyColorClass = 'text-[#8B95A1]';
-                    } else {
-                        penaltyText = '';
-                    }
-                } else if (isDeferred) {
-                    amtClass = 'text-yellow-400';
-                    amtText = '다음달 합산';
-                    statusText = '납부 유예';
-                    statusColorClass = 'text-yellow-400';
-                    
-                    let deferredReasons = [];
-                    if (carryOverTexts.length > 0) {
-                        deferredReasons.push(...carryOverTexts);
-                    }
-                    if (m.penalty && m.penalty.trim() !== '') {
-                        deferredReasons.push(m.penalty);
-                    }
-                    
-                    if (deferredReasons.length > 0) {
-                        penaltyText = `(${deferredReasons.join(', ')})`;
-                        penaltyColorClass = 'text-yellow-400/90';
-                    } else {
-                        penaltyText = '';
+                        penaltyText = carryOverTexts.join(' / ');
                     }
                 }
 
@@ -1932,7 +1989,7 @@
             const e = {}; const p = `${y}-${String(m).padStart(2,'0')}`;
             if(m===1) e[`${p}-01`] = [{type:'holiday', title:'신정', time:'공휴일'}];
             if(m===3) e[`${p}-01`] = [{type:'holiday', title:'삼일절', time:'국경일'}];
-            if(m===5) e[`${p}-05`] = [{type:'holiday', title:'어린이날', time:'공휴일'}];
+            if(m===5) { e[`${p}-01`] = [{type:'holiday', title:'노동절(근로자의 날)', time:'공휴일'}]; e[`${p}-05`] = [{type:'holiday', title:'어린이날', time:'공휴일'}]; }
             if(m===6) e[`${p}-06`] = [{type:'holiday', title:'현충일', time:'공휴일'}];
             if(m===7) e[`${p}-17`] = [{type:'holiday', title:'제헌절', time:'국경일'}]; 
             if(m===8) e[`${p}-15`] = [{type:'holiday', title:'광복절', time:'국경일'}];
@@ -2246,6 +2303,15 @@
                     window.requestPushPermission();
                 }
             }, 1500);
+
+            // 로딩 인디케이터 안전장치 (데이터를 못 불러와도 8초 후엔 무조건 화면 표시)
+            setTimeout(() => {
+                const loader = document.getElementById('app-loader');
+                if (loader && loader.style.display !== 'none') {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
+                }
+            }, 8000);
         };
 
     </script>
@@ -2325,6 +2391,19 @@
                     if (unsubSchedule) { unsubSchedule(); unsubSchedule = null; }
                     
                     if (!user) return;
+
+                    let isMeetingLoaded = false;
+                    let isScheduleLoaded = false;
+
+                    const checkHideLoader = () => {
+                        if (isMeetingLoaded && isScheduleLoaded) {
+                            const loader = document.getElementById('app-loader');
+                            if (loader && loader.style.display !== 'none') {
+                                loader.style.opacity = '0';
+                                setTimeout(() => { loader.style.display = 'none'; }, 500);
+                            }
+                        }
+                    };
                     
                     unsubMeeting = onSnapshot(doc(window.meetingDb, ...window.MEETING_PATH), (docSnap) => {
                         if (docSnap.exists()) { 
@@ -2332,7 +2411,9 @@
                                 window.updateMeetingUI(docSnap.data()); 
                             }
                         }
-                    }, (error) => { console.warn("Meeting snapshot error:", error); });
+                        isMeetingLoaded = true;
+                        checkHideLoader();
+                    }, (error) => { console.warn("Meeting snapshot error:", error); isMeetingLoaded = true; checkHideLoader(); });
 
                     unsubSchedule = onSnapshot(doc(window.meetingDb, ...window.SCHEDULE_PATH), (docSnap) => {
                         if (docSnap.exists()) { 
@@ -2343,7 +2424,9 @@
                         } else { 
                             window.dynamicEvents = {};
                         }
-                    }, (error) => { console.warn("Schedule snapshot error:", error); });
+                        isScheduleLoaded = true;
+                        checkHideLoader();
+                    }, (error) => { console.warn("Schedule snapshot error:", error); isScheduleLoaded = true; checkHideLoader(); });
                 });
 
             } catch(e) { console.error("Firebase Init Error:", e); }
