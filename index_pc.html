@@ -936,6 +936,18 @@
 
                 <!-- 우측: 납부 내역 리스트 -->
                 <div class="flex-1 w-full sticky top-0 flex flex-col">
+                    <!-- [New] 공지사항 배너 (알약 모양) -->
+                    <div id="meeting-notice-banner" class="hidden mb-4 px-1">
+                        <div class="bg-gradient-to-r from-[#2C2C2E] to-[#1C1C1E] border border-white/10 px-4 py-3 rounded-full flex items-center gap-3 shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+                            <div class="w-6 h-6 rounded-full bg-[#3182F6]/20 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-bullhorn text-[#3182F6] text-[11px]"></i>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p id="meeting-notice-text" class="text-[13.5px] text-gray-200 font-medium truncate tracking-tight"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex justify-between items-end mb-4 px-4">
                         <h3 class="text-[20px] font-bold text-white tracking-tight">납부 내역</h3>
                         <div class="flex items-center gap-3">
@@ -1462,6 +1474,18 @@
 
             window.meetingData = data; 
             
+            // 공지사항 배너 업데이트 로직
+            const noticeBanner = document.getElementById('meeting-notice-banner');
+            const noticeText = document.getElementById('meeting-notice-text');
+            if (noticeBanner && noticeText) {
+                if (data.notice && data.notice.trim() !== '') {
+                    noticeText.innerText = data.notice;
+                    noticeBanner.classList.remove('hidden');
+                } else {
+                    noticeBanner.classList.add('hidden');
+                }
+            }
+
             if (!window.meetingData.exemptions) {
                 window.meetingData.exemptions = { '류짱': 1, '성원제': 1, '전시기': 1 };
             }
